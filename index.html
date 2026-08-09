@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Trade Journal</title>
 
   <style>
@@ -20,61 +19,61 @@
 
     .container {
       max-width: 1200px;
-      margin: 0 auto;
+      margin: auto;
       padding: 30px 20px;
     }
 
     h1 {
-      margin: 0 0 8px;
-      font-size: 32px;
+      margin-bottom: 5px;
     }
 
     .subtitle {
       color: #8d9aaa;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
     }
 
     .stats {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
       gap: 15px;
       margin-bottom: 25px;
     }
 
-    .card {
+    .card,
+    .panel {
       background: #121a24;
       border: 1px solid #243141;
       border-radius: 14px;
-      padding: 20px;
+    }
+
+    .card {
+      padding: 18px;
     }
 
     .card span {
       display: block;
       color: #8d9aaa;
-      font-size: 14px;
-      margin-bottom: 10px;
+      font-size: 13px;
+      margin-bottom: 8px;
     }
 
     .card strong {
-      font-size: 25px;
+      font-size: 24px;
     }
 
     .panel {
-      background: #121a24;
-      border: 1px solid #243141;
-      border-radius: 14px;
       padding: 22px;
       margin-bottom: 25px;
-    }
-
-    .panel h2 {
-      margin-top: 0;
     }
 
     .grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 15px;
+    }
+
+    .wide {
+      grid-column: 1 / -1;
     }
 
     label {
@@ -85,15 +84,11 @@
       font-size: 14px;
     }
 
-    .wide {
-      grid-column: 1 / -1;
-    }
-
     input,
     select,
     textarea {
       width: 100%;
-      padding: 12px;
+      padding: 11px;
       border-radius: 8px;
       border: 1px solid #2b3a4b;
       background: #0c131c;
@@ -102,20 +97,14 @@
     }
 
     textarea {
-      min-height: 90px;
+      min-height: 85px;
       resize: vertical;
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: #60a5fa;
     }
 
     button {
       border: 0;
       border-radius: 8px;
-      padding: 12px 18px;
+      padding: 11px 16px;
       cursor: pointer;
       font-weight: bold;
     }
@@ -131,6 +120,11 @@
       color: white;
     }
 
+    .danger {
+      background: #7f1d1d;
+      color: white;
+    }
+
     .settings {
       display: grid;
       grid-template-columns: 1fr 1fr auto;
@@ -138,12 +132,25 @@
       align-items: end;
     }
 
+    .filter-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+
     .tableHead {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      gap: 15px;
-      margin-bottom: 15px;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     .tableWrap {
@@ -181,8 +188,8 @@
     }
 
     .empty {
-      color: #66717e;
       text-align: center;
+      color: #66717e;
     }
 
     canvas {
@@ -209,11 +216,6 @@
       .wide {
         grid-column: auto;
       }
-
-      .tableHead {
-        align-items: flex-start;
-        flex-direction: column;
-      }
     }
   </style>
 </head>
@@ -223,9 +225,11 @@
 <div class="container">
 
   <h1>Trade Journal</h1>
+
   <div class="subtitle">
     Журнал сделок и статистика трейдера
   </div>
+
 
   <!-- НАСТРОЙКИ -->
 
@@ -258,6 +262,7 @@
       <button
         id="saveSettings"
         class="primary"
+        type="button"
       >
         Сохранить
       </button>
@@ -356,7 +361,6 @@
 
         <label>
           Дата
-
           <input
             type="date"
             id="date"
@@ -366,10 +370,8 @@
 
         <label>
           Инструмент
-
           <input
             id="symbol"
-            placeholder="BTCUSDT"
             value="BTCUSDT"
             required
           >
@@ -377,25 +379,22 @@
 
         <label>
           Сессия
-
           <select id="session">
-            <option>London</option>
-            <option>New York</option>
+            <option value="London">London</option>
+            <option value="New York">New York</option>
           </select>
         </label>
 
         <label>
           Направление
-
           <select id="direction">
-            <option>LONG</option>
-            <option>SHORT</option>
+            <option value="LONG">LONG</option>
+            <option value="SHORT">SHORT</option>
           </select>
         </label>
 
         <label>
           Результат
-
           <select id="result">
             <option value="win">TP</option>
             <option value="loss">SL</option>
@@ -405,7 +404,6 @@
 
         <label>
           P/L, %
-
           <input
             type="number"
             id="pl"
@@ -417,7 +415,6 @@
 
         <label class="wide">
           Причина входа
-
           <input
             id="setup"
             placeholder="Liquidity sweep + BOS + FVG"
@@ -426,7 +423,6 @@
 
         <label class="wide">
           Соблюдал стратегию?
-
           <select id="disciplineInput">
             <option value="yes">Да</option>
             <option value="no">Нет</option>
@@ -435,7 +431,6 @@
 
         <label class="wide">
           Комментарий
-
           <textarea
             id="comment"
             placeholder="Что сделал правильно/неправильно?"
@@ -456,6 +451,85 @@
   </section>
 
 
+  <!-- ФИЛЬТРЫ -->
+
+  <section class="panel">
+
+    <h2>Фильтры</h2>
+
+    <div class="grid">
+
+      <label>
+        Результат
+
+        <select id="filterResult">
+          <option value="all">Все</option>
+          <option value="win">TP</option>
+          <option value="loss">SL</option>
+          <option value="be">BE</option>
+        </select>
+
+      </label>
+
+      <label>
+        Направление
+
+        <select id="filterDirection">
+          <option value="all">Все</option>
+          <option value="LONG">LONG</option>
+          <option value="SHORT">SHORT</option>
+        </select>
+
+      </label>
+
+      <label>
+        Сессия
+
+        <select id="filterSession">
+          <option value="all">Все</option>
+          <option value="London">London</option>
+          <option value="New York">New York</option>
+        </select>
+
+      </label>
+
+      <label>
+        Дата от
+
+        <input
+          type="date"
+          id="filterFrom"
+        >
+
+      </label>
+
+      <label>
+        Дата до
+
+        <input
+          type="date"
+          id="filterTo"
+        >
+
+      </label>
+
+    </div>
+
+    <div class="filter-buttons">
+
+      <button
+        id="resetFilters"
+        class="secondary"
+        type="button"
+      >
+        Сбросить фильтры
+      </button>
+
+    </div>
+
+  </section>
+
+
   <!-- ИСТОРИЯ -->
 
   <section class="panel">
@@ -464,19 +538,25 @@
 
       <h2>История сделок</h2>
 
-      <button
-        id="export"
-        class="secondary"
-      >
-        Экспорт CSV
-      </button>
+      <div class="actions">
 
-      <button
-        id="clearAll"
-        class="secondary"
-      >
-        Очистить историю
-      </button>
+        <button
+          id="export"
+          class="secondary"
+          type="button"
+        >
+          Экспорт CSV
+        </button>
+
+        <button
+          id="clearAll"
+          class="danger"
+          type="button"
+        >
+          Очистить историю
+        </button>
+
+      </div>
 
     </div>
 
@@ -536,6 +616,8 @@ let settings = {
 };
 
 
+/* ЗАГРУЗКА СДЕЛОК */
+
 try {
 
   trades = JSON.parse(
@@ -553,6 +635,8 @@ try {
 }
 
 
+/* ЗАГРУЗКА НАСТРОЕК */
+
 try {
 
   const saved =
@@ -565,30 +649,32 @@ try {
     typeof saved === "object"
   ) {
 
-    settings.deposit =
+    if (
       Number(saved.deposit) > 0
-        ? Number(saved.deposit)
-        : 100;
+    ) {
+      settings.deposit =
+        Number(saved.deposit);
+    }
 
-    settings.risk =
+    if (
       Number(saved.risk) >= 0
-        ? Number(saved.risk)
-        : 1;
+    ) {
+      settings.risk =
+        Number(saved.risk);
+    }
+
   }
 
-} catch {
+} catch {}
 
-  settings = {
-    deposit: 100,
-    risk: 1
-  };
 
-}
-
+/* SHORTCUT */
 
 const $ = id =>
   document.getElementById(id);
 
+
+/* НАЧАЛЬНЫЕ ЗНАЧЕНИЯ */
 
 $("initialDeposit").value =
   settings.deposit;
@@ -602,6 +688,8 @@ $("date").value =
     .slice(0, 10);
 
 
+/* ЭКРАНИРОВАНИЕ HTML */
+
 function escapeHtml(value) {
 
   return String(
@@ -609,117 +697,198 @@ function escapeHtml(value) {
   ).replace(
     /[&<>"']/g,
     char => ({
+
       "&": "&amp;",
       "<": "&lt;",
       ">": "&gt;",
       '"': "&quot;",
       "'": "&#039;"
+
     }[char])
   );
 
 }
 
 
-function getDeposit() {
+/* ФИЛЬТРАЦИЯ */
 
-  const value =
-    Number(
-      $("initialDeposit").value
-    );
+function getFilteredTrades() {
 
-  return Number.isFinite(value) &&
-    value > 0
-    ? value
-    : 0;
+  const result =
+    $("filterResult").value;
+
+  const direction =
+    $("filterDirection").value;
+
+  const session =
+    $("filterSession").value;
+
+  const from =
+    $("filterFrom").value;
+
+  const to =
+    $("filterTo").value;
+
+
+  return trades.filter(
+    trade => {
+
+      if (
+        result !== "all" &&
+        trade.result !== result
+      ) {
+        return false;
+      }
+
+
+      if (
+        direction !== "all" &&
+        trade.direction !== direction
+      ) {
+        return false;
+      }
+
+
+      if (
+        session !== "all" &&
+        trade.session !== session
+      ) {
+        return false;
+      }
+
+
+      if (
+        from &&
+        trade.date < from
+      ) {
+        return false;
+      }
+
+
+      if (
+        to &&
+        trade.date > to
+      ) {
+        return false;
+      }
+
+
+      return true;
+
+    }
+  );
 
 }
 
 
-function calculateBalance() {
+/* БАЛАНС */
 
-  let balance =
-    Number(settings.deposit || 0);
-
-  for (
-    const trade of trades
-  ) {
-
-    balance *=
-      1 +
-      Number(trade.pl || 0) /
-      100;
-
-  }
-
-  return balance;
-
-}
-
-
-function calculateStats() {
-
-  const count =
-    trades.length;
-
-  const wins =
-    trades.filter(
-      t => t.result === "win"
-    ).length;
-
-  const losses =
-    trades.filter(
-      t => t.result === "loss"
-    ).length;
-
-  const disciplined =
-    trades.filter(
-      t => t.discipline === "yes"
-    ).length;
-
-  const totalPL =
-    trades.reduce(
-      (sum, trade) =>
-        sum +
-        Number(trade.pl || 0),
-      0
-    );
-
-  const average =
-    count
-      ? totalPL / count
-      : 0;
-
-  const bestTrade =
-    count
-      ? Math.max(
-          ...trades.map(
-            t =>
-              Number(
-                t.pl || 0
-              )
-          )
-        )
-      : 0;
+function calculateBalance(list) {
 
   let balance =
     Number(
       settings.deposit || 0
     );
 
-  let peak =
-    balance;
-
-  let maxDrawdown =
-    0;
 
   for (
-    const trade of trades
+    const trade of list
   ) {
 
     balance *=
       1 +
-      Number(trade.pl || 0) /
-      100;
+      Number(
+        trade.pl || 0
+      ) / 100;
+
+  }
+
+
+  return balance;
+
+}
+
+
+/* СТАТИСТИКА */
+
+function calculateStats(list) {
+
+  const count =
+    list.length;
+
+
+  const wins =
+    list.filter(
+      t => t.result === "win"
+    ).length;
+
+
+  const losses =
+    list.filter(
+      t => t.result === "loss"
+    ).length;
+
+
+  const disciplined =
+    list.filter(
+      t => t.discipline === "yes"
+    ).length;
+
+
+  const totalPL =
+    list.reduce(
+      (sum, trade) =>
+        sum +
+        Number(
+          trade.pl || 0
+        ),
+      0
+    );
+
+
+  const average =
+    count
+      ? totalPL / count
+      : 0;
+
+
+  const bestTrade =
+    count
+      ? Math.max(
+          ...list.map(
+            trade =>
+              Number(
+                trade.pl || 0
+              )
+          )
+        )
+      : 0;
+
+
+  let balance =
+    Number(
+      settings.deposit || 0
+    );
+
+
+  let peak =
+    balance;
+
+
+  let maxDrawdown =
+    0;
+
+
+  for (
+    const trade of list
+  ) {
+
+    balance *=
+      1 +
+      Number(
+        trade.pl || 0
+      ) / 100;
+
 
     if (
       balance > peak
@@ -729,6 +898,7 @@ function calculateStats() {
         balance;
 
     }
+
 
     if (
       peak > 0
@@ -741,6 +911,7 @@ function calculateStats() {
         ) /
         peak *
         100;
+
 
       if (
         drawdown >
@@ -756,13 +927,16 @@ function calculateStats() {
 
   }
 
+
   const pnlMoney =
     balance -
     Number(
       settings.deposit || 0
     );
 
+
   return {
+
     count,
     wins,
     losses,
@@ -773,15 +947,22 @@ function calculateStats() {
     maxDrawdown,
     pnlMoney,
     balance
+
   };
 
 }
 
 
+/* ОТРИСОВКА */
+
 function render() {
 
+  const list =
+    getFilteredTrades();
+
+
   const stats =
-    calculateStats();
+    calculateStats(list);
 
 
   $("count").textContent =
@@ -870,13 +1051,13 @@ function render() {
 
 
   $("empty").style.display =
-    stats.count
+    list.length
       ? "none"
       : "block";
 
 
   $("trades").innerHTML =
-    trades
+    list
       .slice()
       .reverse()
       .map(
@@ -967,23 +1148,28 @@ function render() {
       .join("");
 
 
-  drawEquity();
+  drawEquity(list);
 
 }
 
 
-function drawEquity() {
+/* ГРАФИК */
+
+function drawEquity(list) {
 
   const canvas =
     $("equity");
+
 
   const ctx =
     canvas.getContext(
       "2d"
     );
 
+
   const W =
     canvas.width;
+
 
   const H =
     canvas.height;
@@ -998,23 +1184,28 @@ function drawEquity() {
 
 
   let values = [
+
     Number(
       settings.deposit || 0
     )
+
   ];
+
 
   let balance =
     values[0];
 
 
   for (
-    const trade of trades
+    const trade of list
   ) {
 
     balance *=
       1 +
-      Number(trade.pl || 0) /
-      100;
+      Number(
+        trade.pl || 0
+      ) / 100;
+
 
     values.push(
       balance
@@ -1048,6 +1239,7 @@ function drawEquity() {
     Math.min(
       ...values
     );
+
 
   let max =
     Math.max(
@@ -1129,6 +1321,8 @@ function drawEquity() {
 }
 
 
+/* СОХРАНЕНИЕ НАСТРОЕК */
+
 $("saveSettings").onclick =
   () => {
 
@@ -1159,12 +1353,15 @@ $("saveSettings").onclick =
 
     render();
 
+
     alert(
       "Настройки сохранены"
     );
 
   };
 
+
+/* ДОБАВЛЕНИЕ СДЕЛКИ */
 
 $("tradeForm").onsubmit =
   event => {
@@ -1240,6 +1437,51 @@ $("tradeForm").onsubmit =
   };
 
 
+/* ФИЛЬТРЫ */
+
+$("filterResult").onchange =
+  render;
+
+$("filterDirection").onchange =
+  render;
+
+$("filterSession").onchange =
+  render;
+
+$("filterFrom").onchange =
+  render;
+
+$("filterTo").onchange =
+  render;
+
+
+/* СБРОС ФИЛЬТРОВ */
+
+$("resetFilters").onclick =
+  () => {
+
+    $("filterResult").value =
+      "all";
+
+    $("filterDirection").value =
+      "all";
+
+    $("filterSession").value =
+      "all";
+
+    $("filterFrom").value =
+      "";
+
+    $("filterTo").value =
+      "";
+
+    render();
+
+  };
+
+
+/* ОЧИСТКА ИСТОРИИ */
+
 $("clearAll").onclick =
   () => {
 
@@ -1267,6 +1509,8 @@ $("clearAll").onclick =
 
   };
 
+
+/* ЭКСПОРТ CSV */
 
 $("export").onclick =
   () => {
@@ -1349,6 +1593,8 @@ $("export").onclick =
 
   };
 
+
+/* ЗАПУСК */
 
 render();
 
