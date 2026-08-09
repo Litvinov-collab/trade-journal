@@ -1,41 +1,8 @@
-const KEY='tradeJournalV1';
-let trades=JSON.parse(localStorage.getItem(KEY)||'[]');
-const $=id=>document.getElementById(id);
-$('date').value=new Date().toISOString().slice(0,10);
-
-function save(){localStorage.setItem(KEY,JSON.stringify(trades));render();}
-function render(){
-  $('count').textContent=trades.length;
-  const wins=trades.filter(t=>t.result==='win').length;
-  $('winrate').textContent=trades.length?Math.round(wins/trades.length*100)+'%':'0%';
-  const disciplined=trades.filter(t=>t.discipline==='yes').length;
-  $('discipline').textContent=trades.length?Math.round(disciplined/trades.length*100)+'%':'0%';
-  const pnl=trades.reduce((s,t)=>s+Number(t.pl||0),0);
-  $('pnl').textContent=(pnl>=0?'+':'')+pnl.toFixed(2)+'%';
-  $('empty').style.display=trades.length?'none':'block';
-  $('trades').innerHTML=trades.slice().reverse().map(t=>`
-    <tr>
-      <td>${t.date}</td><td>${esc(t.symbol)}</td><td>${t.session}</td><td>${t.direction}</td>
-      <td class="${t.result}">${t.result==='win'?'TP':t.result==='loss'?'SL':'BE'}</td>
-      <td class="${Number(t.pl)>=0?'win':'loss'}">${Number(t.pl)>=0?'+':''}${Number(t.pl).toFixed(2)}%</td>
-      <td>${t.discipline==='yes'?'Да':'Нет'}</td><td>${esc(t.comment||t.setup||'—')}</td>
-    </tr>`).join('');
-}
-function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
-$('tradeForm').addEventListener('submit',e=>{
- e.preventDefault();
- trades.push({
-  date:$('date').value,symbol:$('symbol').value.trim(),session:$('session').value,
-  direction:$('direction').value,result:$('result').value,pl:Number($('pl').value),
-  setup:$('setup').value.trim(),discipline:$('disciplineInput').value,comment:$('comment').value.trim()
- });
- e.target.reset();$('date').value=new Date().toISOString().slice(0,10);$('symbol').value='BTCUSDT';save();
-});
-$('clearAll').onclick=()=>{if(confirm('Удалить всю историю?')){trades=[];save();}};
-$('export').onclick=()=>{
- const rows=[['Дата','Инструмент','Сессия','Направление','Результат','P/L %','Стратегия','Комментарий'],
- ...trades.map(t=>[t.date,t.symbol,t.session,t.direction,t.result,t.pl,t.discipline,t.comment||t.setup])];
- const csv='\ufeff'+rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
- const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='trade-journal.csv';a.click();
-};
-render();
+const K='tradeJournalV1',S='tradeJournalSettings';let trades=JSON.parse(localStorage.getItem(K)||'[]'),settings=JSON.parse(localStorage.getItem(S)||'{"deposit":100,"risk":1}');const $=id=>document.getElementById(id);$('date').value=new Date().toISOString().slice(0,10);$('initialDeposit').value=settings.deposit;$('riskPercent').value=settings.risk;
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function bal(){return Number(settings.deposit||0)*(1+trades.reduce((a,t)=>a+Number(t.pl||0)/100,0))}
+function render(){let n=trades.length,w=trades.filter(t=>t.result==='win').length,d=trades.filter(t=>t.discipline==='yes').length,p=trades.reduce((a,t)=>a+Number(t.pl||0),0),av=n?p/n:0;$('count').textContent=n;$('winrate').textContent=n?Math.round(w/n*100)+'%':'0%';$('discipline').textContent=n?Math.round(d/n*100)+'%':'0%';$('balance').textContent='$'+bal().toFixed(2);$('pnl').textContent=(p>=0?'+':'')+p.toFixed(2)+'%';$('avg').textContent=(av>=0?'+':'')+av.toFixed(2)+'%';$('empty').style.display=n?'none':'block';$('trades').innerHTML=trades.slice().reverse().map(t=>`<tr><td>${t.date}</td><td>${esc(t.symbol)}</td><td>${t.session}</td><td>${t.direction}</td><td class="${t.result}">${t.result==='win'?'TP':t.result==='loss'?'SL':'BE'}</td><td class="${t.pl>=0?'win':'loss'}">${t.pl>=0?'+':''}${Number(t.pl).toFixed(2)}%</td><td>${t.discipline==='yes'?'Да':'Нет'}</td><td>${esc(t.comment||t.setup||'—')}</td></tr>`).join('');draw()}
+function draw(){let c=$('equity'),x=c.getContext('2d'),W=c.width,H=c.height;x.clearRect(0,0,W,H);let v=[Number(settings.deposit||0)],b=v[0];trades.forEach(t=>{b*=1+Number(t.pl||0)/100;v.push(b)});if(v.length<2){x.fillStyle='#66717e';x.font='16px Arial';x.fillText('Добавь сделки, чтобы увидеть график',25,40);return}let mn=Math.min(...v),mx=Math.max(...v);if(mn===mx){mn--;mx++}x.beginPath();v.forEach((q,i)=>{let xx=20+i*(W-40)/(v.length-1),yy=H-20-(q-mn)/(mx-mn)*(H-40);i?x.lineTo(xx,yy):x.moveTo(xx,yy)});x.strokeStyle='#60a5fa';x.lineWidth=3;x.stroke()}
+$('saveSettings').onclick=()=>{settings={deposit:Number($('initialDeposit').value)||0,risk:Number($('riskPercent').value)||0};localStorage.setItem(S,JSON.stringify(settings));render();alert('Настройки сохранены')};
+$('tradeForm').onsubmit=e=>{e.preventDefault();trades.push({date:$('date').value,symbol:$('symbol').value.trim(),session:$('session').value,direction:$('direction').value,result:$('result').value,pl:Number($('pl').value),setup:$('setup').value,discipline:$('disciplineInput').value,comment:$('comment').value});localStorage.setItem(K,JSON.stringify(trades));e.target.reset();$('date').value=new Date().toISOString().slice(0,10);$('symbol').value='BTCUSDT';render()};
+$('clearAll').onclick=()=>{if(confirm('Удалить всю историю?')){trades=[];localStorage.setItem(K,'[]');render()}};$('export').onclick=()=>{let r=[['Дата','Инструмент','Сессия','Направление','Результат','P/L %','Стратегия','Комментарий'],...trades.map(t=>[t.date,t.symbol,t.session,t.direction,t.result,t.pl,t.discipline,t.comment||t.setup])],csv='\ufeff'+r.map(a=>a.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n'),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='trade-journal.csv';a.click()};render();
