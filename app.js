@@ -1,120 +1,123 @@
-const TRADES_KEY = "tradeJournalV1";
-const SETTINGS_KEY = "tradeJournalSettings";
+const K = "tradeJournalV1";
+const S = "tradeJournalSettings";
 
-let trades = JSON.parse(localStorage.getItem(TRADES_KEY) || "[]");
-let settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
+let trades = JSON.parse(localStorage.getItem(K) || "[]");
+let settings = JSON.parse(
+  localStorage.getItem(S) || '{"deposit":100,"risk":1}'
+);
 
-if (typeof settings !== "object" || settings === null) settings = {};
-
-const savedDeposit = Number(settings.deposit);
-const savedRisk = Number(settings.risk);
-
-$("initialDeposit").value =
-  Number.isFinite(savedDeposit) && savedDeposit > 0 ? savedDeposit : 50;
-
-$("riskPercent").value =
-  Number.isFinite(savedRisk) && savedRisk >= 0 ? savedRisk : 2;
+const $ = id => document.getElementById(id);
 
 $("date").value = new Date().toISOString().slice(0, 10);
+$("initialDeposit").value = settings.deposit;
+$("riskPercent").value = settings.risk;
 
-function getDeposit() {
-  const value = Number($("initialDeposit").value);
-  return Number.isFinite(value) && value > 0 ? value : 0;
-}
-
-function getTotalPL() {
-  return trades.reduce((sum, trade) => sum + Number(trade.pl || 0), 0);
-}
-
-function getBalance() {
-  let balance = getDeposit();
-
-  for (const trade of trades) {
-    const pl = Number(trade.pl || 0);
-    balance *= 1 + pl / 100;
-  }
-
-  return balance;
-}
-
-function escapeHtml(value) {
-  return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, m => ({
     "&": "&amp;",
     "<": "&lt;",
     ">": "&gt;",
     '"': "&quot;",
     "'": "&#039;"
-  }[char]));
+  }[m]));
 }
 
-function render() {
-  const count = trades.length;
-  const wins = trades.filter(t => t.result === "win").length;
-  const disciplined = trades.filter(t => t.discipline === "yes").length;
-
-  const totalPL = getTotalPL();
-  const average = count ? totalPL / count : 0;
-  const balance = getBalance();
-
-  $("count").textContent = count;
-
-  $("winrate").textContent =
-    count ? Math.round(wins / count * 100) + "%" : "0%";
-
-  $("discipline").textContent =
-    count ? Math.round(disciplined / count * 100) + "%" : "0%";
-
-  $("balance").textContent = "$" + balance.toFixed(2);
-
-  $("pnl").textContent =
-    (totalPL >= 0 ? "+" : "") + totalPL.toFixed(2) + "%";
-
-  $("avg").textContent =
-    (average >= 0 ? "+" : "") + average.toFixed(2) + "%";
-
-  $("empty").style.display = count ? "none" : "block";
-
-  $("trades").innerHTML = trades.slice().reverse().map(t => `
-    <tr>
-      <td>${escapeHtml(t.date)}</td>
-      <td>${escapeHtml(t.symbol)}</td>
-      <td>${escapeHtml(t.session)}</td>
-      <td>${escapeHtml(t.direction)}</td>
-      <td class="${t.result}">
-        ${t.result === "win" ? "TP" : t.result === "loss" ? "SL" : "BE"}
-      </td>
-      <td class="${Number(t.pl) >= 0 ? "win" : "loss"}">
-        ${Number(t.pl) >= 0 ? "+" : ""}${Number(t.pl).toFixed(2)}%
-      </td>
-      <td>${t.discipline === "yes" ? "Да" : "Нет"}</td>
-      <td>${escapeHtml(t.comment || t.setup || "—")}</td>
-    </tr>
-  `).join("");
-
-  drawEquity();
-}
-
-function drawEquity() {
-  const canvas = $("equity");
-  const ctx = canvas.getContext("2d");
-
-  const W = canvas.width;
-  const H = canvas.height;
-
-  ctx.clearRect(0, 0, W, H);
-
-  let values = [getDeposit()];
-  let balance = getDeposit();
+function bal() {
+  let balance = Number(settings.deposit || 0);
 
   for (const trade of trades) {
     balance *= 1 + Number(trade.pl || 0) / 100;
-    values.push(balance);
   }
 
+  return balance;
+}
+
+function render() {
+  const n = trades.length;
+  const w = trades.filter(t => t.result === "win").length;
+  const d = trades.filter(t => t.discipline === "yes").length;
+
+  const p = trades.reduce(
+    (a, t) => a + Number(t.pl || 0),
+    0
+  );
+
+  const av = n ? p / n : 0;
+
+  $("count").textContent = n;
+
+  $("winrate").textContent =
+    n ? Math.round(w / n * 100) + "%" : "0%";
+
+  $("discipline").textContent =
+    n ? Math.round(d / n * 100) + "%" : "0%";
+
+  $("balance").textContent =
+    "$" + bal().toFixed(2);
+
+  $("pnl").textContent =
+    (p >= 0 ? "+" : "") + p.toFixed(2) + "%";
+
+  $("avg").textContent =
+    (av >= 0 ? "+" : "") + av.toFixed(2) + "%";
+
+  $("empty").style.display =
+    n ? "none" : "block";
+
+  $("trades").innerHTML = trades
+    .slice()
+    .reverse()
+    .map(t => `
+      <tr>
+        <td>${esc(t.date)}</td>
+        <td>${esc(t.symbol)}</td>
+        <td>${esc(t.session)}</td>
+        <td>${esc(t.direction)}</td>
+        <td class="${t.result}">
+          ${t.result === "win"
+            ? "TP"
+            : t.result === "loss"
+              ? "SL"
+              : "BE"}
+        </td>
+        <td class="${Number(t.pl) >= 0 ? "win" : "loss"}">
+          ${Number(t.pl) >= 0 ? "+" : ""}
+          ${Number(t.pl).toFixed(2)}%
+        </td>
+        <td>
+          ${t.discipline === "yes" ? "Да" : "Нет"}
+        </td>
+        <td>
+          ${esc(t.comment || t.setup || "—")}
+        </td>
+      </tr>
+    `)
+    .join("");
+
+  draw();
+}
+
+function draw() {
+  const c = $("equity");
+  const x = c.getContext("2d");
+
+  const W = c.width;
+  const H = c.height;
+
+  x.clearRect(0, 0, W, H);
+
+  let values = [Number(settings.deposit || 0)];
+  let balance = values[0];
+
+  trades.forEach(t => {
+    balance *= 1 + Number(t.pl || 0) / 100;
+    values.push(balance);
+  });
+
   if (values.length < 2) {
-    ctx.fillStyle = "#66717e";
-    ctx.font = "16px Arial";
-    ctx.fillText(
+    x.fillStyle = "#66717e";
+    x.font = "16px Arial";
+    x.fillText(
       "Добавь сделки, чтобы увидеть график",
       25,
       40
@@ -122,49 +125,56 @@ function drawEquity() {
     return;
   }
 
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const range = max === min ? 1 : max - min;
+  let min = Math.min(...values);
+  let max = Math.max(...values);
 
-  ctx.beginPath();
+  if (min === max) {
+    min--;
+    max++;
+  }
 
-  values.forEach((value, index) => {
-    const x =
-      25 + index * (W - 50) / (values.length - 1);
+  x.beginPath();
 
-    const y =
-      H - 25 -
-      (value - min) / range *
-      (H - 50);
+  values.forEach((value, i) => {
+    const xx =
+      20 + i * (W - 40) / (values.length - 1);
 
-    if (index === 0) {
-      ctx.moveTo(x, y);
+    const yy =
+      H - 20 -
+      (value - min) / (max - min) * (H - 40);
+
+    if (i === 0) {
+      x.moveTo(xx, yy);
     } else {
-      ctx.lineTo(x, y);
+      x.lineTo(xx, yy);
     }
   });
 
-  ctx.strokeStyle = "#60a5fa";
-  ctx.lineWidth = 3;
-  ctx.stroke();
+  x.strokeStyle = "#60a5fa";
+  x.lineWidth = 3;
+  x.stroke();
 }
 
 $("saveSettings").onclick = () => {
   settings = {
-    deposit: getDeposit(),
-    risk: Number($("riskPercent").value) || 0
+    deposit:
+      Number($("initialDeposit").value) || 0,
+    risk:
+      Number($("riskPercent").value) || 0
   };
 
   localStorage.setItem(
-    SETTINGS_KEY,
+    S,
     JSON.stringify(settings)
   );
 
   render();
+
+  alert("Настройки сохранены");
 };
 
-$("tradeForm").onsubmit = (event) => {
-  event.preventDefault();
+$("tradeForm").onsubmit = e => {
+  e.preventDefault();
 
   trades.push({
     date: $("date").value,
@@ -179,11 +189,11 @@ $("tradeForm").onsubmit = (event) => {
   });
 
   localStorage.setItem(
-    TRADES_KEY,
+    K,
     JSON.stringify(trades)
   );
 
-  event.target.reset();
+  e.target.reset();
 
   $("date").value =
     new Date().toISOString().slice(0, 10);
@@ -194,18 +204,16 @@ $("tradeForm").onsubmit = (event) => {
 };
 
 $("clearAll").onclick = () => {
-  if (!confirm("Удалить всю историю сделок?")) {
-    return;
+  if (confirm("Удалить всю историю?")) {
+    trades = [];
+
+    localStorage.setItem(
+      K,
+      "[]"
+    );
+
+    render();
   }
-
-  trades = [];
-
-  localStorage.setItem(
-    TRADES_KEY,
-    "[]"
-  );
-
-  render();
 };
 
 $("export").onclick = () => {
@@ -220,7 +228,6 @@ $("export").onclick = () => {
       "Стратегия",
       "Комментарий"
     ],
-
     ...trades.map(t => [
       t.date,
       t.symbol,
@@ -245,19 +252,17 @@ $("export").onclick = () => {
       )
       .join("\n");
 
-  const link = document.createElement("a");
+  const link =
+    document.createElement("a");
 
   link.href = URL.createObjectURL(
     new Blob(
       [csv],
-      {
-        type: "text/csv;charset=utf-8"
-      }
+      { type: "text/csv;charset=utf-8" }
     )
   );
 
   link.download = "trade-journal.csv";
-
   link.click();
 };
 
