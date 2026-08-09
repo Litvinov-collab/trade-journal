@@ -1,9 +1,8 @@
-```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Trade Journal</title>
 
 <style>
@@ -155,7 +154,7 @@ overflow-x:auto
 table{
 width:100%;
 border-collapse:collapse;
-min-width:950px
+min-width:900px
 }
 
 th,td{
@@ -256,7 +255,6 @@ grid-template-columns:1fr
 Журнал сделок и аналитика трейдера
 </div>
 
-
 <section class="panel">
 
 <h2>Настройки</h2>
@@ -280,7 +278,6 @@ grid-template-columns:1fr
 </div>
 
 </section>
-
 
 <section class="stats">
 
@@ -346,7 +343,6 @@ grid-template-columns:1fr
 
 </section>
 
-
 <section class="panel">
 
 <h2>📈 Кривая баланса</h2>
@@ -354,7 +350,6 @@ grid-template-columns:1fr
 <canvas id="equity" width="1000" height="300"></canvas>
 
 </section>
-
 
 <section class="panel">
 
@@ -432,7 +427,6 @@ P/L, %
 
 </section>
 
-
 <section class="panel">
 
 <h2>📊 Аналитика</h2>
@@ -475,7 +469,6 @@ P/L, %
 
 </div>
 
-
 <div class="analyticsBox">
 
 <h3>📈 Направление</h3>
@@ -511,7 +504,6 @@ P/L, %
 </div>
 
 </div>
-
 
 <div class="analyticsBox">
 
@@ -549,7 +541,6 @@ P/L, %
 
 </div>
 
-
 <div class="analyticsBox">
 
 <h3>🏆 Результативность</h3>
@@ -581,7 +572,6 @@ P/L, %
 
 </div>
 
-
 <div class="analyticsBox">
 
 <h3>🔥 Серии</h3>
@@ -607,7 +597,6 @@ P/L, %
 </div>
 
 </div>
-
 
 <div class="analyticsBox">
 
@@ -639,7 +628,6 @@ P/L, %
 
 </section>
 
-
 <section class="panel">
 
 <div class="tableHead">
@@ -659,7 +647,6 @@ P/L, %
 </div>
 
 </div>
-
 
 <h3>🔎 Фильтры</h3>
 
@@ -718,7 +705,6 @@ P/L, %
 
 </div>
 
-
 <div class="tableWrap">
 
 <table>
@@ -750,14 +736,12 @@ P/L, %
 
 </section>
 
-
 <footer>
 Данные сохраняются в браузере на этом устройстве.
 Это не финансовая рекомендация.
 </footer>
 
 </div>
-
 
 <script>
 
@@ -774,7 +758,7 @@ risk:1
 };
 
 
-/* Загрузка сделок */
+/* ЗАГРУЗКА СДЕЛОК */
 
 try{
 
@@ -794,7 +778,7 @@ trades=[];
 }
 
 
-/* Загрузка настроек */
+/* ЗАГРУЗКА НАСТРОЕК */
 
 try{
 
@@ -814,7 +798,7 @@ settings.risk=Number(savedSettings.risk);
 }catch(e){}
 
 
-/* Начальные значения */
+/* НАЧАЛЬНЫЕ ЗНАЧЕНИЯ */
 
 $("initialDeposit").value=settings.deposit;
 $("riskPercent").value=settings.risk;
@@ -823,7 +807,7 @@ $("date").value=
 new Date().toISOString().slice(0,10);
 
 
-/* Формат */
+/* ФОРМАТ ПРОЦЕНТОВ */
 
 function formatPL(value){
 
@@ -836,6 +820,8 @@ value>=0?"+":""
 }
 
 
+/* ФОРМАТ ДОЛЛАРОВ */
+
 function formatDollar(value){
 
 value=Number(value)||0;
@@ -847,7 +833,7 @@ value>=0?"+":"-"
 }
 
 
-/* Общая статистика */
+/* ГРУППОВАЯ СТАТИСТИКА */
 
 function stats(list){
 
@@ -880,7 +866,7 @@ pl:pl
 }
 
 
-/* Фильтры */
+/* ФИЛЬТРЫ */
 
 function getFilteredTrades(){
 
@@ -915,7 +901,7 @@ return true;
 }
 
 
-/* Аналитика */
+/* АНАЛИТИКА */
 
 function renderAnalytics(){
 
@@ -961,6 +947,7 @@ t=>t.discipline==="no"
 )
 );
 
+
 $("londonCount").textContent=london.count;
 $("londonWinrate").textContent=london.winrate+"%";
 $("londonPL").textContent=formatPL(london.pl);
@@ -988,7 +975,7 @@ $("noPL").textContent=formatPL(no.pl);
 }
 
 
-/* Расширенная аналитика */
+/* РАСШИРЕННАЯ АНАЛИТИКА */
 
 function renderAdvancedAnalytics(){
 
@@ -1003,7 +990,7 @@ t=>t.result==="loss"
 );
 
 
-/* Profit Factor */
+/* PROFIT FACTOR */
 
 const grossProfit=
 winningTrades.reduce(
@@ -1035,7 +1022,7 @@ factor===Infinity
 :factor.toFixed(2);
 
 
-/* Средний TP */
+/* СРЕДНИЙ TP */
 
 const avgTP=
 winningTrades.length
@@ -1047,7 +1034,7 @@ winningTrades.reduce(
 :0;
 
 
-/* Средний SL */
+/* СРЕДНИЙ SL */
 
 const avgSL=
 losingTrades.length
@@ -1064,7 +1051,7 @@ $("avgWin").textContent=formatPL(avgTP);
 $("avgLoss").textContent=formatPL(avgSL);
 
 
-/* Серии */
+/* СЕРИИ */
 
 let currentWin=0;
 let currentLoss=0;
@@ -1102,7 +1089,7 @@ $("maxWinStreak").textContent=maxWin;
 $("maxLossStreak").textContent=maxLoss;
 
 
-/* Текущая серия */
+/* ТЕКУЩАЯ СЕРИЯ */
 
 let streak=0;
 let streakType="";
@@ -1149,7 +1136,7 @@ streakType==="loss"
 :"—";
 
 
-/* Лучший / худший день */
+/* ЛУЧШИЙ И ХУДШИЙ ДЕНЬ */
 
 const daily={};
 
@@ -1199,7 +1186,7 @@ $("worstDayPL").textContent="0%";
 }
 
 
-/* Render */
+/* ОСНОВНОЙ RENDER */
 
 function render(){
 
@@ -1239,7 +1226,7 @@ count
 :0;
 
 
-/* Баланс */
+/* БАЛАНС */
 
 const initialBalance=
 Number(settings.deposit)||0;
@@ -1284,7 +1271,7 @@ Math.max(maxDrawdown,dd);
 }
 
 
-/* Карточки */
+/* КАРТОЧКИ */
 
 $("count").textContent=count;
 
@@ -1319,7 +1306,7 @@ $("drawdown").textContent=
 "-"+maxDrawdown.toFixed(2)+"%";
 
 
-/* Таблица */
+/* ИСТОРИЯ */
 
 const filtered=
 getFilteredTrades();
@@ -1402,7 +1389,7 @@ drawEquity(values);
 }
 
 
-/* Защита HTML */
+/* ЗАЩИТА HTML */
 
 function escapeHtml(value){
 
@@ -1423,7 +1410,7 @@ m=>({
 }
 
 
-/* График */
+/* ГРАФИК */
 
 function drawEquity(values){
 
@@ -1461,7 +1448,7 @@ max+=1;
 }
 
 
-/* Сетка */
+/* СЕТКА */
 
 ctx.strokeStyle="#1c2937";
 ctx.lineWidth=1;
@@ -1479,7 +1466,7 @@ ctx.stroke();
 }
 
 
-/* Кривая */
+/* КРИВАЯ */
 
 ctx.beginPath();
 
@@ -1514,7 +1501,7 @@ ctx.stroke();
 }
 
 
-/* Настройки */
+/* СОХРАНИТЬ НАСТРОЙКИ */
 
 $("saveSettings").onclick=()=>{
 
@@ -1540,7 +1527,7 @@ alert("Настройки сохранены");
 };
 
 
-/* Добавление сделки */
+/* ДОБАВИТЬ СДЕЛКУ */
 
 $("tradeForm").onsubmit=e=>{
 
@@ -1595,7 +1582,7 @@ render();
 };
 
 
-/* Фильтры */
+/* ФИЛЬТРЫ */
 
 [
 "filterFrom",
@@ -1628,7 +1615,7 @@ render();
 };
 
 
-/* Очистить историю */
+/* ОЧИСТИТЬ ИСТОРИЮ */
 
 $("clearAll").onclick=()=>{
 
@@ -1652,7 +1639,7 @@ render();
 };
 
 
-/* Экспорт */
+/* ЭКСПОРТ */
 
 $("export").onclick=()=>{
 
@@ -1719,7 +1706,7 @@ link.click();
 };
 
 
-/* Запуск */
+/* ЗАПУСК */
 
 render();
 
@@ -1727,4 +1714,3 @@ render();
 
 </body>
 </html>
-```
