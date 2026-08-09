@@ -145,8 +145,6 @@ gap:8px;
 flex-wrap:wrap
 }
 
-/* ФИЛЬТРЫ */
-
 .filters{
 display:grid;
 grid-template-columns:repeat(4,1fr);
@@ -164,8 +162,6 @@ flex-wrap:wrap
 .filterButtons button{
 margin-top:0
 }
-
-/* ТАБЛИЦА */
 
 .tableWrap{
 overflow-x:auto
@@ -203,8 +199,6 @@ height:300px;
 background:#0c131c;
 border-radius:10px
 }
-
-/* АНАЛИТИКА */
 
 .analyticsGrid{
 display:grid;
@@ -312,7 +306,7 @@ grid-template-columns:1fr
 </section>
 
 
-<!-- СТАТИСТИКА -->
+<!-- ОСНОВНАЯ СТАТИСТИКА -->
 
 <section class="stats">
 
@@ -477,6 +471,7 @@ P/L, %
 
 <div class="analyticsGrid">
 
+
 <!-- СЕССИИ -->
 
 <div class="analyticsBox">
@@ -592,6 +587,99 @@ P/L, %
 </div>
 
 </div>
+
+
+<!-- НОВАЯ АНАЛИТИКА -->
+
+<div class="analyticsBox">
+
+<h3>🏆 Результативность</h3>
+
+<div class="analyticsRow">
+<span>Profit Factor</span>
+<strong id="profitFactor">0.00</strong>
+</div>
+
+<div class="analyticsRow">
+<span>Средний TP</span>
+<strong id="avgTP">0%</strong>
+</div>
+
+<div class="analyticsRow">
+<span>Средний SL</span>
+<strong id="avgSL">0%</strong>
+</div>
+
+<div class="analyticsRow">
+<span>Средний выигрыш</span>
+<strong id="avgWin">0%</strong>
+</div>
+
+<div class="analyticsRow">
+<span>Средний убыток</span>
+<strong id="avgLoss">0%</strong>
+</div>
+
+</div>
+
+
+<!-- СЕРИИ -->
+
+<div class="analyticsBox">
+
+<h3>🔥 Серии</h3>
+
+<div class="analyticsRow">
+<span>Макс. серия побед</span>
+<strong id="maxWinStreak">0</strong>
+</div>
+
+<div class="analyticsRow">
+<span>Макс. серия убытков</span>
+<strong id="maxLossStreak">0</strong>
+</div>
+
+<div class="analyticsRow">
+<span>Текущая серия</span>
+<strong id="currentStreak">0</strong>
+</div>
+
+<div class="analyticsRow">
+<span>Тип серии</span>
+<strong id="currentStreakType">—</strong>
+</div>
+
+</div>
+
+
+<!-- ДНИ -->
+
+<div class="analyticsBox">
+
+<h3>📅 Лучший / худший день</h3>
+
+<div class="analyticsRow">
+<span>Лучший день</span>
+<strong id="bestDay">—</strong>
+</div>
+
+<div class="analyticsRow">
+<span>P/L лучшего дня</span>
+<strong id="bestDayPL">0%</strong>
+</div>
+
+<div class="analyticsRow">
+<span>Худший день</span>
+<strong id="worstDay">—</strong>
+</div>
+
+<div class="analyticsRow">
+<span>P/L худшего дня</span>
+<strong id="worstDayPL">0%</strong>
+</div>
+
+</div>
+
 
 </div>
 
@@ -818,7 +906,7 @@ value>=0?"+":"-"
 
 
 /* =========================
-   СТАТИСТИКА
+   ГРУППОВАЯ СТАТИСТИКА
 ========================= */
 
 function stats(list){
@@ -853,7 +941,56 @@ pl:pl
 
 
 /* =========================
-   АНАЛИТИКА
+   ФИЛЬТРАЦИЯ
+========================= */
+
+function getFilteredTrades(){
+
+const from=$("filterFrom").value;
+const to=$("filterTo").value;
+const session=$("filterSession").value;
+const direction=$("filterDirection").value;
+const result=$("filterResult").value;
+const discipline=$("filterDiscipline").value;
+
+return trades.filter(t=>{
+
+if(from && t.date<from){
+return false;
+}
+
+if(to && t.date>to){
+return false;
+}
+
+if(session!=="all" && t.session!==session){
+return false;
+}
+
+if(direction!=="all" && t.direction!==direction){
+return false;
+}
+
+if(result!=="all" && t.result!==result){
+return false;
+}
+
+if(
+discipline!=="all" &&
+t.discipline!==discipline
+){
+return false;
+}
+
+return true;
+
+});
+
+}
+
+
+/* =========================
+   АНАЛИТИКА СЕССИЙ
 ========================= */
 
 function renderAnalytics(){
@@ -943,50 +1080,259 @@ $("noPL").textContent=formatPL(no.pl);
 
 
 /* =========================
-   ФИЛЬТРАЦИЯ
+   ПРОДВИНУТАЯ АНАЛИТИКА
 ========================= */
 
-function getFilteredTrades(){
+function renderAdvancedAnalytics(){
 
-const from=$("filterFrom").value;
-const to=$("filterTo").value;
-const session=$("filterSession").value;
-const direction=$("filterDirection").value;
-const result=$("filterResult").value;
-const discipline=$("filterDiscipline").value;
+/* PROFIT FACTOR */
 
-return trades.filter(t=>{
+const grossProfit=
+trades
+.filter(t=>Number(t.pl||0)>0)
+.reduce(
+(sum,t)=>sum+Number(t.pl||0),
+0
+);
 
-if(from && t.date<from){
-return false;
+const grossLoss=
+Math.abs(
+trades
+.filter(t=>Number(t.pl||0)<0)
+.reduce(
+(sum,t)=>sum+Number(t.pl||0),
+0
+)
+);
+
+let profitFactor=0;
+
+if(grossLoss>0){
+
+profitFactor=
+grossProfit/grossLoss;
+
+}else if(grossProfit>0){
+
+profitFactor=Infinity;
+
 }
 
-if(to && t.date>to){
-return false;
+$("profitFactor").textContent=
+profitFactor===Infinity
+?"∞"
+:profitFactor.toFixed(2);
+
+
+/* СРЕДНИЙ TP */
+
+const winningTrades=
+trades.filter(
+t=>t.result==="win"
+);
+
+const losingTrades=
+trades.filter(
+t=>t.result==="loss"
+);
+
+const avgTP=
+winningTrades.length
+?
+winningTrades.reduce(
+(sum,t)=>sum+Number(t.pl||0),
+0
+)/winningTrades.length
+:0;
+
+const avgSL=
+losingTrades.length
+?
+losingTrades.reduce(
+(sum,t)=>sum+Number(t.pl||0),
+0
+)/losingTrades.length
+:0;
+
+$("avgTP").textContent=
+formatPL(avgTP);
+
+$("avgSL").textContent=
+formatPL(avgSL);
+
+$("avgWin").textContent=
+formatPL(avgTP);
+
+$("avgLoss").textContent=
+formatPL(avgSL);
+
+
+/* СЕРИИ */
+
+let currentWin=0;
+let currentLoss=0;
+
+let maxWin=0;
+let maxLoss=0;
+
+let lastType="";
+
+for(const trade of trades){
+
+if(trade.result==="win"){
+
+currentWin++;
+currentLoss=0;
+
+if(currentWin>maxWin){
+maxWin=currentWin;
 }
 
-if(session!=="all" && t.session!==session){
-return false;
+}else if(trade.result==="loss"){
+
+currentLoss++;
+currentWin=0;
+
+if(currentLoss>maxLoss){
+maxLoss=currentLoss;
 }
 
-if(direction!=="all" && t.direction!==direction){
-return false;
+}else{
+
+currentWin=0;
+currentLoss=0;
+
 }
 
-if(result!=="all" && t.result!==result){
-return false;
 }
 
-if(
-discipline!=="all" &&
-t.discipline!==discipline
+$("maxWinStreak").textContent=maxWin;
+$("maxLossStreak").textContent=maxLoss;
+
+
+/* ТЕКУЩАЯ СЕРИЯ */
+
+if(trades.length){
+
+for(
+let i=trades.length-1;
+i>=0;
+i--
 ){
-return false;
+
+const result=
+trades[i].result;
+
+if(result==="be"){
+break;
 }
 
-return true;
+if(!lastType){
 
-});
+lastType=result;
+
+}else if(result!==lastType){
+
+break;
+
+}else{
+
+}
+
+}
+
+let streak=0;
+
+if(lastType){
+
+for(
+let i=trades.length-1;
+i>=0;
+i--
+){
+
+if(trades[i].result===lastType){
+
+streak++;
+
+}else{
+
+break;
+
+}
+
+}
+
+}
+
+$("currentStreak").textContent=streak;
+
+$("currentStreakType").textContent=
+lastType==="win"
+?"Победы"
+:
+lastType==="loss"
+?"Убытки"
+:"—";
+
+}else{
+
+$("currentStreak").textContent="0";
+$("currentStreakType").textContent="—";
+
+}
+
+
+/* ЛУЧШИЙ / ХУДШИЙ ДЕНЬ */
+
+const daily={};
+
+for(const trade of trades){
+
+const date=trade.date;
+
+if(!daily[date]){
+daily[date]=0;
+}
+
+daily[date]+=
+Number(trade.pl||0);
+
+}
+
+const days=
+Object.entries(daily);
+
+if(days.length){
+
+days.sort(
+(a,b)=>a[1]-b[1]
+);
+
+const worst=days[0];
+
+const best=
+days[days.length-1];
+
+$("bestDay").textContent=best[0];
+
+$("bestDayPL").textContent=
+formatPL(best[1]);
+
+$("worstDay").textContent=worst[0];
+
+$("worstDayPL").textContent=
+formatPL(worst[1]);
+
+}else{
+
+$("bestDay").textContent="—";
+$("bestDayPL").textContent="0%";
+
+$("worstDay").textContent="—";
+$("worstDayPL").textContent="0%";
+
+}
 
 }
 
@@ -1033,9 +1379,7 @@ count
 :0;
 
 
-/* =========================
-   БАЛАНС
-========================= */
+/* БАЛАНС */
 
 const initialBalance=
 Number(settings.deposit)||0;
@@ -1045,8 +1389,6 @@ let balance=initialBalance;
 const values=[balance];
 
 let peak=balance;
-
-let maxDrawdownDollar=0;
 
 let maxDrawdownPercent=0;
 
@@ -1075,32 +1417,20 @@ tradePL/100;
 
 values.push(balance);
 
-
-/* ПИК */
-
 if(balance>peak){
 
 peak=balance;
 
 }
 
-
-/* ПРОСАДКА */
-
 const currentDrawdown=
 peak-balance;
 
 const currentDrawdownPercent=
 peak>0
-?(currentDrawdown/peak)*100
+?
+(currentDrawdown/peak)*100
 :0;
-
-if(currentDrawdown>maxDrawdownDollar){
-
-maxDrawdownDollar=
-currentDrawdown;
-
-}
 
 if(
 currentDrawdownPercent>
@@ -1121,9 +1451,7 @@ const pnlDollar=
 balance-initialBalance;
 
 
-/* =========================
-   КАРТОЧКИ
-========================= */
+/* КАРТОЧКИ */
 
 $("count").textContent=count;
 
@@ -1164,9 +1492,7 @@ $("drawdown").textContent=
 "-"+maxDrawdownPercent.toFixed(2)+"%";
 
 
-/* =========================
-   ИСТОРИЯ С ФИЛЬТРАМИ
-========================= */
+/* ИСТОРИЯ */
 
 const filtered=
 getFilteredTrades();
@@ -1244,6 +1570,8 @@ t.setup||
 
 
 renderAnalytics();
+
+renderAdvancedAnalytics();
 
 drawEquity(values);
 
@@ -1533,7 +1861,7 @@ render();
 
 
 /* =========================
-   ЭКСПОРТ CSV
+   ЭКСПОРТ
 ========================= */
 
 $("export").onclick=()=>{
