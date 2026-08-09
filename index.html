@@ -11,62 +11,81 @@
 body{
 margin:0;
 background:
-radial-gradient(circle at 20% 0%,#17283a 0%,#0b1118 42%,#070b10 100%);
+radial-gradient(circle at 15% 0%,#243b55 0%,#101923 35%,#060a0f 100%);
 color:#e8edf3;
-font-family:Arial,sans-serif
+font-family:Arial,sans-serif;
+min-height:100vh
 }
 
 .container{
 max-width:1200px;
 margin:auto;
-padding:25px 18px
+padding:30px 18px
 }
 
-h1{margin:0 0 5px}
-h2{margin-top:0}
+header{
+padding:28px;
+margin-bottom:22px;
+background:linear-gradient(135deg,#162536,#0d151f);
+border:1px solid #2d4055;
+border-radius:18px;
+box-shadow:0 15px 45px rgba(0,0,0,.25)
+}
+
+h1{
+margin:0;
+font-size:34px
+}
 
 .subtitle{
-color:#7f8c9b;
-margin-bottom:25px
+color:#8d9aaa;
+margin-top:8px
 }
 
 .panel,.card{
-background:#121a24;
-border:1px solid #253244;
-border-radius:14px
+background:rgba(18,26,36,.94);
+border:1px solid #29394c;
+border-radius:16px;
+box-shadow:0 10px 30px rgba(0,0,0,.15)
 }
 
 .panel{
-padding:20px;
+padding:22px;
 margin-bottom:22px
 }
 
 .stats{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+grid-template-columns:repeat(4,1fr);
 gap:14px;
 margin-bottom:22px
 }
 
 .card{
-padding:18px
+padding:20px;
+transition:.2s
+}
+
+.card:hover{
+transform:translateY(-2px);
+border-color:#3d5773
 }
 
 .card span{
 display:block;
 font-size:13px;
 color:#8d9aaa;
-margin-bottom:8px
+margin-bottom:9px
 }
 
 .card strong{
-font-size:24px
+font-size:25px
 }
 
 .grid{
 display:grid;
 grid-template-columns:repeat(2,1fr);
-gap:14px
+gap:15px
 }
 
 .wide{
@@ -83,29 +102,36 @@ font-size:14px
 
 input,select,textarea{
 width:100%;
-background:#0c131c;
-border:1px solid #2c3b4d;
-border-radius:8px;
-padding:11px;
+background:#0a1119;
+border:1px solid #304156;
+border-radius:9px;
+padding:12px;
 color:white;
 outline:none
 }
 
 input:focus,select:focus,textarea:focus{
-border-color:#60a5fa
+border-color:#60a5fa;
+box-shadow:0 0 0 2px rgba(96,165,250,.1)
 }
 
 textarea{
-min-height:80px;
+min-height:90px;
 resize:vertical
 }
 
 button{
 border:0;
-border-radius:8px;
+border-radius:9px;
 padding:11px 16px;
 cursor:pointer;
-font-weight:bold
+font-weight:bold;
+transition:.2s
+}
+
+button:hover{
+transform:translateY(-1px);
+filter:brightness(1.1)
 }
 
 .primary{
@@ -115,24 +141,24 @@ margin-top:17px
 }
 
 .secondary{
-background:#263444;
+background:#26384d;
 color:white
 }
 
 .danger{
-background:#7f1d1d;
+background:#8b2525;
 color:white
 }
 
 .editBtn{
-background:#92400e;
+background:#a65b16;
 color:white
 }
 
 .settings{
 display:grid;
 grid-template-columns:1fr 1fr auto;
-gap:14px;
+gap:15px;
 align-items:end
 }
 
@@ -157,12 +183,6 @@ gap:12px;
 margin:20px 0
 }
 
-.filterButtons{
-display:flex;
-gap:8px;
-align-items:end
-}
-
 .tableWrap{
 overflow-x:auto
 }
@@ -174,14 +194,18 @@ min-width:1100px
 }
 
 th,td{
-padding:11px;
-border-bottom:1px solid #263444;
+padding:12px;
+border-bottom:1px solid #29394c;
 text-align:left
 }
 
 th{
 color:#7f8c9b;
 font-size:13px
+}
+
+tr:hover{
+background:rgba(255,255,255,.02)
 }
 
 .win{color:#4ade80}
@@ -202,21 +226,22 @@ margin-right:4px
 canvas{
 width:100%;
 height:300px;
-background:#0c131c;
-border-radius:10px
+background:#0a1119;
+border-radius:12px;
+border:1px solid #26384d
 }
 
 .analyticsGrid{
 display:grid;
 grid-template-columns:repeat(3,1fr);
-gap:14px
+gap:15px
 }
 
 .analyticsBox{
-background:#0c131c;
-border:1px solid #263444;
-border-radius:12px;
-padding:17px
+background:#0a1119;
+border:1px solid #29394c;
+border-radius:13px;
+padding:18px
 }
 
 .analyticsBox h3{
@@ -226,16 +251,13 @@ margin:0 0 12px
 .analyticsRow{
 display:flex;
 justify-content:space-between;
-padding:9px 0;
-border-bottom:1px solid #263444
+padding:10px 0;
+border-bottom:1px solid #29394c
 }
 
 .analyticsRow:last-child{
 border-bottom:0
 }
-
-.good{color:#4ade80}
-.bad{color:#f87171}
 
 .modal{
 display:none;
@@ -245,7 +267,7 @@ left:0;
 top:0;
 width:100%;
 height:100%;
-background:rgba(0,0,0,.75);
+background:rgba(0,0,0,.78);
 padding:20px;
 overflow:auto
 }
@@ -260,9 +282,9 @@ justify-content:center
 width:100%;
 max-width:700px;
 background:#121a24;
-border:1px solid #253244;
-border-radius:14px;
-padding:20px
+border:1px solid #304156;
+border-radius:16px;
+padding:22px
 }
 
 .modalActions{
@@ -279,32 +301,34 @@ font-size:13px;
 padding:20px
 }
 
-@media(max-width:900px){
-
+@media(max-width:1000px){
+.stats{
+grid-template-columns:repeat(2,1fr)
+}
 .analyticsGrid{
 grid-template-columns:1fr
 }
-
 .filters{
 grid-template-columns:repeat(2,1fr)
 }
-
 }
 
-@media(max-width:800px){
-
+@media(max-width:700px){
+.stats{
+grid-template-columns:1fr
+}
 .grid,.settings{
 grid-template-columns:1fr
 }
-
 .wide{
 grid-column:auto
 }
-
 .filters{
 grid-template-columns:1fr
 }
-
+h1{
+font-size:27px
+}
 }
 </style>
 </head>
@@ -313,15 +337,13 @@ grid-template-columns:1fr
 
 <div class="container">
 
-<h1>Trade Journal</h1>
-
-<div class="subtitle">
-Журнал сделок и аналитика трейдера
-</div>
+<header>
+<h1>📊 Trade Journal</h1>
+<div class="subtitle">Журнал сделок и аналитика трейдера</div>
+</header>
 
 <section class="panel">
-
-<h2>Настройки</h2>
+<h2>⚙️ Настройки</h2>
 
 <div class="settings">
 
@@ -340,7 +362,6 @@ grid-template-columns:1fr
 </button>
 
 </div>
-
 </section>
 
 <section class="stats">
@@ -388,16 +409,13 @@ grid-template-columns:1fr
 </section>
 
 <section class="panel">
-
-<h2>Кривая баланса</h2>
-
+<h2>📈 Кривая баланса</h2>
 <canvas id="equity" width="1000" height="300"></canvas>
-
 </section>
 
 <section class="panel">
 
-<h2>Добавить сделку</h2>
+<h2>➕ Добавить сделку</h2>
 
 <form id="tradeForm">
 
@@ -468,7 +486,6 @@ P/L, %
 </button>
 
 </form>
-
 </section>
 
 <section class="panel">
@@ -586,14 +603,13 @@ P/L, %
 </div>
 
 </div>
-
 </section>
 
 <section class="panel">
 
 <div class="tableHead">
 
-<h2>История сделок</h2>
+<h2>📋 История сделок</h2>
 
 <div class="actions">
 
@@ -610,7 +626,6 @@ P/L, %
 </button>
 
 </div>
-
 </div>
 
 <div class="filters">
@@ -674,7 +689,6 @@ P/L, %
 <table>
 
 <thead>
-
 <tr>
 <th>Дата</th>
 <th>Инструмент</th>
@@ -686,7 +700,6 @@ P/L, %
 <th>Комментарий</th>
 <th>Действия</th>
 </tr>
-
 </thead>
 
 <tbody id="trades"></tbody>
@@ -706,7 +719,7 @@ P/L, %
 </section>
 
 <footer>
-Данные сохраняются в браузере на этом устройстве.
+Данные сохраняются в браузере на этом устройстве.<br>
 Это не финансовая рекомендация.
 </footer>
 
@@ -799,7 +812,6 @@ P/L, %
 </form>
 
 </div>
-
 </div>
 
 <script>
@@ -810,151 +822,63 @@ const SETTINGS_KEY="tradeJournalSettings";
 const $=id=>document.getElementById(id);
 
 let trades=[];
-
-let settings={
-deposit:100,
-risk:1
-};
+let settings={deposit:100,risk:1};
 
 try{
-
-const savedTrades=
-JSON.parse(
-localStorage.getItem(TRADES_KEY)||"[]"
-);
-
-if(Array.isArray(savedTrades)){
-trades=savedTrades;
-}
-
-}catch(e){
-trades=[];
-}
+const saved=JSON.parse(localStorage.getItem(TRADES_KEY)||"[]");
+if(Array.isArray(saved)) trades=saved;
+}catch(e){trades=[]}
 
 try{
-
-const savedSettings=
-JSON.parse(
-localStorage.getItem(SETTINGS_KEY)||"{}"
-);
-
-if(savedSettings.deposit!==undefined){
-settings.deposit=Number(savedSettings.deposit);
-}
-
-if(savedSettings.risk!==undefined){
-settings.risk=Number(savedSettings.risk);
-}
-
+const saved=JSON.parse(localStorage.getItem(SETTINGS_KEY)||"{}");
+if(saved.deposit!==undefined) settings.deposit=Number(saved.deposit);
+if(saved.risk!==undefined) settings.risk=Number(saved.risk);
 }catch(e){}
 
-trades=trades.map((t,index)=>({
-
+trades=trades.map((t,i)=>({
 ...t,
-
-id:t.id||
-(String(Date.now())+"_"+index)
-
+id:t.id||String(Date.now())+"_"+i
 }));
 
 $("initialDeposit").value=settings.deposit;
 $("riskPercent").value=settings.risk;
-
-$("date").value=
-new Date().toISOString().slice(0,10);
+$("date").value=new Date().toISOString().slice(0,10);
 
 function saveTrades(){
-
-localStorage.setItem(
-TRADES_KEY,
-JSON.stringify(trades)
-);
-
+localStorage.setItem(TRADES_KEY,JSON.stringify(trades));
 }
 
 function formatPL(value){
-
 value=Number(value)||0;
-
-return(
-value>=0?"+":""
-)+value.toFixed(2)+"%";
-
+return (value>=0?"+":"")+value.toFixed(2)+"%";
 }
 
 function stats(list){
 
 const count=list.length;
 
-const wins=
-list.filter(
-t=>t.result==="win"
-).length;
+const wins=list.filter(t=>t.result==="win").length;
 
-const pl=
-list.reduce(
-(sum,t)=>sum+Number(t.pl||0),
-0
+const pl=list.reduce(
+(sum,t)=>sum+Number(t.pl||0),0
 );
 
 return{
-
 count,
-
-winrate:
-count
-?Math.round(wins/count*100)
-:0,
-
+winrate:count?Math.round(wins/count*100):0,
 pl
-
 };
 
 }
 
 function renderAnalytics(){
 
-const london=
-stats(
-trades.filter(
-t=>t.session==="London"
-)
-);
-
-const ny=
-stats(
-trades.filter(
-t=>t.session==="New York"
-)
-);
-
-const long=
-stats(
-trades.filter(
-t=>t.direction==="LONG"
-)
-);
-
-const short=
-stats(
-trades.filter(
-t=>t.direction==="SHORT"
-)
-);
-
-const yes=
-stats(
-trades.filter(
-t=>t.discipline==="yes"
-)
-);
-
-const no=
-stats(
-trades.filter(
-t=>t.discipline==="no"
-)
-);
+const london=stats(trades.filter(t=>t.session==="London"));
+const ny=stats(trades.filter(t=>t.session==="New York"));
+const long=stats(trades.filter(t=>t.direction==="LONG"));
+const short=stats(trades.filter(t=>t.direction==="SHORT"));
+const yes=stats(trades.filter(t=>t.discipline==="yes"));
+const no=stats(trades.filter(t=>t.discipline==="no"));
 
 $("londonCount").textContent=london.count;
 $("londonWinrate").textContent=london.winrate+"%";
@@ -984,65 +908,48 @@ $("noPL").textContent=formatPL(no.pl);
 
 function getFilteredTrades(){
 
-const search=
-$("searchFilter").value.trim().toLowerCase();
-
+const search=$("searchFilter").value.trim().toLowerCase();
 const session=$("sessionFilter").value;
 const direction=$("directionFilter").value;
 const result=$("resultFilter").value;
 const discipline=$("disciplineFilter").value;
-
 const dateFrom=$("dateFrom").value;
 const dateTo=$("dateTo").value;
 
 return trades.filter(t=>{
 
-if(
-search &&
+if(search &&
 !(
-String(t.symbol||"")
-.toLowerCase()
-.includes(search)
-||
-String(t.setup||"")
-.toLowerCase()
-.includes(search)
-||
-String(t.comment||"")
-.toLowerCase()
-.includes(search)
+String(t.symbol||"").toLowerCase().includes(search) ||
+String(t.setup||"").toLowerCase().includes(search) ||
+String(t.comment||"").toLowerCase().includes(search)
 )
-){
-return false;
-}
+)return false;
 
-if(session!=="all" && t.session!==session){
-return false;
-}
-
-if(direction!=="all" && t.direction!==direction){
-return false;
-}
-
-if(result!=="all" && t.result!==result){
-return false;
-}
-
-if(discipline!=="all" && t.discipline!==discipline){
-return false;
-}
-
-if(dateFrom && t.date<dateFrom){
-return false;
-}
-
-if(dateTo && t.date>dateTo){
-return false;
-}
+if(session!=="all"&&t.session!==session)return false;
+if(direction!=="all"&&t.direction!==direction)return false;
+if(result!=="all"&&t.result!==result)return false;
+if(discipline!=="all"&&t.discipline!==discipline)return false;
+if(dateFrom&&t.date<dateFrom)return false;
+if(dateTo&&t.date>dateTo)return false;
 
 return true;
-
 });
+
+}
+
+function escapeHtml(value){
+
+return String(value??"").replace(
+/[&<>"']/g,
+m=>({
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#039;"
+}[m])
+);
 
 }
 
@@ -1050,89 +957,53 @@ function render(){
 
 const count=trades.length;
 
-const wins=
-trades.filter(
-t=>t.result==="win"
-).length;
+const wins=trades.filter(t=>t.result==="win").length;
+const sl=trades.filter(t=>t.result==="loss").length;
 
-const sl=
-trades.filter(
-t=>t.result==="loss"
-).length;
-
-const disciplined=
-trades.filter(
+const disciplined=trades.filter(
 t=>t.discipline==="yes"
 ).length;
 
-const totalPL=
-trades.reduce(
-(sum,t)=>sum+Number(t.pl||0),
-0
+const totalPL=trades.reduce(
+(sum,t)=>sum+Number(t.pl||0),0
 );
 
-const average=
-count
-?totalPL/count
-:0;
+const average=count?totalPL/count:0;
 
-let balance=
-Number(settings.deposit)||0;
-
+let balance=Number(settings.deposit)||0;
 const values=[balance];
 
 for(const trade of trades){
-
-balance*=
-1+
-Number(trade.pl||0)/100;
-
+balance*=1+Number(trade.pl||0)/100;
 values.push(balance);
-
 }
 
 $("count").textContent=count;
 
 $("winrate").textContent=
-count
-?Math.round(wins/count*100)+"%"
-:"0%";
+count?Math.round(wins/count*100)+"%":"0%";
 
 $("discipline").textContent=
-count
-?Math.round(disciplined/count*100)+"%"
-:"0%";
+count?Math.round(disciplined/count*100)+"%":"0%";
 
-$("pnl").textContent=
-formatPL(totalPL);
+$("pnl").textContent=formatPL(totalPL);
 
-$("balance").textContent=
-"$"+balance.toFixed(2);
+$("balance").textContent="$"+balance.toFixed(2);
 
-$("avg").textContent=
-formatPL(average);
+$("avg").textContent=formatPL(average);
 
 $("tpCount").textContent=wins;
-
 $("slCount").textContent=sl;
 
 const filtered=getFilteredTrades();
 
-$("empty").style.display=
-count
-?"none"
-:"block";
+$("empty").style.display=count?"none":"block";
 
 $("filterEmpty").style.display=
-count && filtered.length===0
-?"block"
-:"none";
+count&&filtered.length===0?"block":"none";
 
 $("trades").innerHTML=
-filtered
-.slice()
-.reverse()
-.map(t=>`
+filtered.slice().reverse().map(t=>`
 
 <tr>
 
@@ -1145,68 +1016,36 @@ filtered
 <td>${escapeHtml(t.direction)}</td>
 
 <td class="${
-t.result==="win"
-?"win"
-:t.result==="loss"
-?"loss"
-:"be"
+t.result==="win"?"win":
+t.result==="loss"?"loss":"be"
 }">
-
 ${
-t.result==="win"
-?"TP"
-:t.result==="loss"
-?"SL"
-:"BE"
-}
-
-</td>
-
-<td class="${
-Number(t.pl||0)>=0
-?"win"
-:"loss"
-}">
-
-${
-Number(t.pl||0)>=0
-?"+"
-:""
-}${Number(t.pl||0).toFixed(2)}%
-
-</td>
-
-<td>
-${
-t.discipline==="yes"
-?"Да"
-:"Нет"
+t.result==="win"?"TP":
+t.result==="loss"?"SL":"BE"
 }
 </td>
 
-<td>
-${escapeHtml(
-t.comment||
-t.setup||
-"—"
-)}
+<td class="${Number(t.pl||0)>=0?"win":"loss"}">
+${Number(t.pl||0)>=0?"+":""}${Number(t.pl||0).toFixed(2)}%
 </td>
+
+<td>${t.discipline==="yes"?"Да":"Нет"}</td>
+
+<td>${escapeHtml(t.comment||t.setup||"—")}</td>
 
 <td>
 
 <button
 class="rowBtn editBtn"
 onclick="editTrade('${t.id}')"
-type="button"
->
+type="button">
 Изменить
 </button>
 
 <button
 class="rowBtn danger"
 onclick="deleteTrade('${t.id}')"
-type="button"
->
+type="button">
 Удалить
 </button>
 
@@ -1214,30 +1053,10 @@ type="button"
 
 </tr>
 
-`)
-.join("");
+`).join("");
 
 renderAnalytics();
-
 drawEquity(values);
-
-}
-
-function escapeHtml(value){
-
-return String(value??"")
-.replace(
-/[&<>"']/g,
-m=>({
-
-"&":"&amp;",
-"<":"&lt;",
-">":"&gt;",
-'"':"&quot;",
-"'":"&#039;"
-
-}[m])
-);
 
 }
 
@@ -1263,7 +1082,6 @@ ctx.fillText(
 );
 
 return;
-
 }
 
 let min=Math.min(...values);
@@ -1279,9 +1097,7 @@ ctx.lineWidth=1;
 
 for(let i=1;i<5;i++){
 
-const y=
-25+
-i*(H-50)/5;
+const y=25+i*(H-50)/5;
 
 ctx.beginPath();
 ctx.moveTo(25,y);
@@ -1294,20 +1110,14 @@ ctx.beginPath();
 
 values.forEach((value,index)=>{
 
-const x=
-25+
+const x=25+
 index*(W-50)/(values.length-1);
 
-const y=
-H-
-25-
+const y=H-25-
 (value-min)/(max-min)*(H-50);
 
-if(index===0){
-ctx.moveTo(x,y);
-}else{
-ctx.lineTo(x,y);
-}
+if(index===0)ctx.moveTo(x,y);
+else ctx.lineTo(x,y);
 
 });
 
@@ -1320,13 +1130,8 @@ ctx.stroke();
 $("saveSettings").onclick=()=>{
 
 settings={
-
-deposit:
-Number($("initialDeposit").value)||0,
-
-risk:
-Number($("riskPercent").value)||0
-
+deposit:Number($("initialDeposit").value)||0,
+risk:Number($("riskPercent").value)||0
 };
 
 localStorage.setItem(
@@ -1351,30 +1156,14 @@ Date.now().toString()+
 Math.random().toString(16).slice(2),
 
 date:$("date").value,
-
-symbol:
-$("symbol").value.trim(),
-
-session:
-$("session").value,
-
-direction:
-$("direction").value,
-
-result:
-$("result").value,
-
-pl:
-Number($("pl").value),
-
-setup:
-$("setup").value,
-
-discipline:
-$("disciplineInput").value,
-
-comment:
-$("comment").value
+symbol:$("symbol").value.trim(),
+session:$("session").value,
+direction:$("direction").value,
+result:$("result").value,
+pl:Number($("pl").value),
+setup:$("setup").value,
+discipline:$("disciplineInput").value,
+comment:$("comment").value
 
 };
 
@@ -1395,12 +1184,11 @@ render();
 
 function editTrade(id){
 
-const trade=
-trades.find(t=>String(t.id)===String(id));
+const trade=trades.find(
+t=>String(t.id)===String(id)
+);
 
-if(!trade){
-return;
-}
+if(!trade)return;
 
 $("editId").value=trade.id;
 $("editDate").value=trade.date;
@@ -1423,44 +1211,25 @@ e.preventDefault();
 
 const id=$("editId").value;
 
-const index=
-trades.findIndex(
+const index=trades.findIndex(
 t=>String(t.id)===String(id)
 );
 
-if(index===-1){
-return;
-}
+if(index===-1)return;
 
 trades[index]={
 
-id:id,
+id,
 
 date:$("editDate").value,
-
-symbol:
-$("editSymbol").value.trim(),
-
-session:
-$("editSession").value,
-
-direction:
-$("editDirection").value,
-
-result:
-$("editResult").value,
-
-pl:
-Number($("editPL").value),
-
-setup:
-$("editSetup").value,
-
-discipline:
-$("editDiscipline").value,
-
-comment:
-$("editComment").value
+symbol:$("editSymbol").value.trim(),
+session:$("editSession").value,
+direction:$("editDirection").value,
+result:$("editResult").value,
+pl:Number($("editPL").value),
+setup:$("editSetup").value,
+discipline:$("editDiscipline").value,
+comment:$("editComment").value
 
 };
 
@@ -1473,26 +1242,18 @@ render();
 };
 
 $("cancelEdit").onclick=()=>{
-
 $("editModal").classList.remove("active");
-
 };
 
 function deleteTrade(id){
 
-if(
-!confirm("Удалить эту сделку?")
-){
-return;
-}
+if(!confirm("Удалить эту сделку?"))return;
 
-trades=
-trades.filter(
+trades=trades.filter(
 t=>String(t.id)!==String(id)
 );
 
 saveTrades();
-
 render();
 
 }
@@ -1528,13 +1289,7 @@ render();
 
 $("clearAll").onclick=()=>{
 
-if(
-!confirm(
-"Удалить всю историю сделок?"
-)
-){
-return;
-}
+if(!confirm("Удалить всю историю сделок?"))return;
 
 trades=[];
 
@@ -1561,7 +1316,6 @@ const rows=[
 ],
 
 ...trades.map(t=>[
-
 t.date,
 t.symbol,
 t.session,
@@ -1571,25 +1325,20 @@ t.pl,
 t.discipline,
 t.setup,
 t.comment
-
 ])
 
 ];
 
-const csv=
-"\ufeff"+
+const csv="\ufeff"+
 rows.map(row=>
 row.map(value=>
-`"${String(value??"")
-.replace(/"/g,'""')}"`
+`"${String(value??"").replace(/"/g,'""')}"`
 ).join(",")
 ).join("\n");
 
-const link=
-document.createElement("a");
+const link=document.createElement("a");
 
-link.href=
-URL.createObjectURL(
+link.href=URL.createObjectURL(
 new Blob(
 [csv],
 {type:"text/csv;charset=utf-8"}
@@ -1597,7 +1346,6 @@ new Blob(
 );
 
 link.download="trade-journal.csv";
-
 link.click();
 
 };
@@ -1605,11 +1353,7 @@ link.click();
 $("editModal").onclick=e=>{
 
 if(e.target.id==="editModal"){
-
-$("editModal")
-.classList
-.remove("active");
-
+$("editModal").classList.remove("active");
 }
 
 };
