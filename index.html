@@ -91,6 +91,10 @@ color:white;
 outline:none
 }
 
+input:focus,select:focus,textarea:focus{
+border-color:#60a5fa
+}
+
 textarea{
 min-height:80px;
 resize:vertical
@@ -141,6 +145,28 @@ gap:8px;
 flex-wrap:wrap
 }
 
+/* ФИЛЬТРЫ */
+
+.filters{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:12px;
+margin-top:15px
+}
+
+.filterButtons{
+display:flex;
+gap:8px;
+align-items:end;
+flex-wrap:wrap
+}
+
+.filterButtons button{
+margin-top:0
+}
+
+/* ТАБЛИЦА */
+
 .tableWrap{
 overflow-x:auto
 }
@@ -148,7 +174,7 @@ overflow-x:auto
 table{
 width:100%;
 border-collapse:collapse;
-min-width:900px
+min-width:950px
 }
 
 th,td{
@@ -218,14 +244,32 @@ font-size:13px;
 padding:20px
 }
 
+@media(max-width:900px){
+
+.filters{
+grid-template-columns:1fr 1fr
+}
+
+.analyticsGrid{
+grid-template-columns:1fr
+}
+
+}
+
 @media(max-width:800px){
-.grid,.settings,.analyticsGrid{
+
+.grid,.settings{
 grid-template-columns:1fr
 }
 
 .wide{
 grid-column:auto
 }
+
+.filters{
+grid-template-columns:1fr
+}
+
 }
 </style>
 </head>
@@ -318,6 +362,11 @@ grid-column:auto
 </div>
 
 <div class="card">
+<span>BE</span>
+<strong id="beCount">0</strong>
+</div>
+
+<div class="card">
 <span>Лучшая сделка</span>
 <strong id="bestTrade">0%</strong>
 </div>
@@ -334,7 +383,7 @@ grid-column:auto
 
 <section class="panel">
 
-<h2>Кривая баланса</h2>
+<h2>📈 Кривая баланса</h2>
 
 <canvas id="equity" width="1000" height="300"></canvas>
 
@@ -428,6 +477,8 @@ P/L, %
 
 <div class="analyticsGrid">
 
+<!-- СЕССИИ -->
+
 <div class="analyticsBox">
 
 <h3>🌍 Сессии</h3>
@@ -465,6 +516,8 @@ P/L, %
 </div>
 
 
+<!-- НАПРАВЛЕНИЕ -->
+
 <div class="analyticsBox">
 
 <h3>📈 Направление</h3>
@@ -501,6 +554,8 @@ P/L, %
 
 </div>
 
+
+<!-- СТРАТЕГИЯ -->
 
 <div class="analyticsBox">
 
@@ -565,6 +620,71 @@ P/L, %
 
 </div>
 
+
+<!-- ФИЛЬТРЫ -->
+
+<h3>🔎 Фильтры</h3>
+
+<div class="filters">
+
+<label>
+От даты
+<input type="date" id="filterFrom">
+</label>
+
+<label>
+До даты
+<input type="date" id="filterTo">
+</label>
+
+<label>
+Сессия
+<select id="filterSession">
+<option value="all">Все сессии</option>
+<option value="London">London</option>
+<option value="New York">New York</option>
+</select>
+</label>
+
+<label>
+Направление
+<select id="filterDirection">
+<option value="all">Все направления</option>
+<option value="LONG">LONG</option>
+<option value="SHORT">SHORT</option>
+</select>
+</label>
+
+<label>
+Результат
+<select id="filterResult">
+<option value="all">Все результаты</option>
+<option value="win">TP</option>
+<option value="loss">SL</option>
+<option value="be">BE</option>
+</select>
+</label>
+
+<label>
+Стратегия
+<select id="filterDiscipline">
+<option value="all">Все</option>
+<option value="yes">Соблюдал</option>
+<option value="no">Нарушал</option>
+</select>
+</label>
+
+<div class="filterButtons">
+
+<button id="resetFilters" class="secondary" type="button">
+Сбросить фильтры
+</button>
+
+</div>
+
+</div>
+
+
 <div class="tableWrap">
 
 <table>
@@ -613,7 +733,9 @@ const SETTINGS_KEY="tradeJournalSettings";
 const $=id=>document.getElementById(id);
 
 
-/* ЗАГРУЗКА ДАННЫХ */
+/* =========================
+   ЗАГРУЗКА
+========================= */
 
 let trades=[];
 
@@ -634,7 +756,9 @@ trades=savedTrades;
 }
 
 }catch(e){
+
 trades=[];
+
 }
 
 
@@ -646,19 +770,19 @@ localStorage.getItem(SETTINGS_KEY)||"{}"
 );
 
 if(savedSettings.deposit!==undefined){
-settings.deposit=
-Number(savedSettings.deposit);
+settings.deposit=Number(savedSettings.deposit);
 }
 
 if(savedSettings.risk!==undefined){
-settings.risk=
-Number(savedSettings.risk);
+settings.risk=Number(savedSettings.risk);
 }
 
 }catch(e){}
 
 
-/* НАЧАЛЬНЫЕ ЗНАЧЕНИЯ */
+/* =========================
+   НАЧАЛЬНЫЕ ЗНАЧЕНИЯ
+========================= */
 
 $("initialDeposit").value=settings.deposit;
 $("riskPercent").value=settings.risk;
@@ -667,7 +791,9 @@ $("date").value=
 new Date().toISOString().slice(0,10);
 
 
-/* ФОРМАТ */
+/* =========================
+   ФОРМАТ
+========================= */
 
 function formatPL(value){
 
@@ -685,13 +811,15 @@ function formatDollar(value){
 value=Number(value)||0;
 
 return(
-value>=0?"+":""
+value>=0?"+":"-"
 )+"$"+Math.abs(value).toFixed(2);
 
 }
 
 
-/* ГРУППОВАЯ СТАТИСТИКА */
+/* =========================
+   СТАТИСТИКА
+========================= */
 
 function stats(list){
 
@@ -724,7 +852,9 @@ pl:pl
 }
 
 
-/* АНАЛИТИКА */
+/* =========================
+   АНАЛИТИКА
+========================= */
 
 function renderAnalytics(){
 
@@ -773,93 +903,117 @@ t=>t.discipline==="no"
 
 /* LONDON */
 
-$("londonCount").textContent=
-london.count;
-
-$("londonWinrate").textContent=
-london.winrate+"%";
-
-$("londonPL").textContent=
-formatPL(london.pl);
+$("londonCount").textContent=london.count;
+$("londonWinrate").textContent=london.winrate+"%";
+$("londonPL").textContent=formatPL(london.pl);
 
 
 /* NEW YORK */
 
-$("nyCount").textContent=
-ny.count;
-
-$("nyWinrate").textContent=
-ny.winrate+"%";
-
-$("nyPL").textContent=
-formatPL(ny.pl);
+$("nyCount").textContent=ny.count;
+$("nyWinrate").textContent=ny.winrate+"%";
+$("nyPL").textContent=formatPL(ny.pl);
 
 
 /* LONG */
 
-$("longCount").textContent=
-long.count;
-
-$("longWinrate").textContent=
-long.winrate+"%";
-
-$("longPL").textContent=
-formatPL(long.pl);
+$("longCount").textContent=long.count;
+$("longWinrate").textContent=long.winrate+"%";
+$("longPL").textContent=formatPL(long.pl);
 
 
 /* SHORT */
 
-$("shortCount").textContent=
-short.count;
-
-$("shortWinrate").textContent=
-short.winrate+"%";
-
-$("shortPL").textContent=
-formatPL(short.pl);
+$("shortCount").textContent=short.count;
+$("shortWinrate").textContent=short.winrate+"%";
+$("shortPL").textContent=formatPL(short.pl);
 
 
 /* СТРАТЕГИЯ */
 
-$("yesCount").textContent=
-yes.count;
+$("yesCount").textContent=yes.count;
+$("yesWinrate").textContent=yes.winrate+"%";
+$("yesPL").textContent=formatPL(yes.pl);
 
-$("yesWinrate").textContent=
-yes.winrate+"%";
-
-$("yesPL").textContent=
-formatPL(yes.pl);
-
-$("noCount").textContent=
-no.count;
-
-$("noWinrate").textContent=
-no.winrate+"%";
-
-$("noPL").textContent=
-formatPL(no.pl);
+$("noCount").textContent=no.count;
+$("noWinrate").textContent=no.winrate+"%";
+$("noPL").textContent=formatPL(no.pl);
 
 }
 
 
-/* ОСНОВНОЙ RENDER */
+/* =========================
+   ФИЛЬТРАЦИЯ
+========================= */
+
+function getFilteredTrades(){
+
+const from=$("filterFrom").value;
+const to=$("filterTo").value;
+const session=$("filterSession").value;
+const direction=$("filterDirection").value;
+const result=$("filterResult").value;
+const discipline=$("filterDiscipline").value;
+
+return trades.filter(t=>{
+
+if(from && t.date<from){
+return false;
+}
+
+if(to && t.date>to){
+return false;
+}
+
+if(session!=="all" && t.session!==session){
+return false;
+}
+
+if(direction!=="all" && t.direction!==direction){
+return false;
+}
+
+if(result!=="all" && t.result!==result){
+return false;
+}
+
+if(
+discipline!=="all" &&
+t.discipline!==discipline
+){
+return false;
+}
+
+return true;
+
+});
+
+}
+
+
+/* =========================
+   ОСНОВНОЙ RENDER
+========================= */
 
 function render(){
 
-const count=
-trades.length;
+const count=trades.length;
 
 const wins=
 trades.filter(
 t=>t.result==="win"
 ).length;
 
-const tp=
-wins;
+const tp=wins;
 
 const sl=
 trades.filter(
 t=>t.result==="loss"
+).length;
+
+const be=
+trades.filter(
+t=>t.result==="be"
 ).length;
 
 const disciplined=
@@ -879,51 +1033,59 @@ count
 :0;
 
 
-/* БАЛАНС */
+/* =========================
+   БАЛАНС
+========================= */
 
 const initialBalance=
 Number(settings.deposit)||0;
 
-let balance=
-initialBalance;
+let balance=initialBalance;
 
 const values=[balance];
 
-let peak=
-balance;
+let peak=balance;
 
-let maxDrawdownDollar=
-0;
+let maxDrawdownDollar=0;
 
-let maxDrawdownPercent=
-0;
+let maxDrawdownPercent=0;
 
-let bestTrade=
-trades.length
-?Math.max(
+let bestTrade=0;
+
+if(trades.length){
+
+bestTrade=
+Math.max(
 ...trades.map(
 t=>Number(t.pl||0)
 )
-)
-:0;
+);
+
+}
 
 
 for(const trade of trades){
 
+const tradePL=
+Number(trade.pl||0);
+
 balance*=
 1+
-Number(trade.pl||0)/100;
+tradePL/100;
 
 values.push(balance);
 
 
-/* МАКСИМАЛЬНАЯ ПРОСАДКА */
+/* ПИК */
 
 if(balance>peak){
 
 peak=balance;
 
 }
+
+
+/* ПРОСАДКА */
 
 const currentDrawdown=
 peak-balance;
@@ -940,7 +1102,10 @@ currentDrawdown;
 
 }
 
-if(currentDrawdownPercent>maxDrawdownPercent){
+if(
+currentDrawdownPercent>
+maxDrawdownPercent
+){
 
 maxDrawdownPercent=
 currentDrawdownPercent;
@@ -950,13 +1115,15 @@ currentDrawdownPercent;
 }
 
 
-/* P/L В ДОЛЛАРАХ */
+/* P/L В $ */
 
 const pnlDollar=
 balance-initialBalance;
 
 
-/* КАРТОЧКИ */
+/* =========================
+   КАРТОЧКИ
+========================= */
 
 $("count").textContent=count;
 
@@ -967,7 +1134,9 @@ count
 
 $("discipline").textContent=
 count
-?Math.round(disciplined/count*100)+"%"
+?Math.round(
+disciplined/count*100
+)+"%"
 :"0%";
 
 $("pnl").textContent=
@@ -986,6 +1155,8 @@ $("tpCount").textContent=tp;
 
 $("slCount").textContent=sl;
 
+$("beCount").textContent=be;
+
 $("bestTrade").textContent=
 formatPL(bestTrade);
 
@@ -993,15 +1164,20 @@ $("drawdown").textContent=
 "-"+maxDrawdownPercent.toFixed(2)+"%";
 
 
-/* ИСТОРИЯ */
+/* =========================
+   ИСТОРИЯ С ФИЛЬТРАМИ
+========================= */
+
+const filtered=
+getFilteredTrades();
 
 $("empty").style.display=
-count
+filtered.length
 ?"none"
 :"block";
 
 $("trades").innerHTML=
-trades
+filtered
 .slice()
 .reverse()
 .map(t=>`
@@ -1021,9 +1197,11 @@ trades
 ${
 t.result==="win"
 ?"TP"
-:t.result==="loss"
+:
+t.result==="loss"
 ?"SL"
-:"BE"
+:
+"BE"
 }
 
 </td>
@@ -1046,7 +1224,8 @@ Number(t.pl||0)>=0
 ${
 t.discipline==="yes"
 ?"Да"
-:"Нет"
+:
+"Нет"
 }
 </td>
 
@@ -1071,7 +1250,9 @@ drawEquity(values);
 }
 
 
-/* ЗАЩИТА HTML */
+/* =========================
+   ЗАЩИТА HTML
+========================= */
 
 function escapeHtml(value){
 
@@ -1092,7 +1273,9 @@ m=>({
 }
 
 
-/* ГРАФИК */
+/* =========================
+   ГРАФИК
+========================= */
 
 function drawEquity(values){
 
@@ -1137,6 +1320,31 @@ max+=1;
 
 }
 
+
+/* СЕТКА */
+
+ctx.strokeStyle="#1c2937";
+ctx.lineWidth=1;
+
+for(let i=1;i<5;i++){
+
+const y=
+25+
+i*(H-50)/5;
+
+ctx.beginPath();
+
+ctx.moveTo(25,y);
+
+ctx.lineTo(W-25,y);
+
+ctx.stroke();
+
+}
+
+
+/* КРИВАЯ */
+
 ctx.beginPath();
 
 values.forEach(
@@ -1156,9 +1364,13 @@ H-
 (H-50);
 
 if(index===0){
+
 ctx.moveTo(x,y);
+
 }else{
+
 ctx.lineTo(x,y);
+
 }
 
 });
@@ -1170,7 +1382,9 @@ ctx.stroke();
 }
 
 
-/* СОХРАНИТЬ НАСТРОЙКИ */
+/* =========================
+   СОХРАНИТЬ НАСТРОЙКИ
+========================= */
 
 $("saveSettings").onclick=()=>{
 
@@ -1200,7 +1414,9 @@ alert("Настройки сохранены");
 };
 
 
-/* ДОБАВИТЬ СДЕЛКУ */
+/* =========================
+   ДОБАВИТЬ СДЕЛКУ
+========================= */
 
 $("tradeForm").onsubmit=e=>{
 
@@ -1226,13 +1442,13 @@ pl:
 Number($("pl").value),
 
 setup:
-$("setup").value,
+$("setup").value.trim(),
 
 discipline:
 $("disciplineInput").value,
 
 comment:
-$("comment").value
+$("comment").value.trim()
 
 };
 
@@ -1255,12 +1471,51 @@ render();
 };
 
 
-/* УДАЛИТЬ ВСЕ */
+/* =========================
+   ФИЛЬТРЫ
+========================= */
+
+[
+"filterFrom",
+"filterTo",
+"filterSession",
+"filterDirection",
+"filterResult",
+"filterDiscipline"
+].forEach(id=>{
+
+$(id).addEventListener(
+"change",
+render
+);
+
+});
+
+
+$("resetFilters").onclick=()=>{
+
+$("filterFrom").value="";
+$("filterTo").value="";
+$("filterSession").value="all";
+$("filterDirection").value="all";
+$("filterResult").value="all";
+$("filterDiscipline").value="all";
+
+render();
+
+};
+
+
+/* =========================
+   УДАЛИТЬ ВСЕ
+========================= */
 
 $("clearAll").onclick=()=>{
 
 if(
-!confirm("Удалить всю историю сделок?")
+!confirm(
+"Удалить всю историю сделок?"
+)
 ){
 return;
 }
@@ -1277,7 +1532,9 @@ render();
 };
 
 
-/* ЭКСПОРТ */
+/* =========================
+   ЭКСПОРТ CSV
+========================= */
 
 $("export").onclick=()=>{
 
@@ -1294,7 +1551,8 @@ const rows=[
 "Комментарий"
 ],
 
-...trades.map(t=>[
+...getFilteredTrades().map(t=>[
+
 t.date,
 t.symbol,
 t.session,
@@ -1303,6 +1561,7 @@ t.result,
 t.pl,
 t.discipline,
 t.comment||t.setup
+
 ])
 
 ];
@@ -1313,7 +1572,8 @@ rows
 .map(row=>
 row
 .map(value=>
-`"${String(value??"").replace(/"/g,'""')}"`
+`"${String(value??"")
+.replace(/"/g,'""')}"`
 )
 .join(",")
 )
@@ -1326,7 +1586,10 @@ link.href=
 URL.createObjectURL(
 new Blob(
 [csv],
-{type:"text/csv;charset=utf-8"}
+{
+type:
+"text/csv;charset=utf-8"
+}
 )
 );
 
@@ -1338,7 +1601,9 @@ link.click();
 };
 
 
-/* ЗАПУСК */
+/* =========================
+   ЗАПУСК
+========================= */
 
 render();
 
