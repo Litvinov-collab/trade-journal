@@ -87,7 +87,24 @@ const pnlMoney =
 
   $("avg").textContent =
     (av >= 0 ? "+" : "") + av.toFixed(2) + "%";
+$("pnlMoney").textContent =
+  (pnlMoney >= 0 ? "+" : "") +
+  "$" +
+  pnlMoney.toFixed(2);
 
+$("tpCount").textContent = tpCount;
+
+$("slCount").textContent = slCount;
+
+$("bestTrade").textContent =
+  (bestTrade >= 0 ? "+" : "") +
+  bestTrade.toFixed(2) +
+  "%";
+
+$("drawdown").textContent =
+  "-" +
+  maxDrawdown.toFixed(2) +
+  "%";
   $("empty").style.display =
     n ? "none" : "block";
 
