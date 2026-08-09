@@ -1,2 +1,18 @@
-# trade-journal
-Free trading journal for tracking trades, discipline and performance.
+# Trade Journal
+
+Простой бесплатный дневник сделок для трейдера.
+
+## Возможности
+- добавление сделок;
+- Win Rate;
+- процент соблюдения стратегии;
+- общий P/L;
+- история сделок;
+- экспорт в CSV;
+- данные хранятся в браузере.
+
+## Запуск
+Открой `index.html` в браузере.
+
+## Публикация
+Проект можно разместить через GitHub Pages.
