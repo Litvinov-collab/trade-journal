@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Trade Journal</title>
 
 <style>
@@ -10,8 +10,9 @@
 
 body{
 margin:0;
+min-height:100vh;
 background:
-radial-gradient(circle at 20% 0%,#17283a 0%,#0b1118 42%,#070b10 100%);
+radial-gradient(circle at 15% 0%,#203b55 0%,#0c141e 38%,#060a0f 100%);
 color:#e8edf3;
 font-family:Arial,sans-serif
 }
@@ -19,31 +20,38 @@ font-family:Arial,sans-serif
 .container{
 max-width:1200px;
 margin:auto;
-padding:25px 18px
+padding:30px 18px
 }
 
-h1{margin:0 0 5px}
-h2{margin-top:0}
+h1{
+font-size:34px;
+margin:0 0 6px
+}
+
+h2{
+margin:0 0 18px
+}
 
 .subtitle{
-color:#7f8c9b;
+color:#8795a6;
 margin-bottom:25px
 }
 
 .panel,.card{
-background:#121a24;
-border:1px solid #253244;
-border-radius:14px
+background:rgba(18,26,36,.94);
+border:1px solid #2a394c;
+border-radius:16px;
+box-shadow:0 10px 35px rgba(0,0,0,.18)
 }
 
 .panel{
-padding:20px;
+padding:22px;
 margin-bottom:22px
 }
 
 .stats{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+grid-template-columns:repeat(4,1fr);
 gap:14px;
 margin-bottom:22px
 }
@@ -55,18 +63,18 @@ padding:18px
 .card span{
 display:block;
 font-size:13px;
-color:#8d9aaa;
-margin-bottom:8px
+color:#8e9cac;
+margin-bottom:9px
 }
 
 .card strong{
-font-size:24px
+font-size:25px
 }
 
 .grid{
 display:grid;
 grid-template-columns:repeat(2,1fr);
-gap:14px
+gap:15px
 }
 
 .wide{
@@ -77,62 +85,70 @@ label{
 display:flex;
 flex-direction:column;
 gap:7px;
-color:#aeb8c5;
+color:#b5c0cc;
 font-size:14px
 }
 
 input,select,textarea{
 width:100%;
-background:#0c131c;
-border:1px solid #2c3b4d;
-border-radius:8px;
-padding:11px;
-color:white;
-outline:none
+background:#0a1119;
+border:1px solid #304154;
+border-radius:9px;
+padding:12px;
+color:#fff;
+outline:none;
+font-size:14px
 }
 
 input:focus,select:focus,textarea:focus{
-border-color:#60a5fa
+border-color:#60a5fa;
+box-shadow:0 0 0 2px rgba(96,165,250,.12)
 }
 
 textarea{
-min-height:80px;
+min-height:90px;
 resize:vertical
 }
 
 button{
 border:0;
-border-radius:8px;
+border-radius:9px;
 padding:11px 16px;
 cursor:pointer;
-font-weight:bold
+font-weight:bold;
+transition:.15s
+}
+
+button:hover{
+transform:translateY(-1px);
+filter:brightness(1.1)
 }
 
 .primary{
 background:#60a5fa;
-color:#07101a;
+color:#06111d;
 margin-top:17px
 }
 
 .secondary{
-background:#263444;
-color:white
+background:#263548;
+color:#fff
 }
 
 .danger{
-background:#7f1d1d;
-color:white
+background:#8f2020;
+color:#fff
 }
 
 .editBtn{
-background:#92400e;
-color:white
+background:#a45c16;
+color:#fff
 }
 
 .settings{
 display:grid;
 grid-template-columns:1fr 1fr auto;
-gap:14px;
+gap:15px;
 align-items:end
 }
 
@@ -140,7 +156,7 @@ align-items:end
 display:flex;
 justify-content:space-between;
 align-items:center;
-gap:10px;
+gap:12px;
 flex-wrap:wrap
 }
 
@@ -159,12 +175,6 @@ gap:12px;
 margin:20px 0
 }
 
-.filterButtons{
-display:flex;
-gap:8px;
-align-items:end
-}
-
 /* ТАБЛИЦА */
 
 .tableWrap{
@@ -178,14 +188,18 @@ min-width:1100px
 }
 
 th,td{
-padding:11px;
+padding:12px 10px;
 border-bottom:1px solid #263444;
 text-align:left
 }
 
 th{
-color:#7f8c9b;
+color:#8290a0;
 font-size:13px
+}
+
+td{
+font-size:14px
 }
 
 .win{color:#4ade80}
@@ -198,18 +212,27 @@ color:#66717e
 }
 
 .rowBtn{
-padding:7px 9px;
+padding:7px 10px;
 font-size:12px;
 margin-right:4px
 }
 
 /* ГРАФИК */
 
-canvas{
+.chartBox{
+position:relative;
 width:100%;
-height:300px;
-background:#0c131c;
-border-radius:10px
+height:320px;
+background:#0a1119;
+border:1px solid #263444;
+border-radius:12px;
+overflow:hidden
+}
+
+canvas{
+display:block;
+width:100%;
+height:100%
 }
 
 /* АНАЛИТИКА */
@@ -217,24 +240,26 @@ border-radius:10px
 .analyticsGrid{
 display:grid;
 grid-template-columns:repeat(3,1fr);
-gap:14px
+gap:15px
 }
 
 .analyticsBox{
-background:#0c131c;
-border:1px solid #263444;
-border-radius:12px;
-padding:17px
+background:#0a1119;
+border:1px solid #29394b;
+border-radius:13px;
+padding:18px
 }
 
 .analyticsBox h3{
-margin:0 0 12px
+margin:0 0 12px;
+font-size:17px
 }
 
 .analyticsRow{
 display:flex;
 justify-content:space-between;
-padding:9px 0;
+gap:10px;
+padding:10px 0;
 border-bottom:1px solid #263444
 }
 
@@ -242,20 +267,18 @@ border-bottom:1px solid #263444
 border-bottom:0
 }
 
-.good{color:#4ade80}
-.bad{color:#f87171}
+.analyticsRow strong{
+font-weight:bold
+}
 
 /* МОДАЛЬНОЕ ОКНО */
 
 .modal{
 display:none;
 position:fixed;
-z-index:999;
-left:0;
-top:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,.75);
+z-index:9999;
+inset:0;
+background:rgba(0,0,0,.78);
 padding:20px;
 overflow:auto
 }
@@ -268,11 +291,12 @@ justify-content:center
 
 .modalBox{
 width:100%;
-max-width:700px;
+max-width:720px;
 background:#121a24;
-border:1px solid #253244;
-border-radius:14px;
-padding:20px
+border:1px solid #314257;
+border-radius:16px;
+padding:22px;
+box-shadow:0 20px 70px rgba(0,0,0,.5)
 }
 
 .modalActions{
@@ -289,7 +313,11 @@ font-size:13px;
 padding:20px
 }
 
-@media(max-width:900px){
+@media(max-width:1000px){
+
+.stats{
+grid-template-columns:repeat(2,1fr)
+}
 
 .analyticsGrid{
 grid-template-columns:1fr
@@ -301,9 +329,17 @@ grid-template-columns:repeat(2,1fr)
 
 }
 
-@media(max-width:800px){
+@media(max-width:700px){
 
-.grid,.settings{
+.container{
+padding:20px 12px
+}
+
+h1{
+font-size:28px
+}
+
+.grid,.settings,.filters{
 grid-template-columns:1fr
 }
 
@@ -311,8 +347,24 @@ grid-template-columns:1fr
 grid-column:auto
 }
 
-.filters{
+.stats{
+grid-template-columns:1fr 1fr
+}
+
+}
+
+@media(max-width:450px){
+
+.stats{
 grid-template-columns:1fr
+}
+
+.actions{
+width:100%
+}
+
+.actions button{
+width:100%
 }
 
 }
@@ -329,12 +381,11 @@ grid-template-columns:1fr
 Журнал сделок и аналитика трейдера
 </div>
 
-
 <!-- НАСТРОЙКИ -->
 
 <section class="panel">
 
-<h2>Настройки</h2>
+<h2>⚙️ Настройки</h2>
 
 <div class="settings">
 
@@ -355,7 +406,6 @@ grid-template-columns:1fr
 </div>
 
 </section>
-
 
 <!-- СТАТИСТИКА -->
 
@@ -403,23 +453,23 @@ grid-template-columns:1fr
 
 </section>
 
-
 <!-- ГРАФИК -->
 
 <section class="panel">
 
-<h2>Кривая баланса</h2>
+<h2>📈 Кривая баланса</h2>
 
-<canvas id="equity" width="1000" height="300"></canvas>
+<div class="chartBox">
+<canvas id="equity"></canvas>
+</div>
 
 </section>
-
 
 <!-- ДОБАВИТЬ СДЕЛКУ -->
 
 <section class="panel">
 
-<h2>Добавить сделку</h2>
+<h2>➕ Добавить сделку</h2>
 
 <form id="tradeForm">
 
@@ -493,7 +543,6 @@ P/L, %
 
 </section>
 
-
 <!-- АНАЛИТИКА -->
 
 <section class="panel">
@@ -501,7 +550,6 @@ P/L, %
 <h2>📊 Аналитика</h2>
 
 <div class="analyticsGrid">
-
 
 <div class="analyticsBox">
 
@@ -539,7 +587,6 @@ P/L, %
 
 </div>
 
-
 <div class="analyticsBox">
 
 <h3>📈 Направление</h3>
@@ -575,7 +622,6 @@ P/L, %
 </div>
 
 </div>
-
 
 <div class="analyticsBox">
 
@@ -617,14 +663,13 @@ P/L, %
 
 </section>
 
-
 <!-- ИСТОРИЯ -->
 
 <section class="panel">
 
 <div class="tableHead">
 
-<h2>История сделок</h2>
+<h2>📋 История сделок</h2>
 
 <div class="actions">
 
@@ -643,7 +688,6 @@ P/L, %
 </div>
 
 </div>
-
 
 <!-- ФИЛЬТРЫ -->
 
@@ -703,13 +747,11 @@ P/L, %
 
 </div>
 
-
 <div class="tableWrap">
 
 <table>
 
 <thead>
-
 <tr>
 <th>Дата</th>
 <th>Инструмент</th>
@@ -721,7 +763,6 @@ P/L, %
 <th>Комментарий</th>
 <th>Действия</th>
 </tr>
-
 </thead>
 
 <tbody id="trades"></tbody>
@@ -740,16 +781,14 @@ P/L, %
 
 </section>
 
-
 <footer>
-Данные сохраняются в браузере на этом устройстве.
+Данные сохраняются в браузере на этом устройстве.<br>
 Это не финансовая рекомендация.
 </footer>
 
 </div>
 
-
-<!-- ОКНО РЕДАКТИРОВАНИЯ -->
+<!-- МОДАЛЬНОЕ ОКНО -->
 
 <div class="modal" id="editModal">
 
@@ -841,7 +880,6 @@ P/L, %
 
 </div>
 
-
 <script>
 
 const TRADES_KEY="tradeJournalV1";
@@ -850,67 +888,57 @@ const SETTINGS_KEY="tradeJournalSettings";
 const $=id=>document.getElementById(id);
 
 let trades=[];
-
 let settings={
 deposit:100,
 risk:1
 };
 
-
-/* ЗАГРУЗКА */
+/* ЗАГРУЗКА СДЕЛОК */
 
 try{
 
-const savedTrades=
-JSON.parse(
+const saved=JSON.parse(
 localStorage.getItem(TRADES_KEY)||"[]"
 );
 
-if(Array.isArray(savedTrades)){
-trades=savedTrades;
+if(Array.isArray(saved)){
+trades=saved;
 }
 
 }catch(e){
 trades=[];
 }
 
+/* ЗАГРУЗКА НАСТРОЕК */
 
 try{
 
-const savedSettings=
-JSON.parse(
+const saved=JSON.parse(
 localStorage.getItem(SETTINGS_KEY)||"{}"
 );
 
-if(savedSettings.deposit!==undefined){
-settings.deposit=Number(savedSettings.deposit);
+if(saved.deposit!==undefined){
+settings.deposit=Number(saved.deposit);
 }
 
-if(savedSettings.risk!==undefined){
-settings.risk=Number(savedSettings.risk);
+if(saved.risk!==undefined){
+settings.risk=Number(saved.risk);
 }
 
 }catch(e){}
 
-
 /* ID ДЛЯ СТАРЫХ СДЕЛОК */
 
 trades=trades.map((t,index)=>({
-
 ...t,
-
-id:t.id||
-(String(Date.now())+"_"+index)
-
+id:t.id||(Date.now()+"_"+index)
 }));
-
 
 $("initialDeposit").value=settings.deposit;
 $("riskPercent").value=settings.risk;
 
 $("date").value=
 new Date().toISOString().slice(0,10);
-
 
 /* СОХРАНЕНИЕ */
 
@@ -923,8 +951,7 @@ JSON.stringify(trades)
 
 }
 
-
-/* ФОРМАТ */
+/* ФОРМАТ P/L */
 
 function formatPL(value){
 
@@ -936,84 +963,56 @@ value>=0?"+":""
 
 }
 
-
 /* СТАТИСТИКА */
 
 function stats(list){
 
 const count=list.length;
 
-const wins=
-list.filter(
+const wins=list.filter(
 t=>t.result==="win"
 ).length;
 
-const pl=
-list.reduce(
+const pl=list.reduce(
 (sum,t)=>sum+Number(t.pl||0),
 0
 );
 
 return{
-
-count,
-
-winrate:
-count
-?Math.round(wins/count*100)
-:0,
-
-pl
-
+count:count,
+winrate:count?
+Math.round(wins/count*100):0,
+pl:pl
 };
 
 }
-
 
 /* АНАЛИТИКА */
 
 function renderAnalytics(){
 
-const london=
-stats(
-trades.filter(
-t=>t.session==="London"
-)
+const london=stats(
+trades.filter(t=>t.session==="London")
 );
 
-const ny=
-stats(
-trades.filter(
-t=>t.session==="New York"
-)
+const ny=stats(
+trades.filter(t=>t.session==="New York")
 );
 
-const long=
-stats(
-trades.filter(
-t=>t.direction==="LONG"
-)
+const long=stats(
+trades.filter(t=>t.direction==="LONG")
 );
 
-const short=
-stats(
-trades.filter(
-t=>t.direction==="SHORT"
-)
+const short=stats(
+trades.filter(t=>t.direction==="SHORT")
 );
 
-const yes=
-stats(
-trades.filter(
-t=>t.discipline==="yes"
-)
+const yes=stats(
+trades.filter(t=>t.discipline==="yes")
 );
 
-const no=
-stats(
-trades.filter(
-t=>t.discipline==="no"
-)
+const no=stats(
+trades.filter(t=>t.discipline==="no")
 );
 
 $("londonCount").textContent=london.count;
@@ -1042,57 +1041,54 @@ $("noPL").textContent=formatPL(no.pl);
 
 }
 
-
 /* ФИЛЬТРЫ */
 
 function getFilteredTrades(){
 
-const search=
-$("searchFilter").value.trim().toLowerCase();
+const search=$("searchFilter")
+.value.trim()
+.toLowerCase();
 
 const session=$("sessionFilter").value;
 const direction=$("directionFilter").value;
 const result=$("resultFilter").value;
 const discipline=$("disciplineFilter").value;
-
 const dateFrom=$("dateFrom").value;
 const dateTo=$("dateTo").value;
 
-
 return trades.filter(t=>{
 
-if(
-search &&
-!(
-String(t.symbol||"")
-.toLowerCase()
-.includes(search)
-||
-String(t.setup||"")
-.toLowerCase()
-.includes(search)
-||
+if(search){
+
+const text=(
+String(t.symbol||"")+" "+
+String(t.setup||"")+" "+
 String(t.comment||"")
-.toLowerCase()
-.includes(search)
-)
-){
+).toLowerCase();
+
+if(!text.includes(search)){
 return false;
 }
 
-if(session!=="all" && t.session!==session){
+}
+
+if(session!=="all" &&
+t.session!==session){
 return false;
 }
 
-if(direction!=="all" && t.direction!==direction){
+if(direction!=="all" &&
+t.direction!==direction){
 return false;
 }
 
-if(result!=="all" && t.result!==result){
+if(result!=="all" &&
+t.result!==result){
 return false;
 }
 
-if(discipline!=="all" && t.discipline!==discipline){
+if(discipline!=="all" &&
+t.discipline!==discipline){
 return false;
 }
 
@@ -1110,74 +1106,58 @@ return true;
 
 }
 
-
 /* RENDER */
 
 function render(){
 
 const count=trades.length;
 
-const wins=
-trades.filter(
+const wins=trades.filter(
 t=>t.result==="win"
 ).length;
 
-const sl=
-trades.filter(
+const sl=trades.filter(
 t=>t.result==="loss"
 ).length;
 
-const disciplined=
-trades.filter(
+const disciplined=trades.filter(
 t=>t.discipline==="yes"
 ).length;
 
-const totalPL=
-trades.reduce(
+const totalPL=trades.reduce(
 (sum,t)=>sum+Number(t.pl||0),
 0
 );
 
-const average=
-count
-?totalPL/count
-:0;
-
+const average=count?
+totalPL/count:0;
 
 /* БАЛАНС */
 
-let balance=
-Number(settings.deposit)||0;
+let balance=Number(settings.deposit)||0;
 
 const values=[balance];
 
 for(const trade of trades){
 
-balance*=
-1+
+balance*=1+
 Number(trade.pl||0)/100;
 
 values.push(balance);
 
 }
 
-
 /* СТАТИСТИКА */
 
 $("count").textContent=count;
 
-$("winrate").textContent=
-count
-?Math.round(wins/count*100)+"%"
-:"0%";
+$("winrate").textContent=count?
+Math.round(wins/count*100)+"%":"0%";
 
-$("discipline").textContent=
-count
-?Math.round(disciplined/count*100)+"%"
-:"0%";
+$("discipline").textContent=count?
+Math.round(disciplined/count*100)+"%":"0%";
 
-$("pnl").textContent=
-formatPL(totalPL);
+$("pnl").textContent=formatPL(totalPL);
 
 $("balance").textContent=
 "$"+balance.toFixed(2);
@@ -1186,30 +1166,21 @@ $("avg").textContent=
 formatPL(average);
 
 $("tpCount").textContent=wins;
-
 $("slCount").textContent=sl;
 
-
-/* ИСТОРИЯ */
+/* ТАБЛИЦА */
 
 const filtered=getFilteredTrades();
 
 $("empty").style.display=
-count
-?"none"
-:"block";
+count?"none":"block";
 
 $("filterEmpty").style.display=
-count && filtered.length===0
-?"block"
-:"none";
-
+count && filtered.length===0?
+"block":"none";
 
 $("trades").innerHTML=
-filtered
-.slice()
-.reverse()
-.map(t=>`
+filtered.slice().reverse().map(t=>`
 
 <tr>
 
@@ -1222,42 +1193,36 @@ filtered
 <td>${escapeHtml(t.direction)}</td>
 
 <td class="${
-t.result==="win"
-?"win"
-:t.result==="loss"
-?"loss"
-:"be"
+t.result==="win"?
+"win":
+t.result==="loss"?
+"loss":"be"
 }">
 
 ${
-t.result==="win"
-?"TP"
-:t.result==="loss"
-?"SL"
-:"BE"
+t.result==="win"?
+"TP":
+t.result==="loss"?
+"SL":"BE"
 }
 
 </td>
 
 <td class="${
-Number(t.pl||0)>=0
-?"win"
-:"loss"
+Number(t.pl||0)>=0?
+"win":"loss"
 }">
 
 ${
-Number(t.pl||0)>=0
-?"+"
-:""
+Number(t.pl||0)>=0?"+":""
 }${Number(t.pl||0).toFixed(2)}%
 
 </td>
 
 <td>
 ${
-t.discipline==="yes"
-?"Да"
-:"Нет"
+t.discipline==="yes"?
+"Да":"Нет"
 }
 </td>
 
@@ -1291,18 +1256,14 @@ type="button"
 
 </tr>
 
-`)
-.join("");
-
+`).join("");
 
 renderAnalytics();
-
 drawEquity(values);
 
 }
 
-
-/* HTML ЗАЩИТА */
+/* ЗАЩИТА HTML */
 
 function escapeHtml(value){
 
@@ -1310,30 +1271,42 @@ return String(value??"")
 .replace(
 /[&<>"']/g,
 m=>({
-
 "&":"&amp;",
 "<":"&lt;",
 ">":"&gt;",
 '"':"&quot;",
 "'":"&#039;"
-
 }[m])
 );
 
 }
-
 
 /* ГРАФИК */
 
 function drawEquity(values){
 
 const canvas=$("equity");
+const box=canvas.parentElement;
+
+const width=box.clientWidth;
+const height=box.clientHeight;
+
+const dpr=window.devicePixelRatio||1;
+
+canvas.width=width*dpr;
+canvas.height=height*dpr;
+
 const ctx=canvas.getContext("2d");
 
-const W=canvas.width;
-const H=canvas.height;
+ctx.scale(dpr,dpr);
+
+const W=width;
+const H=height;
 
 ctx.clearRect(0,0,W,H);
+
+ctx.fillStyle="#0a1119";
+ctx.fillRect(0,0,W,H);
 
 if(values.length<2){
 
@@ -1358,7 +1331,6 @@ min-=1;
 max+=1;
 }
 
-
 /* СЕТКА */
 
 ctx.strokeStyle="#1d2937";
@@ -1367,8 +1339,7 @@ ctx.lineWidth=1;
 for(let i=1;i<5;i++){
 
 const y=
-25+
-i*(H-50)/5;
+25+i*(H-50)/5;
 
 ctx.beginPath();
 ctx.moveTo(25,y);
@@ -1376,7 +1347,6 @@ ctx.lineTo(W-25,y);
 ctx.stroke();
 
 }
-
 
 /* ЛИНИЯ */
 
@@ -1405,21 +1375,40 @@ ctx.strokeStyle="#60a5fa";
 ctx.lineWidth=3;
 ctx.stroke();
 
-}
+/* ТОЧКИ */
 
+values.forEach((value,index)=>{
+
+const x=
+25+
+index*(W-50)/(values.length-1);
+
+const y=
+H-
+25-
+(value-min)/(max-min)*(H-50);
+
+ctx.beginPath();
+ctx.arc(x,y,3,0,Math.PI*2);
+ctx.fillStyle="#60a5fa";
+ctx.fill();
+
+});
+
+}
 
 /* НАСТРОЙКИ */
 
 $("saveSettings").onclick=()=>{
 
 settings={
+deposit:Number(
+$("initialDeposit").value
+)||0,
 
-deposit:
-Number($("initialDeposit").value)||0,
-
-risk:
-Number($("riskPercent").value)||0
-
+risk:Number(
+$("riskPercent").value
+)||0
 };
 
 localStorage.setItem(
@@ -1433,8 +1422,7 @@ alert("Настройки сохранены");
 
 };
 
-
-/* ДОБАВИТЬ */
+/* ДОБАВИТЬ СДЕЛКУ */
 
 $("tradeForm").onsubmit=e=>{
 
@@ -1464,13 +1452,13 @@ pl:
 Number($("pl").value),
 
 setup:
-$("setup").value,
+$("setup").value.trim(),
 
 discipline:
 $("disciplineInput").value,
 
 comment:
-$("comment").value
+$("comment").value.trim()
 
 };
 
@@ -1489,17 +1477,15 @@ render();
 
 };
 
-
 /* РЕДАКТИРОВАНИЕ */
 
 function editTrade(id){
 
-const trade=
-trades.find(t=>String(t.id)===String(id));
+const trade=trades.find(
+t=>String(t.id)===String(id)
+);
 
-if(!trade){
-return;
-}
+if(!trade)return;
 
 $("editId").value=trade.id;
 $("editDate").value=trade.date;
@@ -1509,13 +1495,15 @@ $("editDirection").value=trade.direction;
 $("editResult").value=trade.result;
 $("editPL").value=trade.pl;
 $("editSetup").value=trade.setup||"";
-$("editDiscipline").value=trade.discipline||"yes";
-$("editComment").value=trade.comment||"";
+$("editDiscipline").value=
+trade.discipline||"yes";
+$("editComment").value=
+trade.comment||"";
 
-$("editModal").classList.add("active");
+$("editModal")
+.classList.add("active");
 
 }
-
 
 /* СОХРАНИТЬ ИЗМЕНЕНИЯ */
 
@@ -1525,14 +1513,11 @@ e.preventDefault();
 
 const id=$("editId").value;
 
-const index=
-trades.findIndex(
+const index=trades.findIndex(
 t=>String(t.id)===String(id)
 );
 
-if(index===-1){
-return;
-}
+if(index===-1)return;
 
 trades[index]={
 
@@ -1556,46 +1541,43 @@ pl:
 Number($("editPL").value),
 
 setup:
-$("editSetup").value,
+$("editSetup").value.trim(),
 
 discipline:
 $("editDiscipline").value,
 
 comment:
-$("editComment").value
+$("editComment").value.trim()
 
 };
 
 saveTrades();
 
-$("editModal").classList.remove("active");
+$("editModal")
+.classList.remove("active");
 
 render();
 
 };
 
-
-/* ЗАКРЫТЬ РЕДАКТИРОВАНИЕ */
+/* ОТМЕНА */
 
 $("cancelEdit").onclick=()=>{
 
-$("editModal").classList.remove("active");
+$("editModal")
+.classList.remove("active");
 
 };
 
-
-/* УДАЛИТЬ ОДНУ СДЕЛКУ */
+/* УДАЛЕНИЕ */
 
 function deleteTrade(id){
 
-if(
-!confirm("Удалить эту сделку?")
-){
-return;
-}
+if(!confirm(
+"Удалить эту сделку?"
+))return;
 
-trades=
-trades.filter(
+trades=trades.filter(
 t=>String(t.id)!==String(id)
 );
 
@@ -1604,7 +1586,6 @@ saveTrades();
 render();
 
 }
-
 
 /* ФИЛЬТРЫ */
 
@@ -1618,11 +1599,17 @@ render();
 "dateTo"
 ].forEach(id=>{
 
-$(id).addEventListener("input",render);
-$(id).addEventListener("change",render);
+$(id).addEventListener(
+"input",
+render
+);
+
+$(id).addEventListener(
+"change",
+render
+);
 
 });
-
 
 /* СБРОС ФИЛЬТРОВ */
 
@@ -1640,18 +1627,13 @@ render();
 
 };
 
-
-/* ОЧИСТИТЬ ВСЕ */
+/* ОЧИСТИТЬ ИСТОРИЮ */
 
 $("clearAll").onclick=()=>{
 
-if(
-!confirm(
+if(!confirm(
 "Удалить всю историю сделок?"
-)
-){
-return;
-}
+))return;
 
 trades=[];
 
@@ -1661,8 +1643,7 @@ render();
 
 };
 
-
-/* ЭКСПОРТ */
+/* ЭКСПОРТ CSV */
 
 $("export").onclick=()=>{
 
@@ -1681,7 +1662,6 @@ const rows=[
 ],
 
 ...trades.map(t=>[
-
 t.date,
 t.symbol,
 t.session,
@@ -1691,13 +1671,11 @@ t.pl,
 t.discipline,
 t.setup,
 t.comment
-
 ])
 
 ];
 
-const csv=
-"\ufeff"+
+const csv="\ufeff"+
 rows.map(row=>
 row.map(value=>
 `"${String(value??"")
@@ -1705,11 +1683,9 @@ row.map(value=>
 ).join(",")
 ).join("\n");
 
-const link=
-document.createElement("a");
+const link=document.createElement("a");
 
-link.href=
-URL.createObjectURL(
+link.href=URL.createObjectURL(
 new Blob(
 [csv],
 {type:"text/csv;charset=utf-8"}
@@ -1720,23 +1696,62 @@ link.download="trade-journal.csv";
 
 link.click();
 
+URL.revokeObjectURL(link.href);
+
 };
 
-
-/* ЗАКРЫТЬ ОКНО ПО ФОНУ */
+/* ЗАКРЫТЬ МОДАЛЬНОЕ ОКНО */
 
 $("editModal").onclick=e=>{
 
 if(e.target.id==="editModal"){
 
 $("editModal")
-.classList
-.remove("active");
+.classList.remove("active");
 
 }
 
 };
 
+/* ESC */
+
+document.addEventListener(
+"keydown",
+e=>{
+
+if(e.key==="Escape"){
+
+$("editModal")
+.classList.remove("active");
+
+}
+
+});
+
+/* ПЕРЕРИСОВКА ГРАФИКА */
+
+window.addEventListener(
+"resize",
+()=>{
+
+const balance=Number(settings.deposit)||0;
+
+const values=[balance];
+
+let current=balance;
+
+for(const trade of trades){
+
+current*=1+
+Number(trade.pl||0)/100;
+
+values.push(current);
+
+}
+
+drawEquity(values);
+
+});
 
 /* ЗАПУСК */
 
