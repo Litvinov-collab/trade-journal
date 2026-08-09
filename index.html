@@ -1,1597 +1,1677 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trade Journal</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trade Journal Pro</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+*{box-sizing:border-box}
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0b1118;
-      color: #e8edf3;
-    }
+body{
+margin:0;
+font-family:Arial,sans-serif;
+background:#0b1118;
+color:#e8edf3
+}
 
-    .container {
-      max-width: 1200px;
-      margin: auto;
-      padding: 30px 20px;
-    }
+.container{
+max-width:1250px;
+margin:auto;
+padding:30px 20px
+}
 
-    h1 {
-      margin-bottom: 5px;
-    }
+h1{margin:0 0 6px}
+h2{margin-top:0}
 
-    .subtitle {
-      color: #8d9aaa;
-      margin-bottom: 25px;
-    }
+.subtitle{
+color:#8d9aaa;
+margin-bottom:25px
+}
 
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-      gap: 15px;
-      margin-bottom: 25px;
-    }
+.stats{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+gap:15px;
+margin-bottom:25px
+}
 
-    .card,
-    .panel {
-      background: #121a24;
-      border: 1px solid #243141;
-      border-radius: 14px;
-    }
+.card,.panel{
+background:#121a24;
+border:1px solid #243141;
+border-radius:14px
+}
 
-    .card {
-      padding: 18px;
-    }
+.card{
+padding:18px
+}
 
-    .card span {
-      display: block;
-      color: #8d9aaa;
-      font-size: 13px;
-      margin-bottom: 8px;
-    }
+.card span{
+display:block;
+color:#8d9aaa;
+font-size:13px;
+margin-bottom:8px
+}
 
-    .card strong {
-      font-size: 24px;
-    }
+.card strong{
+font-size:24px
+}
 
-    .panel {
-      padding: 22px;
-      margin-bottom: 25px;
-    }
+.panel{
+padding:22px;
+margin-bottom:25px
+}
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-    }
+.grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:15px
+}
 
-    .wide {
-      grid-column: 1 / -1;
-    }
+.wide{
+grid-column:1/-1
+}
 
-    label {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-      color: #aab5c2;
-      font-size: 14px;
-    }
+label{
+display:flex;
+flex-direction:column;
+gap:7px;
+color:#aab5c2;
+font-size:14px
+}
 
-    input,
-    select,
-    textarea {
-      width: 100%;
-      padding: 11px;
-      border-radius: 8px;
-      border: 1px solid #2b3a4b;
-      background: #0c131c;
-      color: white;
-      outline: none;
-    }
+input,select,textarea{
+width:100%;
+padding:11px;
+border-radius:8px;
+border:1px solid #2b3a4b;
+background:#0c131c;
+color:white;
+outline:none
+}
 
-    textarea {
-      min-height: 85px;
-      resize: vertical;
-    }
+textarea{
+min-height:85px;
+resize:vertical
+}
 
-    button {
-      border: 0;
-      border-radius: 8px;
-      padding: 11px 16px;
-      cursor: pointer;
-      font-weight: bold;
-    }
+button{
+border:0;
+border-radius:8px;
+padding:11px 16px;
+cursor:pointer;
+font-weight:bold
+}
 
-    .primary {
-      background: #60a5fa;
-      color: #07101a;
-      margin-top: 18px;
-    }
+.primary{
+background:#60a5fa;
+color:#07101a;
+margin-top:18px
+}
 
-    .secondary {
-      background: #243141;
-      color: white;
-    }
+.secondary{
+background:#243141;
+color:white
+}
 
-    .danger {
-      background: #7f1d1d;
-      color: white;
-    }
+.danger{
+background:#7f1d1d;
+color:white
+}
 
-    .settings {
-      display: grid;
-      grid-template-columns: 1fr 1fr auto;
-      gap: 15px;
-      align-items: end;
-    }
+.settings{
+display:grid;
+grid-template-columns:1fr 1fr auto;
+gap:15px;
+align-items:end
+}
 
-    .filter-buttons {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 15px;
-    }
+.tableHead{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:10px;
+flex-wrap:wrap
+}
 
-    .tableHead {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
+.actions{
+display:flex;
+gap:10px;
+flex-wrap:wrap
+}
 
-    .actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
+.tableWrap{
+overflow-x:auto
+}
 
-    .tableWrap {
-      overflow-x: auto;
-    }
+table{
+width:100%;
+border-collapse:collapse;
+min-width:900px
+}
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 850px;
-    }
+th,td{
+padding:12px;
+text-align:left;
+border-bottom:1px solid #243141
+}
 
-    th,
-    td {
-      padding: 12px;
-      text-align: left;
-      border-bottom: 1px solid #243141;
-    }
+th{
+color:#8d9aaa;
+font-size:13px
+}
 
-    th {
-      color: #8d9aaa;
-      font-size: 13px;
-    }
+.win{color:#4ade80}
+.loss{color:#f87171}
+.be{color:#facc15}
 
-    .win {
-      color: #4ade80;
-    }
+.empty{
+text-align:center;
+color:#66717e
+}
 
-    .loss {
-      color: #f87171;
-    }
+canvas{
+width:100%;
+height:300px;
+display:block;
+background:#0c131c;
+border-radius:10px
+}
 
-    .be {
-      color: #facc15;
-    }
+.analyticsGrid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:15px
+}
 
-    .empty {
-      text-align: center;
-      color: #66717e;
-    }
+.analyticsBox{
+background:#0c131c;
+border:1px solid #243141;
+border-radius:12px;
+padding:18px
+}
 
-    canvas {
-      width: 100%;
-      height: 300px;
-      display: block;
-      background: #0c131c;
-      border-radius: 10px;
-    }
+.analyticsBox h3{
+margin-top:0;
+margin-bottom:15px
+}
 
-    footer {
-      text-align: center;
-      color: #66717e;
-      font-size: 13px;
-      padding: 20px;
-    }
+.analyticsRow{
+display:flex;
+justify-content:space-between;
+padding:9px 0;
+border-bottom:1px solid #243141
+}
 
-    @media (max-width: 700px) {
-      .grid,
-      .settings {
-        grid-template-columns: 1fr;
-      }
+.analyticsRow:last-child{
+border-bottom:0
+}
 
-      .wide {
-        grid-column: auto;
-      }
-    }
-  </style>
+.analyticsValue{
+font-weight:bold
+}
+
+.good{color:#4ade80}
+.bad{color:#f87171}
+
+.filterButtons{
+display:flex;
+gap:10px;
+margin-top:15px;
+flex-wrap:wrap
+}
+
+footer{
+text-align:center;
+color:#66717e;
+font-size:13px;
+padding:20px
+}
+
+@media(max-width:800px){
+
+.grid,
+.settings,
+.analyticsGrid{
+grid-template-columns:1fr
+}
+
+.wide{
+grid-column:auto
+}
+
+}
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-  <h1>Trade Journal</h1>
-
-  <div class="subtitle">
-    Журнал сделок и статистика трейдера
-  </div>
-
-
-  <!-- НАСТРОЙКИ -->
-
-  <section class="panel">
+<h1>Trade Journal Pro</h1>
+
+<div class="subtitle">
+Журнал сделок, статистика и аналитика трейдера
+</div>
+
 
-    <h2>Настройки</h2>
+<!-- НАСТРОЙКИ -->
 
-    <div class="settings">
+<section class="panel">
 
-      <label>
-        Начальный депозит, $
-        <input
-          type="number"
-          id="initialDeposit"
-          step="0.01"
-          value="100"
-        >
-      </label>
+<h2>Настройки</h2>
 
-      <label>
-        Риск на сделку, %
-        <input
-          type="number"
-          id="riskPercent"
-          step="0.1"
-          value="1"
-        >
-      </label>
+<div class="settings">
 
-      <button
-        id="saveSettings"
-        class="primary"
-        type="button"
-      >
-        Сохранить
-      </button>
+<label>
+Начальный депозит, $
+<input
+type="number"
+id="initialDeposit"
+step="0.01"
+value="100">
+</label>
 
-    </div>
+<label>
+Риск на сделку, %
+<input
+type="number"
+id="riskPercent"
+step="0.1"
+value="1">
+</label>
 
-  </section>
+<button
+id="saveSettings"
+class="primary"
+type="button">
+Сохранить
+</button>
 
+</div>
 
-  <!-- СТАТИСТИКА -->
+</section>
 
-  <section class="stats">
 
-    <div class="card">
-      <span>Сделок</span>
-      <strong id="count">0</strong>
-    </div>
+<!-- СТАТИСТИКА -->
 
-    <div class="card">
-      <span>Win rate</span>
-      <strong id="winrate">0%</strong>
-    </div>
+<section class="stats">
 
-    <div class="card">
-      <span>Соблюдение стратегии</span>
-      <strong id="discipline">0%</strong>
-    </div>
+<div class="card">
+<span>Сделок</span>
+<strong id="count">0</strong>
+</div>
 
-    <div class="card">
-      <span>Результат</span>
-      <strong id="pnl">0%</strong>
-    </div>
+<div class="card">
+<span>Win Rate</span>
+<strong id="winrate">0%</strong>
+</div>
 
-    <div class="card">
-      <span>Баланс</span>
-      <strong id="balance">$0.00</strong>
-    </div>
-
-    <div class="card">
-      <span>P/L в $</span>
-      <strong id="pnlMoney">$0.00</strong>
-    </div>
-
-    <div class="card">
-      <span>TP</span>
-      <strong id="tpCount">0</strong>
-    </div>
-
-    <div class="card">
-      <span>SL</span>
-      <strong id="slCount">0</strong>
-    </div>
-
-    <div class="card">
-      <span>Лучшая сделка</span>
-      <strong id="bestTrade">0%</strong>
-    </div>
-
-    <div class="card">
-      <span>Средний результат</span>
-      <strong id="avg">0%</strong>
-    </div>
-
-    <div class="card">
-      <span>Макс. просадка</span>
-      <strong id="drawdown">0%</strong>
-    </div>
-
-  </section>
-
-
-  <!-- ГРАФИК -->
-
-  <section class="panel">
-
-    <h2>Кривая баланса</h2>
-
-    <canvas
-      id="equity"
-      width="1000"
-      height="300"
-    ></canvas>
-
-  </section>
-
-
-  <!-- ДОБАВЛЕНИЕ СДЕЛКИ -->
-
-  <section class="panel">
-
-    <h2>Добавить сделку</h2>
-
-    <form id="tradeForm">
-
-      <div class="grid">
-
-        <label>
-          Дата
-          <input
-            type="date"
-            id="date"
-            required
-          >
-        </label>
-
-        <label>
-          Инструмент
-          <input
-            id="symbol"
-            value="BTCUSDT"
-            required
-          >
-        </label>
-
-        <label>
-          Сессия
-          <select id="session">
-            <option value="London">London</option>
-            <option value="New York">New York</option>
-          </select>
-        </label>
-
-        <label>
-          Направление
-          <select id="direction">
-            <option value="LONG">LONG</option>
-            <option value="SHORT">SHORT</option>
-          </select>
-        </label>
-
-        <label>
-          Результат
-          <select id="result">
-            <option value="win">TP</option>
-            <option value="loss">SL</option>
-            <option value="be">BE</option>
-          </select>
-        </label>
-
-        <label>
-          P/L, %
-          <input
-            type="number"
-            id="pl"
-            step="0.01"
-            placeholder="например 3.5"
-            required
-          >
-        </label>
+<div class="card">
+<span>Соблюдение стратегии</span>
+<strong id="discipline">0%</strong>
+</div>
 
-        <label class="wide">
-          Причина входа
-          <input
-            id="setup"
-            placeholder="Liquidity sweep + BOS + FVG"
-          >
-        </label>
+<div class="card">
+<span>Результат</span>
+<strong id="pnl">0%</strong>
+</div>
 
-        <label class="wide">
-          Соблюдал стратегию?
-          <select id="disciplineInput">
-            <option value="yes">Да</option>
-            <option value="no">Нет</option>
-          </select>
-        </label>
+<div class="card">
+<span>Баланс</span>
+<strong id="balance">$0.00</strong>
+</div>
 
-        <label class="wide">
-          Комментарий
-          <textarea
-            id="comment"
-            placeholder="Что сделал правильно/неправильно?"
-          ></textarea>
-        </label>
+<div class="card">
+<span>P/L в $</span>
+<strong id="pnlMoney">$0.00</strong>
+</div>
+
+<div class="card">
+<span>TP</span>
+<strong id="tpCount">0</strong>
+</div>
+
+<div class="card">
+<span>SL</span>
+<strong id="slCount">0</strong>
+</div>
+
+<div class="card">
+<span>Лучшая сделка</span>
+<strong id="bestTrade">0%</strong>
+</div>
+
+<div class="card">
+<span>Средний результат</span>
+<strong id="avg">0%</strong>
+</div>
+
+<div class="card">
+<span>Макс. просадка</span>
+<strong id="drawdown">0%</strong>
+</div>
+
+</section>
+
+
+<!-- ГРАФИК -->
+
+<section class="panel">
+
+<h2>Кривая баланса</h2>
+
+<canvas
+id="equity"
+width="1000"
+height="300">
+</canvas>
+
+</section>
+
+
+<!-- ДОБАВЛЕНИЕ СДЕЛКИ -->
+
+<section class="panel">
+
+<h2>Добавить сделку</h2>
 
-      </div>
-
-      <button
-        class="primary"
-        type="submit"
-      >
-        Добавить сделку
-      </button>
-
-    </form>
-
-  </section>
-
-
-  <!-- ФИЛЬТРЫ -->
-
-  <section class="panel">
-
-    <h2>Фильтры</h2>
-
-    <div class="grid">
-
-      <label>
-        Результат
-
-        <select id="filterResult">
-          <option value="all">Все</option>
-          <option value="win">TP</option>
-          <option value="loss">SL</option>
-          <option value="be">BE</option>
-        </select>
-
-      </label>
-
-      <label>
-        Направление
-
-        <select id="filterDirection">
-          <option value="all">Все</option>
-          <option value="LONG">LONG</option>
-          <option value="SHORT">SHORT</option>
-        </select>
-
-      </label>
-
-      <label>
-        Сессия
-
-        <select id="filterSession">
-          <option value="all">Все</option>
-          <option value="London">London</option>
-          <option value="New York">New York</option>
-        </select>
-
-      </label>
-
-      <label>
-        Дата от
-
-        <input
-          type="date"
-          id="filterFrom"
-        >
-
-      </label>
-
-      <label>
-        Дата до
-
-        <input
-          type="date"
-          id="filterTo"
-        >
-
-      </label>
-
-    </div>
-
-    <div class="filter-buttons">
-
-      <button
-        id="resetFilters"
-        class="secondary"
-        type="button"
-      >
-        Сбросить фильтры
-      </button>
-
-    </div>
-
-  </section>
-
-
-  <!-- ИСТОРИЯ -->
-
-  <section class="panel">
-
-    <div class="tableHead">
-
-      <h2>История сделок</h2>
-
-      <div class="actions">
-
-        <button
-          id="export"
-          class="secondary"
-          type="button"
-        >
-          Экспорт CSV
-        </button>
-
-        <button
-          id="clearAll"
-          class="danger"
-          type="button"
-        >
-          Очистить историю
-        </button>
-
-      </div>
-
-    </div>
-
-    <div class="tableWrap">
-
-      <table>
-
-        <thead>
-
-          <tr>
-            <th>Дата</th>
-            <th>Инструмент</th>
-            <th>Сессия</th>
-            <th>Направление</th>
-            <th>Результат</th>
-            <th>P/L</th>
-            <th>Стратегия</th>
-            <th>Комментарий</th>
-          </tr>
-
-        </thead>
-
-        <tbody id="trades"></tbody>
-
-      </table>
-
-    </div>
-
-    <p
-      id="empty"
-      class="empty"
-    >
-      Пока нет сделок. Добавь первую.
-    </p>
-
-  </section>
-
-
-  <footer>
-    Данные сохраняются в браузере на этом устройстве.
-    Это не финансовая рекомендация.
-  </footer>
+<form id="tradeForm">
+
+<div class="grid">
+
+<label>
+Дата
+<input
+type="date"
+id="date"
+required>
+</label>
+
+<label>
+Инструмент
+<input
+id="symbol"
+value="BTCUSDT"
+required>
+</label>
+
+<label>
+Сессия
+<select id="session">
+<option value="London">London</option>
+<option value="New York">New York</option>
+</select>
+</label>
+
+<label>
+Направление
+<select id="direction">
+<option value="LONG">LONG</option>
+<option value="SHORT">SHORT</option>
+</select>
+</label>
+
+<label>
+Результат
+<select id="result">
+<option value="win">TP</option>
+<option value="loss">SL</option>
+<option value="be">BE</option>
+</select>
+</label>
+
+<label>
+P/L, %
+<input
+type="number"
+id="pl"
+step="0.01"
+placeholder="например 3.5"
+required>
+</label>
+
+<label class="wide">
+Причина входа
+<input
+id="setup"
+placeholder="Liquidity sweep + BOS + FVG">
+</label>
+
+<label class="wide">
+Соблюдал стратегию?
+<select id="disciplineInput">
+<option value="yes">Да</option>
+<option value="no">Нет</option>
+</select>
+</label>
+
+<label class="wide">
+Комментарий
+<textarea
+id="comment"
+placeholder="Что сделал правильно/неправильно?">
+</textarea>
+</label>
+
+</div>
+
+<button
+class="primary"
+type="submit">
+Добавить сделку
+</button>
+
+</form>
+
+</section>
+
+
+<!-- ФИЛЬТРЫ -->
+
+<section class="panel">
+
+<h2>Фильтры</h2>
+
+<div class="grid">
+
+<label>
+Результат
+<select id="filterResult">
+<option value="all">Все</option>
+<option value="win">TP</option>
+<option value="loss">SL</option>
+<option value="be">BE</option>
+</select>
+</label>
+
+<label>
+Направление
+<select id="filterDirection">
+<option value="all">Все</option>
+<option value="LONG">LONG</option>
+<option value="SHORT">SHORT</option>
+</select>
+</label>
+
+<label>
+Сессия
+<select id="filterSession">
+<option value="all">Все</option>
+<option value="London">London</option>
+<option value="New York">New York</option>
+</select>
+</label>
+
+<label>
+Дата от
+<input
+type="date"
+id="filterFrom">
+</label>
+
+<label>
+Дата до
+<input
+type="date"
+id="filterTo">
+</label>
+
+</div>
+
+<div class="filterButtons">
+
+<button
+id="resetFilters"
+class="secondary"
+type="button">
+Сбросить фильтры
+</button>
+
+</div>
+
+</section>
+
+
+<!-- АНАЛИТИКА -->
+
+<section class="panel">
+
+<h2>Аналитика</h2>
+
+<div class="analyticsGrid">
+
+
+<div class="analyticsBox">
+
+<h3>🌍 Сессии</h3>
+
+<div class="analyticsRow">
+<span>London сделок</span>
+<strong
+id="londonCount"
+class="analyticsValue">
+0
+</strong>
+</div>
+
+<div class="analyticsRow">
+<span>London Win Rate</span>
+<strong
+id="londonWinrate"
+class="analyticsValue">
+0%
+</strong>
+</div>
+
+<div class="analyticsRow">
+<span>London P/L</span>
+<strong
+id="londonPL"
+class="analyticsValue">
+0%
+</strong>
+</div>
+
+<div class="analyticsRow">
+<span>New York сделок</span>
+<strong
+id="nyCount"
+class="analyticsValue">
+0
+</strong>
+</div>
+
+<div class="analyticsRow">
+<span>New York Win Rate</span>
+<strong
+id="nyWinrate"
+class="analyticsValue">
+0%
+</strong>
+</div>
+
+<div class="analyticsRow">
+<span>New York P/L</span>
+<strong
+id="nyPL"
+class="analyticsValue">
+0%
+</strong>
+</div>
+
+</div>
+
+
+<div class="analyticsBox">
+
+<h3>📈 Направление</h3>
+
+<div class="analyticsRow">
+<span>LONG сделок</span>
+<strong
+id="longCount"
+class="analyticsValue">
+0
+</strong>
+</div>
+
+<div class="analyticsRow">
+<span>LONG Win Rate</span>
+<strong
+id="longWinrate"
+class="analyticsValue">
+0%
+</strong>
+</div>
+
+<div class="analyticsRow">
+<span>LONG P/L</span>
+<strong
+id="longPL"
+class="analyticsValue">
+0%
+</strong>
+</div>
+
+<div class="analyticsRow">
+<span>SHORT сделок</span>
+<strong
+id="shortCount"
+class="analyticsValue">
+0
+</strong>
+</div>
+
+<div class="analyticsRow">
+<span>SHORT Win Rate</span>
+<strong
+id="shortWinrate"
+class="analyticsValue">
+0%
+</strong>
+</div>
+
+<div class="analyticsRow">
+<span>SHORT P/L</span>
+<strong
+id="shortPL"
+class="analyticsValue">
+0%
+</strong>
+</div>
+
+</div>
+
+
+<div class="analyticsBox">
+
+<h3>🧠 Дисциплина</h3>
+
+<div class="analyticsRow">
+<span>Соблюдал стратегию</span>
+<strong
+id="strategyYesCount"
+class="analyticsValue">
+0
+</strong>
+</div>
+
+<div class="analyticsRow">
+<span>Win Rate</span>
+<strong
+id="strategyYesWinrate"
+class="analyticsValue">
+0%
+</strong>
+</div>
+
+<div class="analyticsRow">
+<span>P/L</span>
+<strong
+id="strategyYesPL"
+class="analyticsValue">
+0%
+</strong>
+</div>
+
+<div class="analyticsRow">
+<span>Нарушил стратегию</span>
+<strong
+id="strategyNoCount"
+class="analyticsValue">
+0
+</strong>
+</div>
+
+<div class="analyticsRow">
+<span>Win Rate</span>
+<strong
+id="strategyNoWinrate"
+class="analyticsValue">
+0%
+</strong>
+</div>
+
+<div class="analyticsRow">
+<span>P/L</span>
+<strong
+id="strategyNoPL"
+class="analyticsValue">
+0%
+</strong>
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ИСТОРИЯ -->
+
+<section class="panel">
+
+<div class="tableHead">
+
+<h2>История сделок</h2>
+
+<div class="actions">
+
+<button
+id="export"
+class="secondary"
+type="button">
+Экспорт CSV
+</button>
+
+<button
+id="clearAll"
+class="danger"
+type="button">
+Очистить историю
+</button>
+
+</div>
+
+</div>
+
+<div class="tableWrap">
+
+<table>
+
+<thead>
+
+<tr>
+<th>Дата</th>
+<th>Инструмент</th>
+<th>Сессия</th>
+<th>Направление</th>
+<th>Результат</th>
+<th>P/L</th>
+<th>Стратегия</th>
+<th>Комментарий</th>
+</tr>
+
+</thead>
+
+<tbody id="trades"></tbody>
+
+</table>
+
+</div>
+
+<p
+id="empty"
+class="empty">
+Пока нет сделок. Добавь первую.
+</p>
+
+</section>
+
+
+<footer>
+Данные сохраняются в браузере на этом устройстве.
+Это не финансовая рекомендация.
+</footer>
 
 </div>
 
 
 <script>
 
-const TRADES_KEY = "tradeJournalV1";
-const SETTINGS_KEY = "tradeJournalSettings";
+const TRADES_KEY="tradeJournalV1";
+const SETTINGS_KEY="tradeJournalSettings";
 
-let trades = [];
-
-let settings = {
-  deposit: 100,
-  risk: 1
+let trades=[];
+let settings={
+deposit:100,
+risk:1
 };
 
 
-/* ЗАГРУЗКА СДЕЛОК */
+/* ЗАГРУЗКА */
 
-try {
+try{
 
-  trades = JSON.parse(
-    localStorage.getItem(TRADES_KEY) || "[]"
-  );
+trades=
+JSON.parse(
+localStorage.getItem(TRADES_KEY)||"[]"
+);
 
-  if (!Array.isArray(trades)) {
-    trades = [];
-  }
+if(!Array.isArray(trades)){
+trades=[];
+}
 
-} catch {
+}catch{
+trades=[];
+}
 
-  trades = [];
+
+try{
+
+const saved=
+JSON.parse(
+localStorage.getItem(SETTINGS_KEY)||"{}"
+);
+
+if(saved&&typeof saved==="object"){
+
+if(Number(saved.deposit)>0){
+settings.deposit=
+Number(saved.deposit);
+}
+
+if(Number(saved.risk)>=0){
+settings.risk=
+Number(saved.risk);
+}
+
+}
+
+}catch{}
+
+
+const $=
+id=>document.getElementById(id);
+
+
+$("initialDeposit").value=
+settings.deposit;
+
+$("riskPercent").value=
+settings.risk;
+
+$("date").value=
+new Date()
+.toISOString()
+.slice(0,10);
+
+
+/* ESCAPE */
+
+function escapeHtml(value){
+
+return String(value??"")
+.replace(
+/[&<>"']/g,
+char=>({
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#039;"
+}[char])
+);
 
 }
 
 
-/* ЗАГРУЗКА НАСТРОЕК */
+/* ФИЛЬТР */
 
-try {
+function getFilteredTrades(){
 
-  const saved =
-    JSON.parse(
-      localStorage.getItem(SETTINGS_KEY) || "{}"
-    );
+const result=
+$("filterResult").value;
 
-  if (
-    saved &&
-    typeof saved === "object"
-  ) {
+const direction=
+$("filterDirection").value;
 
-    if (
-      Number(saved.deposit) > 0
-    ) {
-      settings.deposit =
-        Number(saved.deposit);
-    }
+const session=
+$("filterSession").value;
 
-    if (
-      Number(saved.risk) >= 0
-    ) {
-      settings.risk =
-        Number(saved.risk);
-    }
+const from=
+$("filterFrom").value;
 
-  }
-
-} catch {}
+const to=
+$("filterTo").value;
 
 
-/* SHORTCUT */
+return trades.filter(trade=>{
 
-const $ = id =>
-  document.getElementById(id);
+if(
+result!=="all"&&
+trade.result!==result
+){
+return false;
+}
 
+if(
+direction!=="all"&&
+trade.direction!==direction
+){
+return false;
+}
 
-/* НАЧАЛЬНЫЕ ЗНАЧЕНИЯ */
+if(
+session!=="all"&&
+trade.session!==session
+){
+return false;
+}
 
-$("initialDeposit").value =
-  settings.deposit;
+if(from&&trade.date<from){
+return false;
+}
 
-$("riskPercent").value =
-  settings.risk;
+if(to&&trade.date>to){
+return false;
+}
 
-$("date").value =
-  new Date()
-    .toISOString()
-    .slice(0, 10);
+return true;
 
-
-/* ЭКРАНИРОВАНИЕ HTML */
-
-function escapeHtml(value) {
-
-  return String(
-    value ?? ""
-  ).replace(
-    /[&<>"']/g,
-    char => ({
-
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;"
-
-    }[char])
-  );
+});
 
 }
 
 
-/* ФИЛЬТРАЦИЯ */
+/* СТАТИСТИКА ГРУППЫ */
 
-function getFilteredTrades() {
+function groupStats(list){
 
-  const result =
-    $("filterResult").value;
+const count=list.length;
 
-  const direction =
-    $("filterDirection").value;
+const wins=
+list.filter(
+t=>t.result==="win"
+).length;
 
-  const session =
-    $("filterSession").value;
+const pl=
+list.reduce(
+(sum,t)=>
+sum+Number(t.pl||0),
+0
+);
 
-  const from =
-    $("filterFrom").value;
-
-  const to =
-    $("filterTo").value;
-
-
-  return trades.filter(
-    trade => {
-
-      if (
-        result !== "all" &&
-        trade.result !== result
-      ) {
-        return false;
-      }
-
-
-      if (
-        direction !== "all" &&
-        trade.direction !== direction
-      ) {
-        return false;
-      }
-
-
-      if (
-        session !== "all" &&
-        trade.session !== session
-      ) {
-        return false;
-      }
-
-
-      if (
-        from &&
-        trade.date < from
-      ) {
-        return false;
-      }
-
-
-      if (
-        to &&
-        trade.date > to
-      ) {
-        return false;
-      }
-
-
-      return true;
-
-    }
-  );
+return{
+count,
+wins,
+winrate:
+count
+?Math.round(wins/count*100)
+:0,
+pl
+};
 
 }
 
 
-/* БАЛАНС */
+/* ОСНОВНАЯ СТАТИСТИКА */
 
-function calculateBalance(list) {
+function calculateStats(list){
 
-  let balance =
-    Number(
-      settings.deposit || 0
-    );
+const count=list.length;
+
+const wins=
+list.filter(
+t=>t.result==="win"
+).length;
+
+const losses=
+list.filter(
+t=>t.result==="loss"
+).length;
+
+const disciplined=
+list.filter(
+t=>t.discipline==="yes"
+).length;
+
+const totalPL=
+list.reduce(
+(sum,t)=>
+sum+Number(t.pl||0),
+0
+);
+
+const average=
+count
+?totalPL/count
+:0;
+
+const bestTrade=
+count
+?Math.max(
+...list.map(
+t=>Number(t.pl||0)
+)
+)
+:0;
 
 
-  for (
-    const trade of list
-  ) {
+let balance=
+Number(settings.deposit||0);
 
-    balance *=
-      1 +
-      Number(
-        trade.pl || 0
-      ) / 100;
+let peak=balance;
+let maxDrawdown=0;
 
-  }
+for(const trade of list){
 
+balance*=
+1+
+Number(trade.pl||0)/100;
 
-  return balance;
+if(balance>peak){
+peak=balance;
+}
+
+if(peak>0){
+
+const dd=
+(peak-balance)/
+peak*
+100;
+
+if(dd>maxDrawdown){
+maxDrawdown=dd;
+}
+
+}
+
+}
+
+return{
+
+count,
+wins,
+losses,
+disciplined,
+totalPL,
+average,
+bestTrade,
+maxDrawdown,
+balance,
+pnlMoney:
+balance-
+Number(settings.deposit||0)
+
+};
 
 }
 
 
-/* СТАТИСТИКА */
+/* АНАЛИТИКА */
 
-function calculateStats(list) {
+function renderAnalytics(list){
 
-  const count =
-    list.length;
+const london=
+groupStats(
+list.filter(
+t=>t.session==="London"
+)
+);
 
+const ny=
+groupStats(
+list.filter(
+t=>t.session==="New York"
+)
+);
 
-  const wins =
-    list.filter(
-      t => t.result === "win"
-    ).length;
+const long=
+groupStats(
+list.filter(
+t=>t.direction==="LONG"
+)
+);
 
+const short=
+groupStats(
+list.filter(
+t=>t.direction==="SHORT"
+)
+);
 
-  const losses =
-    list.filter(
-      t => t.result === "loss"
-    ).length;
+const strategyYes=
+groupStats(
+list.filter(
+t=>t.discipline==="yes"
+)
+);
 
-
-  const disciplined =
-    list.filter(
-      t => t.discipline === "yes"
-    ).length;
-
-
-  const totalPL =
-    list.reduce(
-      (sum, trade) =>
-        sum +
-        Number(
-          trade.pl || 0
-        ),
-      0
-    );
-
-
-  const average =
-    count
-      ? totalPL / count
-      : 0;
-
-
-  const bestTrade =
-    count
-      ? Math.max(
-          ...list.map(
-            trade =>
-              Number(
-                trade.pl || 0
-              )
-          )
-        )
-      : 0;
+const strategyNo=
+groupStats(
+list.filter(
+t=>t.discipline==="no"
+)
+);
 
 
-  let balance =
-    Number(
-      settings.deposit || 0
-    );
+/* SESSION */
+
+$("londonCount").textContent=
+london.count;
+
+$("londonWinrate").textContent=
+london.winrate+"%";
+
+$("londonPL").textContent=
+formatPL(london.pl);
+
+$("nyCount").textContent=
+ny.count;
+
+$("nyWinrate").textContent=
+ny.winrate+"%";
+
+$("nyPL").textContent=
+formatPL(ny.pl);
 
 
-  let peak =
-    balance;
+/* DIRECTION */
+
+$("longCount").textContent=
+long.count;
+
+$("longWinrate").textContent=
+long.winrate+"%";
+
+$("longPL").textContent=
+formatPL(long.pl);
+
+$("shortCount").textContent=
+short.count;
+
+$("shortWinrate").textContent=
+short.winrate+"%";
+
+$("shortPL").textContent=
+formatPL(short.pl);
 
 
-  let maxDrawdown =
-    0;
+/* STRATEGY */
 
+$("strategyYesCount").textContent=
+strategyYes.count;
 
-  for (
-    const trade of list
-  ) {
+$("strategyYesWinrate").textContent=
+strategyYes.winrate+"%";
 
-    balance *=
-      1 +
-      Number(
-        trade.pl || 0
-      ) / 100;
+$("strategyYesPL").textContent=
+formatPL(strategyYes.pl);
 
+$("strategyNoCount").textContent=
+strategyNo.count;
 
-    if (
-      balance > peak
-    ) {
+$("strategyNoWinrate").textContent=
+strategyNo.winrate+"%";
 
-      peak =
-        balance;
-
-    }
-
-
-    if (
-      peak > 0
-    ) {
-
-      const drawdown =
-        (
-          peak -
-          balance
-        ) /
-        peak *
-        100;
-
-
-      if (
-        drawdown >
-        maxDrawdown
-      ) {
-
-        maxDrawdown =
-          drawdown;
-
-      }
-
-    }
-
-  }
-
-
-  const pnlMoney =
-    balance -
-    Number(
-      settings.deposit || 0
-    );
-
-
-  return {
-
-    count,
-    wins,
-    losses,
-    disciplined,
-    totalPL,
-    average,
-    bestTrade,
-    maxDrawdown,
-    pnlMoney,
-    balance
-
-  };
+$("strategyNoPL").textContent=
+formatPL(strategyNo.pl);
 
 }
 
 
-/* ОТРИСОВКА */
+/* ФОРМАТ P/L */
 
-function render() {
+function formatPL(value){
 
-  const list =
-    getFilteredTrades();
+return(
+value>=0?"+":""
+)+value.toFixed(2)+"%";
 
-
-  const stats =
-    calculateStats(list);
-
-
-  $("count").textContent =
-    stats.count;
+}
 
 
-  $("winrate").textContent =
-    stats.count
-      ? Math.round(
-          stats.wins /
-          stats.count *
-          100
-        ) + "%"
-      : "0%";
+/* RENDER */
+
+function render(){
+
+const list=
+getFilteredTrades();
+
+const stats=
+calculateStats(list);
 
 
-  $("discipline").textContent =
-    stats.count
-      ? Math.round(
-          stats.disciplined /
-          stats.count *
-          100
-        ) + "%"
-      : "0%";
+/* CARDS */
+
+$("count").textContent=
+stats.count;
+
+$("winrate").textContent=
+stats.count
+?Math.round(
+stats.wins/
+stats.count*
+100
+)+"%"
+:"0%";
+
+$("discipline").textContent=
+stats.count
+?Math.round(
+stats.disciplined/
+stats.count*
+100
+)+"%"
+:"0%";
+
+$("pnl").textContent=
+formatPL(
+stats.totalPL
+);
+
+$("balance").textContent=
+"$"+
+stats.balance.toFixed(2);
+
+$("pnlMoney").textContent=
+(
+stats.pnlMoney>=0
+?"+$"
+:"-$"
+)+
+Math.abs(
+stats.pnlMoney
+).toFixed(2);
+
+$("tpCount").textContent=
+stats.wins;
+
+$("slCount").textContent=
+stats.losses;
+
+$("bestTrade").textContent=
+formatPL(
+stats.bestTrade
+);
+
+$("avg").textContent=
+formatPL(
+stats.average
+);
+
+$("drawdown").textContent=
+"-"+
+stats.maxDrawdown.toFixed(2)+
+"%";
 
 
-  $("pnl").textContent =
-    (
-      stats.totalPL >= 0
-        ? "+"
-        : ""
-    ) +
-    stats.totalPL.toFixed(2) +
-    "%";
+/* HISTORY */
+
+$("empty").style.display=
+list.length
+?"none"
+:"block";
 
 
-  $("balance").textContent =
-    "$" +
-    stats.balance.toFixed(2);
+$("trades").innerHTML=
+list
+.slice()
+.reverse()
+.map(t=>`
+
+<tr>
+
+<td>
+${escapeHtml(t.date)}
+</td>
+
+<td>
+${escapeHtml(t.symbol)}
+</td>
+
+<td>
+${escapeHtml(t.session)}
+</td>
+
+<td>
+${escapeHtml(t.direction)}
+</td>
+
+<td class="${escapeHtml(t.result)}">
+${
+t.result==="win"
+?"TP"
+:t.result==="loss"
+?"SL"
+:"BE"
+}
+</td>
+
+<td class="${
+Number(t.pl||0)>=0
+?"win"
+:"loss"
+}">
+${
+Number(t.pl||0)>=0
+?"+"
+:""
+}${Number(t.pl||0).toFixed(2)}%
+</td>
+
+<td>
+${
+t.discipline==="yes"
+?"Да"
+:"Нет"
+}
+</td>
+
+<td>
+${escapeHtml(
+t.comment||
+t.setup||
+"—"
+)}
+</td>
+
+</tr>
+
+`)
+.join("");
 
 
-  $("pnlMoney").textContent =
-    (
-      stats.pnlMoney >= 0
-        ? "+"
-        : "-"
-    ) +
-    "$" +
-    Math.abs(
-      stats.pnlMoney
-    ).toFixed(2);
-
-
-  $("tpCount").textContent =
-    stats.wins;
-
-
-  $("slCount").textContent =
-    stats.losses;
-
-
-  $("bestTrade").textContent =
-    (
-      stats.bestTrade >= 0
-        ? "+"
-        : ""
-    ) +
-    stats.bestTrade.toFixed(2) +
-    "%";
-
-
-  $("avg").textContent =
-    (
-      stats.average >= 0
-        ? "+"
-        : ""
-    ) +
-    stats.average.toFixed(2) +
-    "%";
-
-
-  $("drawdown").textContent =
-    "-" +
-    stats.maxDrawdown.toFixed(2) +
-    "%";
-
-
-  $("empty").style.display =
-    list.length
-      ? "none"
-      : "block";
-
-
-  $("trades").innerHTML =
-    list
-      .slice()
-      .reverse()
-      .map(
-        trade => `
-
-          <tr>
-
-            <td>
-              ${escapeHtml(
-                trade.date
-              )}
-            </td>
-
-            <td>
-              ${escapeHtml(
-                trade.symbol
-              )}
-            </td>
-
-            <td>
-              ${escapeHtml(
-                trade.session
-              )}
-            </td>
-
-            <td>
-              ${escapeHtml(
-                trade.direction
-              )}
-            </td>
-
-            <td
-              class="${escapeHtml(
-                trade.result
-              )}"
-            >
-              ${
-                trade.result === "win"
-                  ? "TP"
-                  : trade.result === "loss"
-                    ? "SL"
-                    : "BE"
-              }
-            </td>
-
-            <td
-              class="${
-                Number(
-                  trade.pl || 0
-                ) >= 0
-                  ? "win"
-                  : "loss"
-              }"
-            >
-              ${
-                Number(
-                  trade.pl || 0
-                ) >= 0
-                  ? "+"
-                  : ""
-              }${
-                Number(
-                  trade.pl || 0
-                ).toFixed(2)
-              }%
-            </td>
-
-            <td>
-              ${
-                trade.discipline === "yes"
-                  ? "Да"
-                  : "Нет"
-              }
-            </td>
-
-            <td>
-              ${escapeHtml(
-                trade.comment ||
-                trade.setup ||
-                "—"
-              )}
-            </td>
-
-          </tr>
-
-        `
-      )
-      .join("");
-
-
-  drawEquity(list);
+renderAnalytics(list);
+drawEquity(list);
 
 }
 
 
 /* ГРАФИК */
 
-function drawEquity(list) {
+function drawEquity(list){
 
-  const canvas =
-    $("equity");
+const canvas=
+$("equity");
 
+const ctx=
+canvas.getContext("2d");
 
-  const ctx =
-    canvas.getContext(
-      "2d"
-    );
+const W=canvas.width;
+const H=canvas.height;
 
+ctx.clearRect(
+0,0,W,H
+);
 
-  const W =
-    canvas.width;
+let values=[
+Number(settings.deposit||0)
+];
 
+let balance=
+values[0];
 
-  const H =
-    canvas.height;
+for(const trade of list){
 
+balance*=
+1+
+Number(trade.pl||0)/100;
 
-  ctx.clearRect(
-    0,
-    0,
-    W,
-    H
-  );
+values.push(balance);
 
+}
 
-  let values = [
+if(values.length<2){
 
-    Number(
-      settings.deposit || 0
-    )
+ctx.fillStyle="#66717e";
+ctx.font="16px Arial";
 
-  ];
+ctx.fillText(
+"Добавь сделки, чтобы увидеть график",
+25,
+40
+);
 
+return;
 
-  let balance =
-    values[0];
+}
 
+let min=
+Math.min(...values);
 
-  for (
-    const trade of list
-  ) {
+let max=
+Math.max(...values);
 
-    balance *=
-      1 +
-      Number(
-        trade.pl || 0
-      ) / 100;
+if(min===max){
+min-=1;
+max+=1;
+}
 
+ctx.beginPath();
 
-    values.push(
-      balance
-    );
+values.forEach(
+(value,index)=>{
 
-  }
+const x=
+25+
+index*
+(W-50)/
+(values.length-1);
 
+const y=
+H-
+25-
+(value-min)/
+(max-min)*
+(H-50);
 
-  if (
-    values.length < 2
-  ) {
+if(index===0){
+ctx.moveTo(x,y);
+}else{
+ctx.lineTo(x,y);
+}
 
-    ctx.fillStyle =
-      "#66717e";
+});
 
-    ctx.font =
-      "16px Arial";
-
-    ctx.fillText(
-      "Добавь сделки, чтобы увидеть график",
-      25,
-      40
-    );
-
-    return;
-
-  }
-
-
-  let min =
-    Math.min(
-      ...values
-    );
-
-
-  let max =
-    Math.max(
-      ...values
-    );
-
-
-  if (
-    min === max
-  ) {
-
-    min -= 1;
-    max += 1;
-
-  }
-
-
-  ctx.beginPath();
-
-
-  values.forEach(
-    (value, index) => {
-
-      const x =
-        25 +
-        index *
-        (
-          W - 50
-        ) /
-        (
-          values.length - 1
-        );
-
-
-      const y =
-        H -
-        25 -
-        (
-          value - min
-        ) /
-        (
-          max - min
-        ) *
-        (
-          H - 50
-        );
-
-
-      if (
-        index === 0
-      ) {
-
-        ctx.moveTo(
-          x,
-          y
-        );
-
-      } else {
-
-        ctx.lineTo(
-          x,
-          y
-        );
-
-      }
-
-    }
-  );
-
-
-  ctx.strokeStyle =
-    "#60a5fa";
-
-  ctx.lineWidth =
-    3;
-
-  ctx.stroke();
+ctx.strokeStyle="#60a5fa";
+ctx.lineWidth=3;
+ctx.stroke();
 
 }
 
 
 /* СОХРАНЕНИЕ НАСТРОЕК */
 
-$("saveSettings").onclick =
-  () => {
+$("saveSettings").onclick=()=>{
 
-    settings = {
+settings={
 
-      deposit:
-        Number(
-          $("initialDeposit")
-            .value
-        ) || 0,
+deposit:
+Number(
+$("initialDeposit").value
+)||0,
 
-      risk:
-        Number(
-          $("riskPercent")
-            .value
-        ) || 0
+risk:
+Number(
+$("riskPercent").value
+)||0
 
-    };
+};
 
+localStorage.setItem(
+SETTINGS_KEY,
+JSON.stringify(settings)
+);
 
-    localStorage.setItem(
-      SETTINGS_KEY,
-      JSON.stringify(
-        settings
-      )
-    );
+render();
 
+alert(
+"Настройки сохранены"
+);
 
-    render();
-
-
-    alert(
-      "Настройки сохранены"
-    );
-
-  };
+};
 
 
 /* ДОБАВЛЕНИЕ СДЕЛКИ */
 
-$("tradeForm").onsubmit =
-  event => {
+$("tradeForm").onsubmit=
+event=>{
 
-    event.preventDefault();
+event.preventDefault();
 
+const trade={
 
-    const trade = {
+date:
+$("date").value,
 
-      date:
-        $("date").value,
+symbol:
+$("symbol").value.trim(),
 
-      symbol:
-        $("symbol")
-          .value
-          .trim(),
+session:
+$("session").value,
 
-      session:
-        $("session").value,
+direction:
+$("direction").value,
 
-      direction:
-        $("direction").value,
+result:
+$("result").value,
 
-      result:
-        $("result").value,
+pl:
+Number(
+$("pl").value
+),
 
-      pl:
-        Number(
-          $("pl").value
-        ),
+setup:
+$("setup").value,
 
-      setup:
-        $("setup").value,
+discipline:
+$("disciplineInput").value,
 
-      discipline:
-        $("disciplineInput")
-          .value,
+comment:
+$("comment").value
 
-      comment:
-        $("comment").value
+};
 
-    };
+trades.push(trade);
 
+localStorage.setItem(
+TRADES_KEY,
+JSON.stringify(trades)
+);
 
-    trades.push(
-      trade
-    );
+event.target.reset();
 
+$("date").value=
+new Date()
+.toISOString()
+.slice(0,10);
 
-    localStorage.setItem(
-      TRADES_KEY,
-      JSON.stringify(
-        trades
-      )
-    );
+$("symbol").value=
+"BTCUSDT";
 
+render();
 
-    event.target.reset();
-
-
-    $("date").value =
-      new Date()
-        .toISOString()
-        .slice(0, 10);
-
-
-    $("symbol").value =
-      "BTCUSDT";
-
-
-    render();
-
-  };
+};
 
 
 /* ФИЛЬТРЫ */
 
-$("filterResult").onchange =
-  render;
+$("filterResult").onchange=
+render;
 
-$("filterDirection").onchange =
-  render;
+$("filterDirection").onchange=
+render;
 
-$("filterSession").onchange =
-  render;
+$("filterSession").onchange=
+render;
 
-$("filterFrom").onchange =
-  render;
+$("filterFrom").onchange=
+render;
 
-$("filterTo").onchange =
-  render;
-
-
-/* СБРОС ФИЛЬТРОВ */
-
-$("resetFilters").onclick =
-  () => {
-
-    $("filterResult").value =
-      "all";
-
-    $("filterDirection").value =
-      "all";
-
-    $("filterSession").value =
-      "all";
-
-    $("filterFrom").value =
-      "";
-
-    $("filterTo").value =
-      "";
-
-    render();
-
-  };
+$("filterTo").onchange=
+render;
 
 
-/* ОЧИСТКА ИСТОРИИ */
+/* СБРОС */
 
-$("clearAll").onclick =
-  () => {
+$("resetFilters").onclick=()=>{
 
-    if (
-      !confirm(
-        "Удалить всю историю сделок?"
-      )
-    ) {
+$("filterResult").value=
+"all";
 
-      return;
+$("filterDirection").value=
+"all";
 
-    }
+$("filterSession").value=
+"all";
 
+$("filterFrom").value="";
+$("filterTo").value="";
 
-    trades = [];
+render();
 
-
-    localStorage.setItem(
-      TRADES_KEY,
-      "[]"
-    );
+};
 
 
-    render();
+/* ОЧИСТКА */
 
-  };
+$("clearAll").onclick=()=>{
 
+if(
+!confirm(
+"Удалить всю историю сделок?"
+)
+){
+return;
+}
 
-/* ЭКСПОРТ CSV */
+trades=[];
 
-$("export").onclick =
-  () => {
+localStorage.setItem(
+TRADES_KEY,
+"[]"
+);
 
-    const rows = [
+render();
 
-      [
-        "Дата",
-        "Инструмент",
-        "Сессия",
-        "Направление",
-        "Результат",
-        "P/L %",
-        "Стратегия",
-        "Комментарий"
-      ],
-
-      ...trades.map(
-        trade => [
-
-          trade.date,
-          trade.symbol,
-          trade.session,
-          trade.direction,
-          trade.result,
-          trade.pl,
-          trade.discipline,
-          trade.comment ||
-            trade.setup
-
-        ]
-      )
-
-    ];
+};
 
 
-    const csv =
-      "\ufeff" +
-      rows
-        .map(
-          row =>
-            row
-              .map(
-                value =>
-                  `"${String(
-                    value ?? ""
-                  ).replace(
-                    /"/g,
-                    '""'
-                  )}"`
-              )
-              .join(",")
-        )
-        .join("\n");
+/* CSV */
 
+$("export").onclick=()=>{
 
-    const link =
-      document.createElement(
-        "a"
-      );
+const rows=[
 
+[
+"Дата",
+"Инструмент",
+"Сессия",
+"Направление",
+"Результат",
+"P/L %",
+"Стратегия",
+"Комментарий"
+],
 
-    link.href =
-      URL.createObjectURL(
-        new Blob(
-          [csv],
-          {
-            type:
-              "text/csv;charset=utf-8"
-          }
-        )
-      );
+...trades.map(
+t=>[
+t.date,
+t.symbol,
+t.session,
+t.direction,
+t.result,
+t.pl,
+t.discipline,
+t.comment||t.setup
+]
+)
 
+];
 
-    link.download =
-      "trade-journal.csv";
+const csv=
+"\ufeff"+
+rows
+.map(
+row=>
+row
+.map(
+value=>
+`"${String(
+value??""
+).replace(
+/"/g,
+'""'
+)}"`
+)
+.join(",")
+)
+.join("\n");
 
+const link=
+document.createElement("a");
 
-    link.click();
+link.href=
+URL.createObjectURL(
+new Blob(
+[csv],
+{
+type:
+"text/csv;charset=utf-8"
+}
+)
+);
 
-  };
+link.download=
+"trade-journal.csv";
+
+link.click();
+
+};
 
 
 /* ЗАПУСК */
