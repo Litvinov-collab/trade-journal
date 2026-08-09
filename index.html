@@ -293,6 +293,11 @@ grid-column:auto
 </div>
 
 <div class="card">
+<span>P/L в $</span>
+<strong id="pnlDollar">$0.00</strong>
+</div>
+
+<div class="card">
 <span>Баланс</span>
 <strong id="balance">$0.00</strong>
 </div>
@@ -310,6 +315,16 @@ grid-column:auto
 <div class="card">
 <span>SL</span>
 <strong id="slCount">0</strong>
+</div>
+
+<div class="card">
+<span>Лучшая сделка</span>
+<strong id="bestTrade">0%</strong>
+</div>
+
+<div class="card">
+<span>Макс. просадка</span>
+<strong id="drawdown">0%</strong>
 </div>
 
 </section>
@@ -665,6 +680,17 @@ value>=0?"+":""
 }
 
 
+function formatDollar(value){
+
+value=Number(value)||0;
+
+return(
+value>=0?"+":""
+)+"$"+Math.abs(value).toFixed(2);
+
+}
+
+
 /* ГРУППОВАЯ СТАТИСТИКА */
 
 function stats(list){
@@ -855,10 +881,32 @@ count
 
 /* БАЛАНС */
 
-let balance=
+const initialBalance=
 Number(settings.deposit)||0;
 
+let balance=
+initialBalance;
+
 const values=[balance];
+
+let peak=
+balance;
+
+let maxDrawdownDollar=
+0;
+
+let maxDrawdownPercent=
+0;
+
+let bestTrade=
+trades.length
+?Math.max(
+...trades.map(
+t=>Number(t.pl||0)
+)
+)
+:0;
+
 
 for(const trade of trades){
 
@@ -868,7 +916,44 @@ Number(trade.pl||0)/100;
 
 values.push(balance);
 
+
+/* МАКСИМАЛЬНАЯ ПРОСАДКА */
+
+if(balance>peak){
+
+peak=balance;
+
 }
+
+const currentDrawdown=
+peak-balance;
+
+const currentDrawdownPercent=
+peak>0
+?(currentDrawdown/peak)*100
+:0;
+
+if(currentDrawdown>maxDrawdownDollar){
+
+maxDrawdownDollar=
+currentDrawdown;
+
+}
+
+if(currentDrawdownPercent>maxDrawdownPercent){
+
+maxDrawdownPercent=
+currentDrawdownPercent;
+
+}
+
+}
+
+
+/* P/L В ДОЛЛАРАХ */
+
+const pnlDollar=
+balance-initialBalance;
 
 
 /* КАРТОЧКИ */
@@ -888,6 +973,9 @@ count
 $("pnl").textContent=
 formatPL(totalPL);
 
+$("pnlDollar").textContent=
+formatDollar(pnlDollar);
+
 $("balance").textContent=
 "$"+balance.toFixed(2);
 
@@ -897,6 +985,12 @@ formatPL(average);
 $("tpCount").textContent=tp;
 
 $("slCount").textContent=sl;
+
+$("bestTrade").textContent=
+formatPL(bestTrade);
+
+$("drawdown").textContent=
+"-"+maxDrawdownPercent.toFixed(2)+"%";
 
 
 /* ИСТОРИЯ */
