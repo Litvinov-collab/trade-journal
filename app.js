@@ -43,7 +43,34 @@ function render() {
   );
 
   const av = n ? p / n : 0;
+const tpCount = trades.filter(t => t.result === "win").length;
+const slCount = trades.filter(t => t.result === "loss").length;
 
+const bestTrade = trades.length
+  ? Math.max(...trades.map(t => Number(t.pl || 0)))
+  : 0;
+
+let peak = Number(settings.deposit || 0);
+let current = peak;
+let maxDrawdown = 0;
+
+for (const trade of trades) {
+  current *= 1 + Number(trade.pl || 0) / 100;
+
+  if (current > peak) {
+    peak = current;
+  }
+
+  const drawdown =
+    peak > 0 ? (peak - current) / peak * 100 : 0;
+
+  if (drawdown > maxDrawdown) {
+    maxDrawdown = drawdown;
+  }
+}
+
+const pnlMoney =
+  current - Number(settings.deposit || 0);
   $("count").textContent = n;
 
   $("winrate").textContent =
