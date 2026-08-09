@@ -3,7 +3,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Trade Journal</title>
 
 <style>
@@ -91,10 +91,6 @@ color:white;
 outline:none
 }
 
-input:focus,select:focus,textarea:focus{
-border-color:#60a5fa
-}
-
 textarea{
 min-height:80px;
 resize:vertical
@@ -149,18 +145,7 @@ flex-wrap:wrap
 display:grid;
 grid-template-columns:repeat(4,1fr);
 gap:12px;
-margin-top:15px
-}
-
-.filterButtons{
-display:flex;
-gap:8px;
-align-items:end;
-flex-wrap:wrap
-}
-
-.filterButtons button{
-margin-top:0
+margin:15px 0
 }
 
 .tableWrap{
@@ -228,9 +213,6 @@ border-bottom:1px solid #263444
 border-bottom:0
 }
 
-.good{color:#4ade80}
-.bad{color:#f87171}
-
 footer{
 text-align:center;
 color:#66717e;
@@ -239,7 +221,6 @@ padding:20px
 }
 
 @media(max-width:900px){
-
 .filters{
 grid-template-columns:1fr 1fr
 }
@@ -247,11 +228,9 @@ grid-template-columns:1fr 1fr
 .analyticsGrid{
 grid-template-columns:1fr
 }
-
 }
 
 @media(max-width:800px){
-
 .grid,.settings{
 grid-template-columns:1fr
 }
@@ -263,7 +242,6 @@ grid-column:auto
 .filters{
 grid-template-columns:1fr
 }
-
 }
 </style>
 </head>
@@ -278,8 +256,6 @@ grid-template-columns:1fr
 Журнал сделок и аналитика трейдера
 </div>
 
-
-<!-- НАСТРОЙКИ -->
 
 <section class="panel">
 
@@ -305,8 +281,6 @@ grid-template-columns:1fr
 
 </section>
 
-
-<!-- ОСНОВНАЯ СТАТИСТИКА -->
 
 <section class="stats">
 
@@ -373,8 +347,6 @@ grid-template-columns:1fr
 </section>
 
 
-<!-- ГРАФИК -->
-
 <section class="panel">
 
 <h2>📈 Кривая баланса</h2>
@@ -383,8 +355,6 @@ grid-template-columns:1fr
 
 </section>
 
-
-<!-- ДОБАВИТЬ СДЕЛКУ -->
 
 <section class="panel">
 
@@ -463,16 +433,11 @@ P/L, %
 </section>
 
 
-<!-- АНАЛИТИКА -->
-
 <section class="panel">
 
 <h2>📊 Аналитика</h2>
 
 <div class="analyticsGrid">
-
-
-<!-- СЕССИИ -->
 
 <div class="analyticsBox">
 
@@ -511,8 +476,6 @@ P/L, %
 </div>
 
 
-<!-- НАПРАВЛЕНИЕ -->
-
 <div class="analyticsBox">
 
 <h3>📈 Направление</h3>
@@ -549,8 +512,6 @@ P/L, %
 
 </div>
 
-
-<!-- СТРАТЕГИЯ -->
 
 <div class="analyticsBox">
 
@@ -589,8 +550,6 @@ P/L, %
 </div>
 
 
-<!-- НОВАЯ АНАЛИТИКА -->
-
 <div class="analyticsBox">
 
 <h3>🏆 Результативность</h3>
@@ -623,8 +582,6 @@ P/L, %
 </div>
 
 
-<!-- СЕРИИ -->
-
 <div class="analyticsBox">
 
 <h3>🔥 Серии</h3>
@@ -652,8 +609,6 @@ P/L, %
 </div>
 
 
-<!-- ДНИ -->
-
 <div class="analyticsBox">
 
 <h3>📅 Лучший / худший день</h3>
@@ -680,13 +635,10 @@ P/L, %
 
 </div>
 
-
 </div>
 
 </section>
 
-
-<!-- ИСТОРИЯ -->
 
 <section class="panel">
 
@@ -708,8 +660,6 @@ P/L, %
 
 </div>
 
-
-<!-- ФИЛЬТРЫ -->
 
 <h3>🔎 Фильтры</h3>
 
@@ -762,13 +712,9 @@ P/L, %
 </select>
 </label>
 
-<div class="filterButtons">
-
 <button id="resetFilters" class="secondary" type="button">
 Сбросить фильтры
 </button>
-
-</div>
 
 </div>
 
@@ -820,17 +766,15 @@ const SETTINGS_KEY="tradeJournalSettings";
 
 const $=id=>document.getElementById(id);
 
-
-/* =========================
-   ЗАГРУЗКА
-========================= */
-
 let trades=[];
 
 let settings={
 deposit:100,
 risk:1
 };
+
+
+/* Загрузка сделок */
 
 try{
 
@@ -850,6 +794,8 @@ trades=[];
 }
 
 
+/* Загрузка настроек */
+
 try{
 
 const savedSettings=
@@ -868,9 +814,7 @@ settings.risk=Number(savedSettings.risk);
 }catch(e){}
 
 
-/* =========================
-   НАЧАЛЬНЫЕ ЗНАЧЕНИЯ
-========================= */
+/* Начальные значения */
 
 $("initialDeposit").value=settings.deposit;
 $("riskPercent").value=settings.risk;
@@ -879,9 +823,7 @@ $("date").value=
 new Date().toISOString().slice(0,10);
 
 
-/* =========================
-   ФОРМАТ
-========================= */
+/* Формат */
 
 function formatPL(value){
 
@@ -905,9 +847,7 @@ value>=0?"+":"-"
 }
 
 
-/* =========================
-   ГРУППОВАЯ СТАТИСТИКА
-========================= */
+/* Общая статистика */
 
 function stats(list){
 
@@ -940,9 +880,7 @@ pl:pl
 }
 
 
-/* =========================
-   ФИЛЬТРАЦИЯ
-========================= */
+/* Фильтры */
 
 function getFilteredTrades(){
 
@@ -955,32 +893,20 @@ const discipline=$("filterDiscipline").value;
 
 return trades.filter(t=>{
 
-if(from && t.date<from){
-return false;
-}
+if(from && t.date<from)return false;
 
-if(to && t.date>to){
-return false;
-}
+if(to && t.date>to)return false;
 
-if(session!=="all" && t.session!==session){
-return false;
-}
+if(session!=="all" && t.session!==session)return false;
 
-if(direction!=="all" && t.direction!==direction){
-return false;
-}
+if(direction!=="all" && t.direction!==direction)return false;
 
-if(result!=="all" && t.result!==result){
-return false;
-}
+if(result!=="all" && t.result!==result)return false;
 
 if(
 discipline!=="all" &&
 t.discipline!==discipline
-){
-return false;
-}
+)return false;
 
 return true;
 
@@ -989,9 +915,7 @@ return true;
 }
 
 
-/* =========================
-   АНАЛИТИКА СЕССИЙ
-========================= */
+/* Аналитика */
 
 function renderAnalytics(){
 
@@ -1037,36 +961,21 @@ t=>t.discipline==="no"
 )
 );
 
-
-/* LONDON */
-
 $("londonCount").textContent=london.count;
 $("londonWinrate").textContent=london.winrate+"%";
 $("londonPL").textContent=formatPL(london.pl);
-
-
-/* NEW YORK */
 
 $("nyCount").textContent=ny.count;
 $("nyWinrate").textContent=ny.winrate+"%";
 $("nyPL").textContent=formatPL(ny.pl);
 
-
-/* LONG */
-
 $("longCount").textContent=long.count;
 $("longWinrate").textContent=long.winrate+"%";
 $("longPL").textContent=formatPL(long.pl);
 
-
-/* SHORT */
-
 $("shortCount").textContent=short.count;
 $("shortWinrate").textContent=short.winrate+"%";
 $("shortPL").textContent=formatPL(short.pl);
-
-
-/* СТРАТЕГИЯ */
 
 $("yesCount").textContent=yes.count;
 $("yesWinrate").textContent=yes.winrate+"%";
@@ -1079,52 +988,9 @@ $("noPL").textContent=formatPL(no.pl);
 }
 
 
-/* =========================
-   ПРОДВИНУТАЯ АНАЛИТИКА
-========================= */
+/* Расширенная аналитика */
 
 function renderAdvancedAnalytics(){
-
-/* PROFIT FACTOR */
-
-const grossProfit=
-trades
-.filter(t=>Number(t.pl||0)>0)
-.reduce(
-(sum,t)=>sum+Number(t.pl||0),
-0
-);
-
-const grossLoss=
-Math.abs(
-trades
-.filter(t=>Number(t.pl||0)<0)
-.reduce(
-(sum,t)=>sum+Number(t.pl||0),
-0
-)
-);
-
-let profitFactor=0;
-
-if(grossLoss>0){
-
-profitFactor=
-grossProfit/grossLoss;
-
-}else if(grossProfit>0){
-
-profitFactor=Infinity;
-
-}
-
-$("profitFactor").textContent=
-profitFactor===Infinity
-?"∞"
-:profitFactor.toFixed(2);
-
-
-/* СРЕДНИЙ TP */
 
 const winningTrades=
 trades.filter(
@@ -1136,6 +1002,41 @@ trades.filter(
 t=>t.result==="loss"
 );
 
+
+/* Profit Factor */
+
+const grossProfit=
+winningTrades.reduce(
+(sum,t)=>sum+Math.max(0,Number(t.pl||0)),
+0
+);
+
+const grossLoss=
+Math.abs(
+losingTrades.reduce(
+(sum,t)=>sum+Math.min(0,Number(t.pl||0)),
+0
+)
+);
+
+let factor=0;
+
+if(grossLoss>0){
+factor=grossProfit/grossLoss;
+}
+
+if(grossProfit>0 && grossLoss===0){
+factor=Infinity;
+}
+
+$("profitFactor").textContent=
+factor===Infinity
+?"∞"
+:factor.toFixed(2);
+
+
+/* Средний TP */
+
 const avgTP=
 winningTrades.length
 ?
@@ -1144,6 +1045,9 @@ winningTrades.reduce(
 0
 )/winningTrades.length
 :0;
+
+
+/* Средний SL */
 
 const avgSL=
 losingTrades.length
@@ -1154,28 +1058,18 @@ losingTrades.reduce(
 )/losingTrades.length
 :0;
 
-$("avgTP").textContent=
-formatPL(avgTP);
-
-$("avgSL").textContent=
-formatPL(avgSL);
-
-$("avgWin").textContent=
-formatPL(avgTP);
-
-$("avgLoss").textContent=
-formatPL(avgSL);
+$("avgTP").textContent=formatPL(avgTP);
+$("avgSL").textContent=formatPL(avgSL);
+$("avgWin").textContent=formatPL(avgTP);
+$("avgLoss").textContent=formatPL(avgSL);
 
 
-/* СЕРИИ */
+/* Серии */
 
 let currentWin=0;
 let currentLoss=0;
-
 let maxWin=0;
 let maxLoss=0;
-
-let lastType="";
 
 for(const trade of trades){
 
@@ -1184,18 +1078,16 @@ if(trade.result==="win"){
 currentWin++;
 currentLoss=0;
 
-if(currentWin>maxWin){
-maxWin=currentWin;
-}
+maxWin=
+Math.max(maxWin,currentWin);
 
 }else if(trade.result==="loss"){
 
 currentLoss++;
 currentWin=0;
 
-if(currentLoss>maxLoss){
-maxLoss=currentLoss;
-}
+maxLoss=
+Math.max(maxLoss,currentLoss);
 
 }else{
 
@@ -1210,40 +1102,19 @@ $("maxWinStreak").textContent=maxWin;
 $("maxLossStreak").textContent=maxLoss;
 
 
-/* ТЕКУЩАЯ СЕРИЯ */
+/* Текущая серия */
+
+let streak=0;
+let streakType="";
 
 if(trades.length){
 
-for(
-let i=trades.length-1;
-i>=0;
-i--
-){
+const last=
+trades[trades.length-1].result;
 
-const result=
-trades[i].result;
+if(last==="win" || last==="loss"){
 
-if(result==="be"){
-break;
-}
-
-if(!lastType){
-
-lastType=result;
-
-}else if(result!==lastType){
-
-break;
-
-}else{
-
-}
-
-}
-
-let streak=0;
-
-if(lastType){
+streakType=last;
 
 for(
 let i=trades.length-1;
@@ -1251,7 +1122,7 @@ i>=0;
 i--
 ){
 
-if(trades[i].result===lastType){
+if(trades[i].result===last){
 
 streak++;
 
@@ -1265,37 +1136,30 @@ break;
 
 }
 
+}
+
 $("currentStreak").textContent=streak;
 
 $("currentStreakType").textContent=
-lastType==="win"
+streakType==="win"
 ?"Победы"
 :
-lastType==="loss"
+streakType==="loss"
 ?"Убытки"
 :"—";
 
-}else{
 
-$("currentStreak").textContent="0";
-$("currentStreakType").textContent="—";
-
-}
-
-
-/* ЛУЧШИЙ / ХУДШИЙ ДЕНЬ */
+/* Лучший / худший день */
 
 const daily={};
 
 for(const trade of trades){
 
-const date=trade.date;
-
-if(!daily[date]){
-daily[date]=0;
+if(!daily[trade.date]){
+daily[trade.date]=0;
 }
 
-daily[date]+=
+daily[trade.date]+=
 Number(trade.pl||0);
 
 }
@@ -1305,24 +1169,22 @@ Object.entries(daily);
 
 if(days.length){
 
-days.sort(
-(a,b)=>a[1]-b[1]
-);
+let best=days[0];
+let worst=days[0];
 
-const worst=days[0];
+for(const day of days){
 
-const best=
-days[days.length-1];
+if(day[1]>best[1])best=day;
+
+if(day[1]<worst[1])worst=day;
+
+}
 
 $("bestDay").textContent=best[0];
-
-$("bestDayPL").textContent=
-formatPL(best[1]);
+$("bestDayPL").textContent=formatPL(best[1]);
 
 $("worstDay").textContent=worst[0];
-
-$("worstDayPL").textContent=
-formatPL(worst[1]);
+$("worstDayPL").textContent=formatPL(worst[1]);
 
 }else{
 
@@ -1337,9 +1199,7 @@ $("worstDayPL").textContent="0%";
 }
 
 
-/* =========================
-   ОСНОВНОЙ RENDER
-========================= */
+/* Render */
 
 function render(){
 
@@ -1379,7 +1239,7 @@ count
 :0;
 
 
-/* БАЛАНС */
+/* Баланс */
 
 const initialBalance=
 Number(settings.deposit)||0;
@@ -1390,68 +1250,41 @@ const values=[balance];
 
 let peak=balance;
 
-let maxDrawdownPercent=0;
+let maxDrawdown=0;
 
 let bestTrade=0;
 
-if(trades.length){
-
-bestTrade=
-Math.max(
-...trades.map(
-t=>Number(t.pl||0)
-)
-);
-
-}
-
-
 for(const trade of trades){
 
-const tradePL=
+const pl=
 Number(trade.pl||0);
 
+bestTrade=
+Math.max(bestTrade,pl);
+
 balance*=
-1+
-tradePL/100;
+1+pl/100;
 
 values.push(balance);
 
 if(balance>peak){
-
 peak=balance;
-
 }
 
-const currentDrawdown=
-peak-balance;
+if(peak>0){
 
-const currentDrawdownPercent=
-peak>0
-?
-(currentDrawdown/peak)*100
-:0;
+const dd=
+((peak-balance)/peak)*100;
 
-if(
-currentDrawdownPercent>
-maxDrawdownPercent
-){
-
-maxDrawdownPercent=
-currentDrawdownPercent;
+maxDrawdown=
+Math.max(maxDrawdown,dd);
 
 }
 
 }
 
 
-/* P/L В $ */
-
-const pnlDollar=
-balance-initialBalance;
-
-
-/* КАРТОЧКИ */
+/* Карточки */
 
 $("count").textContent=count;
 
@@ -1462,37 +1295,31 @@ count
 
 $("discipline").textContent=
 count
-?Math.round(
-disciplined/count*100
-)+"%"
+?Math.round(disciplined/count*100)+"%"
 :"0%";
 
-$("pnl").textContent=
-formatPL(totalPL);
+$("pnl").textContent=formatPL(totalPL);
 
 $("pnlDollar").textContent=
-formatDollar(pnlDollar);
+formatDollar(balance-initialBalance);
 
 $("balance").textContent=
 "$"+balance.toFixed(2);
 
-$("avg").textContent=
-formatPL(average);
+$("avg").textContent=formatPL(average);
 
 $("tpCount").textContent=tp;
-
 $("slCount").textContent=sl;
-
 $("beCount").textContent=be;
 
 $("bestTrade").textContent=
 formatPL(bestTrade);
 
 $("drawdown").textContent=
-"-"+maxDrawdownPercent.toFixed(2)+"%";
+"-"+maxDrawdown.toFixed(2)+"%";
 
 
-/* ИСТОРИЯ */
+/* Таблица */
 
 const filtered=
 getFilteredTrades();
@@ -1526,8 +1353,7 @@ t.result==="win"
 :
 t.result==="loss"
 ?"SL"
-:
-"BE"
+:"BE"
 }
 
 </td>
@@ -1550,8 +1376,7 @@ Number(t.pl||0)>=0
 ${
 t.discipline==="yes"
 ?"Да"
-:
-"Нет"
+:"Нет"
 }
 </td>
 
@@ -1568,7 +1393,6 @@ t.setup||
 `)
 .join("");
 
-
 renderAnalytics();
 
 renderAdvancedAnalytics();
@@ -1578,9 +1402,7 @@ drawEquity(values);
 }
 
 
-/* =========================
-   ЗАЩИТА HTML
-========================= */
+/* Защита HTML */
 
 function escapeHtml(value){
 
@@ -1601,28 +1423,21 @@ m=>({
 }
 
 
-/* =========================
-   ГРАФИК
-========================= */
+/* График */
 
 function drawEquity(values){
 
 const canvas=$("equity");
-
-const ctx=
-canvas.getContext("2d");
+const ctx=canvas.getContext("2d");
 
 const W=canvas.width;
 const H=canvas.height;
 
-ctx.clearRect(
-0,0,W,H
-);
+ctx.clearRect(0,0,W,H);
 
 if(values.length<2){
 
 ctx.fillStyle="#66717e";
-
 ctx.font="16px Arial";
 
 ctx.fillText(
@@ -1635,11 +1450,8 @@ return;
 
 }
 
-let min=
-Math.min(...values);
-
-let max=
-Math.max(...values);
+let min=Math.min(...values);
+let max=Math.max(...values);
 
 if(min===max){
 
@@ -1649,7 +1461,7 @@ max+=1;
 }
 
 
-/* СЕТКА */
+/* Сетка */
 
 ctx.strokeStyle="#1c2937";
 ctx.lineWidth=1;
@@ -1657,21 +1469,17 @@ ctx.lineWidth=1;
 for(let i=1;i<5;i++){
 
 const y=
-25+
-i*(H-50)/5;
+25+i*(H-50)/5;
 
 ctx.beginPath();
-
 ctx.moveTo(25,y);
-
 ctx.lineTo(W-25,y);
-
 ctx.stroke();
 
 }
 
 
-/* КРИВАЯ */
+/* Кривая */
 
 ctx.beginPath();
 
@@ -1680,16 +1488,12 @@ values.forEach(
 
 const x=
 25+
-index*
-(W-50)/
-(values.length-1);
+index*(W-50)/(values.length-1);
 
 const y=
 H-
 25-
-(value-min)/
-(max-min)*
-(H-50);
+(value-min)/(max-min)*(H-50);
 
 if(index===0){
 
@@ -1710,23 +1514,17 @@ ctx.stroke();
 }
 
 
-/* =========================
-   СОХРАНИТЬ НАСТРОЙКИ
-========================= */
+/* Настройки */
 
 $("saveSettings").onclick=()=>{
 
 settings={
 
 deposit:
-Number(
-$("initialDeposit").value
-)||0,
+Number($("initialDeposit").value)||0,
 
 risk:
-Number(
-$("riskPercent").value
-)||0
+Number($("riskPercent").value)||0
 
 };
 
@@ -1742,9 +1540,7 @@ alert("Настройки сохранены");
 };
 
 
-/* =========================
-   ДОБАВИТЬ СДЕЛКУ
-========================= */
+/* Добавление сделки */
 
 $("tradeForm").onsubmit=e=>{
 
@@ -1799,9 +1595,7 @@ render();
 };
 
 
-/* =========================
-   ФИЛЬТРЫ
-========================= */
+/* Фильтры */
 
 [
 "filterFrom",
@@ -1834,9 +1628,7 @@ render();
 };
 
 
-/* =========================
-   УДАЛИТЬ ВСЕ
-========================= */
+/* Очистить историю */
 
 $("clearAll").onclick=()=>{
 
@@ -1860,9 +1652,7 @@ render();
 };
 
 
-/* =========================
-   ЭКСПОРТ
-========================= */
+/* Экспорт */
 
 $("export").onclick=()=>{
 
@@ -1929,9 +1719,7 @@ link.click();
 };
 
 
-/* =========================
-   ЗАПУСК
-========================= */
+/* Запуск */
 
 render();
 
