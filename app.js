@@ -1,8 +1,6 @@
 const TRADES_KEY = "tradeJournalV1";
 const SETTINGS_KEY = "tradeJournalSettings";
 
-const $ = (id) => document.getElementById(id);
-
 let trades = JSON.parse(localStorage.getItem(TRADES_KEY) || "[]");
 let settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
 
