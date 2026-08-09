@@ -11,14 +11,13 @@
 body{
 margin:0;
 background:
-radial-gradient(circle at top left,#182536 0%,#0b1118 45%,#070b10 100%);
+radial-gradient(circle at 20% 0%,#17283a 0%,#0b1118 42%,#070b10 100%);
 color:#e8edf3;
-font-family:Arial,sans-serif;
-min-height:100vh
+font-family:Arial,sans-serif
 }
 
 .container{
-max-width:1250px;
+max-width:1200px;
 margin:auto;
 padding:25px 18px
 }
@@ -32,10 +31,9 @@ margin-bottom:25px
 }
 
 .panel,.card{
-background:rgba(18,26,36,.94);
+background:#121a24;
 border:1px solid #253244;
-border-radius:14px;
-box-shadow:0 8px 30px rgba(0,0,0,.18)
+border-radius:14px
 }
 
 .panel{
@@ -107,13 +105,7 @@ border:0;
 border-radius:8px;
 padding:11px 16px;
 cursor:pointer;
-font-weight:bold;
-transition:.15s
-}
-
-button:hover{
-transform:translateY(-1px);
-opacity:.92
+font-weight:bold
 }
 
 .primary{
@@ -132,7 +124,7 @@ background:#7f1d1d;
 color:white
 }
 
-.edit{
+.editBtn{
 background:#92400e;
 color:white
 }
@@ -158,11 +150,13 @@ gap:8px;
 flex-wrap:wrap
 }
 
+/* ФИЛЬТРЫ */
+
 .filters{
 display:grid;
 grid-template-columns:repeat(4,1fr);
 gap:12px;
-margin-bottom:16px
+margin:20px 0
 }
 
 .filterButtons{
@@ -170,6 +164,8 @@ display:flex;
 gap:8px;
 align-items:end
 }
+
+/* ТАБЛИЦА */
 
 .tableWrap{
 overflow-x:auto
@@ -201,11 +197,13 @@ text-align:center;
 color:#66717e
 }
 
-.smallBtn{
-padding:7px 10px;
+.rowBtn{
+padding:7px 9px;
 font-size:12px;
-margin-right:5px
+margin-right:4px
 }
+
+/* ГРАФИК */
 
 canvas{
 width:100%;
@@ -213,6 +211,8 @@ height:300px;
 background:#0c131c;
 border-radius:10px
 }
+
+/* АНАЛИТИКА */
 
 .analyticsGrid{
 display:grid;
@@ -245,40 +245,41 @@ border-bottom:0
 .good{color:#4ade80}
 .bad{color:#f87171}
 
+/* МОДАЛЬНОЕ ОКНО */
+
 .modal{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.72);
 display:none;
-align-items:center;
-justify-content:center;
+position:fixed;
+z-index:999;
+left:0;
+top:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.75);
 padding:20px;
-z-index:1000
+overflow:auto
 }
 
 .modal.active{
-display:flex
+display:flex;
+align-items:center;
+justify-content:center
 }
 
 .modalBox{
-width:min(700px,100%);
-max-height:90vh;
-overflow:auto;
+width:100%;
+max-width:700px;
 background:#121a24;
-border:1px solid #2c3b4d;
+border:1px solid #253244;
 border-radius:14px;
-padding:22px
+padding:20px
 }
 
 .modalActions{
 display:flex;
-gap:10px;
 justify-content:flex-end;
-margin-top:18px
-}
-
-.resultBadge{
-font-weight:bold
+gap:10px;
+margin-top:15px
 }
 
 footer{
@@ -289,16 +290,19 @@ padding:20px
 }
 
 @media(max-width:900px){
-.filters{
-grid-template-columns:repeat(2,1fr)
-}
 
 .analyticsGrid{
 grid-template-columns:1fr
 }
+
+.filters{
+grid-template-columns:repeat(2,1fr)
+}
+
 }
 
 @media(max-width:800px){
+
 .grid,.settings{
 grid-template-columns:1fr
 }
@@ -311,9 +315,6 @@ grid-column:auto
 grid-template-columns:1fr
 }
 
-.container{
-padding:15px 10px
-}
 }
 </style>
 </head>
@@ -501,6 +502,7 @@ P/L, %
 
 <div class="analyticsGrid">
 
+
 <div class="analyticsBox">
 
 <h3>🌍 Сессии</h3>
@@ -649,7 +651,7 @@ P/L, %
 
 <label>
 Поиск
-<input id="searchFilter" placeholder="BTCUSDT...">
+<input id="searchFilter" placeholder="BTCUSDT, FVG...">
 </label>
 
 <label>
@@ -747,7 +749,7 @@ P/L, %
 </div>
 
 
-<!-- МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ -->
+<!-- ОКНО РЕДАКТИРОВАНИЯ -->
 
 <div class="modal" id="editModal">
 
@@ -891,13 +893,35 @@ settings.risk=Number(savedSettings.risk);
 }catch(e){}
 
 
-/* НАЧАЛЬНЫЕ ЗНАЧЕНИЯ */
+/* ID ДЛЯ СТАРЫХ СДЕЛОК */
+
+trades=trades.map((t,index)=>({
+
+...t,
+
+id:t.id||
+(String(Date.now())+"_"+index)
+
+}));
+
 
 $("initialDeposit").value=settings.deposit;
 $("riskPercent").value=settings.risk;
 
 $("date").value=
 new Date().toISOString().slice(0,10);
+
+
+/* СОХРАНЕНИЕ */
+
+function saveTrades(){
+
+localStorage.setItem(
+TRADES_KEY,
+JSON.stringify(trades)
+);
+
+}
 
 
 /* ФОРМАТ */
@@ -909,16 +933,6 @@ value=Number(value)||0;
 return(
 value>=0?"+":""
 )+value.toFixed(2)+"%";
-
-}
-
-
-/* ID */
-
-function createId(){
-
-return Date.now().toString()+
-Math.random().toString(16).slice(2);
 
 }
 
@@ -1002,36 +1016,21 @@ t=>t.discipline==="no"
 )
 );
 
-
-/* LONDON */
-
 $("londonCount").textContent=london.count;
 $("londonWinrate").textContent=london.winrate+"%";
 $("londonPL").textContent=formatPL(london.pl);
-
-
-/* NEW YORK */
 
 $("nyCount").textContent=ny.count;
 $("nyWinrate").textContent=ny.winrate+"%";
 $("nyPL").textContent=formatPL(ny.pl);
 
-
-/* LONG */
-
 $("longCount").textContent=long.count;
 $("longWinrate").textContent=long.winrate+"%";
 $("longPL").textContent=formatPL(long.pl);
 
-
-/* SHORT */
-
 $("shortCount").textContent=short.count;
 $("shortWinrate").textContent=short.winrate+"%";
 $("shortPL").textContent=formatPL(short.pl);
-
-
-/* СТРАТЕГИЯ */
 
 $("yesCount").textContent=yes.count;
 $("yesWinrate").textContent=yes.winrate+"%";
@@ -1044,32 +1043,20 @@ $("noPL").textContent=formatPL(no.pl);
 }
 
 
-/* ФИЛЬТРАЦИЯ */
+/* ФИЛЬТРЫ */
 
 function getFilteredTrades(){
 
 const search=
-$("searchFilter").value
-.trim()
-.toLowerCase();
+$("searchFilter").value.trim().toLowerCase();
 
-const session=
-$("sessionFilter").value;
+const session=$("sessionFilter").value;
+const direction=$("directionFilter").value;
+const result=$("resultFilter").value;
+const discipline=$("disciplineFilter").value;
 
-const direction=
-$("directionFilter").value;
-
-const result=
-$("resultFilter").value;
-
-const discipline=
-$("disciplineFilter").value;
-
-const dateFrom=
-$("dateFrom").value;
-
-const dateTo=
-$("dateTo").value;
+const dateFrom=$("dateFrom").value;
+const dateTo=$("dateTo").value;
 
 
 return trades.filter(t=>{
@@ -1093,45 +1080,27 @@ String(t.comment||"")
 return false;
 }
 
-if(
-session!=="all" &&
-t.session!==session
-){
+if(session!=="all" && t.session!==session){
 return false;
 }
 
-if(
-direction!=="all" &&
-t.direction!==direction
-){
+if(direction!=="all" && t.direction!==direction){
 return false;
 }
 
-if(
-result!=="all" &&
-t.result!==result
-){
+if(result!=="all" && t.result!==result){
 return false;
 }
 
-if(
-discipline!=="all" &&
-t.discipline!==discipline
-){
+if(discipline!=="all" && t.discipline!==discipline){
 return false;
 }
 
-if(
-dateFrom &&
-t.date<dateFrom
-){
+if(dateFrom && t.date<dateFrom){
 return false;
 }
 
-if(
-dateTo &&
-t.date>dateTo
-){
+if(dateTo && t.date>dateTo){
 return false;
 }
 
@@ -1142,7 +1111,7 @@ return true;
 }
 
 
-/* ОСНОВНОЙ RENDER */
+/* RENDER */
 
 function render(){
 
@@ -1152,8 +1121,6 @@ const wins=
 trades.filter(
 t=>t.result==="win"
 ).length;
-
-const tp=wins;
 
 const sl=
 trades.filter(
@@ -1195,7 +1162,7 @@ values.push(balance);
 }
 
 
-/* КАРТОЧКИ */
+/* СТАТИСТИКА */
 
 $("count").textContent=count;
 
@@ -1218,15 +1185,14 @@ $("balance").textContent=
 $("avg").textContent=
 formatPL(average);
 
-$("tpCount").textContent=tp;
+$("tpCount").textContent=wins;
 
 $("slCount").textContent=sl;
 
 
 /* ИСТОРИЯ */
 
-const filtered=
-getFilteredTrades();
+const filtered=getFilteredTrades();
 
 $("empty").style.display=
 count
@@ -1255,7 +1221,7 @@ filtered
 
 <td>${escapeHtml(t.direction)}</td>
 
-<td class="resultBadge ${
+<td class="${
 t.result==="win"
 ?"win"
 :t.result==="loss"
@@ -1306,17 +1272,17 @@ t.setup||
 <td>
 
 <button
-class="smallBtn edit"
-type="button"
+class="rowBtn editBtn"
 onclick="editTrade('${t.id}')"
+type="button"
 >
 Изменить
 </button>
 
 <button
-class="smallBtn danger"
-type="button"
+class="rowBtn danger"
 onclick="deleteTrade('${t.id}')"
+type="button"
 >
 Удалить
 </button>
@@ -1336,7 +1302,7 @@ drawEquity(values);
 }
 
 
-/* ЗАЩИТА HTML */
+/* HTML ЗАЩИТА */
 
 function escapeHtml(value){
 
@@ -1362,21 +1328,16 @@ m=>({
 function drawEquity(values){
 
 const canvas=$("equity");
-
-const ctx=
-canvas.getContext("2d");
+const ctx=canvas.getContext("2d");
 
 const W=canvas.width;
 const H=canvas.height;
 
-ctx.clearRect(
-0,0,W,H
-);
+ctx.clearRect(0,0,W,H);
 
 if(values.length<2){
 
 ctx.fillStyle="#66717e";
-
 ctx.font="16px Arial";
 
 ctx.fillText(
@@ -1389,17 +1350,12 @@ return;
 
 }
 
-let min=
-Math.min(...values);
-
-let max=
-Math.max(...values);
+let min=Math.min(...values);
+let max=Math.max(...values);
 
 if(min===max){
-
 min-=1;
 max+=1;
-
 }
 
 
@@ -1426,21 +1382,16 @@ ctx.stroke();
 
 ctx.beginPath();
 
-values.forEach(
-(value,index)=>{
+values.forEach((value,index)=>{
 
 const x=
 25+
-index*
-(W-50)/
-(values.length-1);
+index*(W-50)/(values.length-1);
 
 const y=
 H-
 25-
-(value-min)/
-(max-min)*
-(H-50);
+(value-min)/(max-min)*(H-50);
 
 if(index===0){
 ctx.moveTo(x,y);
@@ -1454,32 +1405,6 @@ ctx.strokeStyle="#60a5fa";
 ctx.lineWidth=3;
 ctx.stroke();
 
-
-/* ТОЧКИ */
-
-values.forEach(
-(value,index)=>{
-
-const x=
-25+
-index*
-(W-50)/
-(values.length-1);
-
-const y=
-H-
-25-
-(value-min)/
-(max-min)*
-(H-50);
-
-ctx.beginPath();
-ctx.arc(x,y,3,0,Math.PI*2);
-ctx.fillStyle="#60a5fa";
-ctx.fill();
-
-});
-
 }
 
 
@@ -1490,14 +1415,10 @@ $("saveSettings").onclick=()=>{
 settings={
 
 deposit:
-Number(
-$("initialDeposit").value
-)||0,
+Number($("initialDeposit").value)||0,
 
 risk:
-Number(
-$("riskPercent").value
-)||0
+Number($("riskPercent").value)||0
 
 };
 
@@ -1513,7 +1434,7 @@ alert("Настройки сохранены");
 };
 
 
-/* ДОБАВИТЬ СДЕЛКУ */
+/* ДОБАВИТЬ */
 
 $("tradeForm").onsubmit=e=>{
 
@@ -1521,7 +1442,9 @@ e.preventDefault();
 
 const trade={
 
-id:createId(),
+id:
+Date.now().toString()+
+Math.random().toString(16).slice(2),
 
 date:$("date").value,
 
@@ -1553,10 +1476,7 @@ $("comment").value
 
 trades.push(trade);
 
-localStorage.setItem(
-TRADES_KEY,
-JSON.stringify(trades)
-);
+saveTrades();
 
 e.target.reset();
 
@@ -1575,7 +1495,7 @@ render();
 function editTrade(id){
 
 const trade=
-trades.find(t=>t.id===id);
+trades.find(t=>String(t.id)===String(id));
 
 if(!trade){
 return;
@@ -1597,7 +1517,7 @@ $("editModal").classList.add("active");
 }
 
 
-/* СОХРАНИТЬ РЕДАКТИРОВАНИЕ */
+/* СОХРАНИТЬ ИЗМЕНЕНИЯ */
 
 $("editForm").onsubmit=e=>{
 
@@ -1607,7 +1527,7 @@ const id=$("editId").value;
 
 const index=
 trades.findIndex(
-t=>t.id===id
+t=>String(t.id)===String(id)
 );
 
 if(index===-1){
@@ -1646,10 +1566,7 @@ $("editComment").value
 
 };
 
-localStorage.setItem(
-TRADES_KEY,
-JSON.stringify(trades)
-);
+saveTrades();
 
 $("editModal").classList.remove("active");
 
@@ -1658,7 +1575,7 @@ render();
 };
 
 
-/* ОТМЕНА */
+/* ЗАКРЫТЬ РЕДАКТИРОВАНИЕ */
 
 $("cancelEdit").onclick=()=>{
 
@@ -1667,34 +1584,22 @@ $("editModal").classList.remove("active");
 };
 
 
-/* УДАЛЕНИЕ */
+/* УДАЛИТЬ ОДНУ СДЕЛКУ */
 
 function deleteTrade(id){
 
-const trade=
-trades.find(t=>t.id===id);
-
-if(!trade){
-return;
-}
-
 if(
-!confirm(
-"Удалить эту сделку?"
-)
+!confirm("Удалить эту сделку?")
 ){
 return;
 }
 
 trades=
 trades.filter(
-t=>t.id!==id
+t=>String(t.id)!==String(id)
 );
 
-localStorage.setItem(
-TRADES_KEY,
-JSON.stringify(trades)
-);
+saveTrades();
 
 render();
 
@@ -1713,15 +1618,8 @@ render();
 "dateTo"
 ].forEach(id=>{
 
-$(id).addEventListener(
-"input",
-render
-);
-
-$(id).addEventListener(
-"change",
-render
-);
+$(id).addEventListener("input",render);
+$(id).addEventListener("change",render);
 
 });
 
@@ -1743,7 +1641,7 @@ render();
 };
 
 
-/* УДАЛИТЬ ВСЕ */
+/* ОЧИСТИТЬ ВСЕ */
 
 $("clearAll").onclick=()=>{
 
@@ -1757,10 +1655,7 @@ return;
 
 trades=[];
 
-localStorage.setItem(
-TRADES_KEY,
-"[]"
-);
+saveTrades();
 
 render();
 
@@ -1803,16 +1698,12 @@ t.comment
 
 const csv=
 "\ufeff"+
-rows
-.map(row=>
-row
-.map(value=>
+rows.map(row=>
+row.map(value=>
 `"${String(value??"")
 .replace(/"/g,'""')}"`
-)
-.join(",")
-)
-.join("\n");
+).join(",")
+).join("\n");
 
 const link=
 document.createElement("a");
@@ -1825,21 +1716,16 @@ new Blob(
 )
 );
 
-link.download=
-"trade-journal.csv";
+link.download="trade-journal.csv";
 
 link.click();
-
-URL.revokeObjectURL(link.href);
 
 };
 
 
-/* ЗАКРЫТИЕ МОДАЛЬНОГО ОКНА */
+/* ЗАКРЫТЬ ОКНО ПО ФОНУ */
 
-$("editModal").addEventListener(
-"click",
-e=>{
+$("editModal").onclick=e=>{
 
 if(e.target.id==="editModal"){
 
@@ -1849,7 +1735,7 @@ $("editModal")
 
 }
 
-});
+};
 
 
 /* ЗАПУСК */
