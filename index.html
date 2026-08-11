@@ -42,7 +42,7 @@ canvas{width:100%;height:320px;background:linear-gradient(145deg,rgba(5,13,23,.9
 .progress{height:10px;background:#182536;border-radius:10px;overflow:hidden;margin-top:8px}.progressBar{height:100%;width:0;background:linear-gradient(90deg,#60a5fa,#38bdf8);border-radius:10px}
 .badge{display:inline-block;padding:5px 9px;border-radius:7px;font-size:12px;font-weight:bold}.badge.win{background:#12351f}.badge.loss{background:#3a1515}.badge.be{background:#3a3210}
 .auth{max-width:500px;margin:50px auto}.auth .panel{padding:28px}.auth h2{text-align:center}.authBtns{display:flex;gap:10px;flex-wrap:wrap}.authBtns button{flex:1}.status{margin-top:12px;padding:10px;border-radius:10px;background:rgba(96,165,250,.08);color:#9fb3ca;font-size:13px;display:none}.status.show{display:block}
-.userbar{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:13px;color:#9fb3ca}.userbar button{padding:7px 10px}
+.userbar{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:13px;color:#9fb3ca}.userbar button{padding:7px 10px}.nickname{font-weight:bold;color:#eef4ff;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 footer{text-align:center;color:#66778c;font-size:13px;padding:25px}
 @media(max-width:950px){.analyticsGrid{grid-template-columns:1fr 1fr}.filters{grid-template-columns:1fr 1fr}}
 @media(max-width:800px){.grid,.settings,.analyticsGrid{grid-template-columns:1fr}.wide{grid-column:auto}.filters{grid-template-columns:1fr}.nav{position:static}.siteHeader{padding:18px}.headerText h1{font-size:24px}.userbar{width:100%;margin-left:0}}
@@ -71,7 +71,7 @@ footer{text-align:center;color:#66778c;font-size:13px;padding:25px}
 <header class="siteHeader">
 <div class="avatar"></div>
 <div class="headerText"><h1>Trade Journal</h1><p>Журнал сделок и аналитика трейдера</p></div>
-<div class="userbar"><span id="userEmail"></span><button id="logoutBtn" class="secondary">Выйти</button></div>
+<div class="userbar"><span id="userNickname" class="nickname"></span><button id="logoutBtn" class="secondary">Выйти</button></div>
 </header>
 
 <nav class="nav">
@@ -153,7 +153,34 @@ footer{text-align:center;color:#66778c;font-size:13px;padding:25px}
 
 <section id="charts" class="page"><div class="panel"><h2>📈 Кривая баланса</h2><canvas id="equity2" width="1100" height="400"></canvas></div><div class="panel"><h2>📊 Основные показатели</h2><div class="stats"><div class="card"><span>Начальный депозит</span><strong id="chartDeposit">$0</strong></div><div class="card"><span>Текущий баланс</span><strong id="chartBalance">$0</strong></div><div class="card"><span>Общий P/L</span><strong id="chartPL">0%</strong></div><div class="card"><span>Просадка</span><strong id="chartDD">0%</strong></div></div></div></section>
 
-<section id="settings" class="page"><div class="panel"><h2>⚙️ Настройки</h2><div class="settings"><label>Начальный депозит, $<input id="initialDeposit" type="number" step="0.01"></label><label>Риск на сделку, %<input id="riskPercent" type="number" step="0.1"></label><button id="saveSettings" class="primary" type="button">Сохранить</button></div></div><div class="panel"><h2>💾 Данные</h2><p class="subtitle">Сделки сохраняются в Supabase и привязаны к твоему аккаунту.</p><button id="exportSettings" class="secondary" type="button">Экспортировать сделки</button></div></section>
+<section id="settings" class="page">
+<div class="panel">
+<h2>⚙️ Профиль</h2>
+<div class="settings">
+<label>Твой ник
+<input id="nicknameInput" type="text" maxlength="24" placeholder="Например: SmartTrader">
+</label>
+<div></div>
+<button id="saveNickname" class="primary" type="button">Сохранить ник</button>
+</div>
+<p class="subtitle" style="margin-top:12px">Ник будет отображаться в верхней части Trade Journal. Его можно менять в любое время.</p>
+</div>
+
+<div class="panel">
+<h2>💰 Торговые настройки</h2>
+<div class="settings">
+<label>Начальный депозит, $<input id="initialDeposit" type="number" step="0.01"></label>
+<label>Риск на сделку, %<input id="riskPercent" type="number" step="0.1"></label>
+<button id="saveSettings" class="primary" type="button">Сохранить</button>
+</div>
+</div>
+
+<div class="panel">
+<h2>💾 Данные</h2>
+<p class="subtitle">Сделки сохраняются в Supabase и привязаны к твоему аккаунту.</p>
+<button id="exportSettings" class="secondary" type="button">Экспортировать сделки</button>
+</div>
+</section>
 
 <footer>Trade Journal • Данные сохраняются в Supabase.<br>Это не финансовая рекомендация.</footer>
 </div></div>
@@ -191,7 +218,24 @@ async function loadTrades(){
 }
 
 function showAuth(msg="",err=false){$("app").style.display="none";$("authScreen").style.display="block";if(msg){status(msg,err)}}
-function showApp(){ $("authScreen").style.display="none";$("app").style.display="block";$("userEmail").textContent=currentUser?.email||""; $("initialDeposit").value=settings.deposit; $("riskPercent").value=settings.risk; $("date").value=new Date().toISOString().slice(0,10); }
+function getNickname(user){
+  return (user?.user_metadata?.nickname || "").trim();
+}
+
+function updateNicknameUI(){
+  const nick=getNickname(currentUser);
+  $("userNickname").textContent=nick ? "@"+nick : (currentUser?.email || "");
+  $("nicknameInput").value=nick;
+}
+
+function showApp(){
+  $("authScreen").style.display="none";
+  $("app").style.display="block";
+  $("initialDeposit").value=settings.deposit;
+  $("riskPercent").value=settings.risk;
+  $("date").value=new Date().toISOString().slice(0,10);
+  updateNicknameUI();
+}
 
 async function initAuth(){
   const {data,error}=await client.auth.getSession();
@@ -224,7 +268,7 @@ $("registerBtn").onclick=async()=>{
 $("logoutBtn").onclick=async()=>{await client.auth.signOut({scope:"local"});currentUser=null;trades=[];showAuth("Ты вышел из аккаунта.");};
 
 client.auth.onAuthStateChange(async(event,session)=>{
- if(event==="TOKEN_REFRESHED"&&session?.user){currentUser=session.user}
+ if(event==="TOKEN_REFRESHED"&&session?.user){currentUser=session.user;updateNicknameUI()}
  if(event==="SIGNED_OUT"){currentUser=null;trades=[];showAuth()}
 });
 
@@ -286,6 +330,28 @@ function drawEquity(v){const c=$("equity");if(!c)return;const ctx=c.getContext("
 function drawEquity2(){drawCanvas("equity2")}
 
 $("saveSettings").onclick=()=>{settings={deposit:Number($("initialDeposit").value)||0,risk:Number($("riskPercent").value)||0};localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings));render();alert("Настройки сохранены")};
+
+$("saveNickname").onclick=async()=>{
+  if(!currentUser)return alert("Сначала войди в аккаунт.");
+
+  const nickname=$("nicknameInput").value.trim();
+
+  if(!nickname)return alert("Введи ник.");
+  if(nickname.length<3)return alert("Ник должен содержать минимум 3 символа.");
+
+  const {data,error}=await client.auth.updateUser({
+    data:{nickname:nickname}
+  });
+
+  if(error){
+    alert("Ошибка сохранения ника: "+error.message);
+    return;
+  }
+
+  currentUser=data.user;
+  updateNicknameUI();
+  alert("Ник сохранён!");
+};
 
 $("tradeForm").onsubmit=async e=>{
  e.preventDefault();if(!currentUser)return alert("Сначала войди в аккаунт.");
