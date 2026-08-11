@@ -1,2863 +1,1940 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trade Journal</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+margin:0;
+font-family:Arial,sans-serif;
+color:#eef4ff;
+background:#050912;
+}
+
+.container{
+max-width:1280px;
+margin:auto;
+padding:24px 18px;
+}
+
+.siteHeader{
+display:flex;
+align-items:center;
+gap:18px;
+padding:22px 24px;
+margin-bottom:16px;
+background:rgba(9,16,28,.9);
+border:1px solid rgba(105,170,255,.22);
+border-radius:22px;
+}
+
+.avatar{
+width:66px;
+height:66px;
+min-width:66px;
+border-radius:50%;
+background:#102541;
+border:2px solid #4da3ff;
+position:relative;
+}
+
+.avatar:before{
+content:"";
+position:absolute;
+width:24px;
+height:24px;
+border:3px solid white;
+border-radius:50%;
+top:9px;
+left:18px;
+}
+
+.avatar:after{
+content:"";
+position:absolute;
+width:40px;
+height:20px;
+border:3px solid white;
+border-radius:25px 25px 10px 10px;
+bottom:7px;
+left:10px;
+}
+
+.headerText h1{
+margin:0;
+font-size:30px;
+}
+
+.headerText p{
+margin:6px 0 0;
+color:#8495aa;
+}
+
+.nav{
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+margin-bottom:20px;
+padding:10px;
+background:#0a111d;
+border:1px solid #263c56;
+border-radius:16px;
+}
+
+.nav button{
+background:#182638;
+color:#aebbd0;
+border:1px solid #263c56;
+}
+
+.nav button.active{
+background:linear-gradient(135deg,#60a5fa,#38bdf8);
+color:#04101d;
+}
+
+button{
+border:0;
+border-radius:10px;
+padding:11px 16px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.primary{
+background:linear-gradient(135deg,#60a5fa,#38bdf8);
+color:#03101b;
+margin-top:18px;
+}
+
+.secondary{
+background:#223348;
+color:white;
+border:1px solid #304861;
+}
+
+.danger{
+background:#7f1d1d;
+color:white;
+}
+
+.page{display:none}
+.page.active{display:block}
+
+.panel,.card{
+background:linear-gradient(145deg,#101b2a,#080f1a);
+border:1px solid rgba(103,158,213,.18);
+border-radius:18px;
+}
+
+.panel{
+padding:22px;
+margin-bottom:20px;
+}
+
+.stats{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+gap:14px;
+}
+
+.card{
+padding:19px;
+}
+
+.card span{
+display:block;
+font-size:13px;
+color:#8090a4;
+margin-bottom:9px;
+}
+
+.card strong{
+font-size:24px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:15px;
+}
+
+.wide{
+grid-column:1/-1;
+}
+
+label{
+display:flex;
+flex-direction:column;
+gap:8px;
+color:#aebbd0;
+font-size:14px;
+}
+
+input,select,textarea{
+width:100%;
+background:#050c15;
+border:1px solid #263b53;
+border-radius:10px;
+padding:12px;
+color:white;
+outline:none;
+}
+
+textarea{
+min-height:90px;
+resize:vertical;
+}
+
+.tableWrap{
+overflow-x:auto;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+min-width:800px;
+}
+
+th,td{
+padding:12px;
+border-bottom:1px solid rgba(70,95,120,.35);
+text-align:left;
+}
+
+th{
+color:#7f91a8;
+}
+
+.win{color:#4ade80}
+.loss{color:#f87171}
+.be{color:#facc15}
+
+canvas{
+width:100%;
+height:320px;
+background:#050d17;
+border:1px solid #24384d;
+border-radius:14px;
+}
+
+.analyticsGrid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:15px;
+}
+
+.analyticsBox{
+background:#050d17;
+border:1px solid #25394d;
+border-radius:14px;
+padding:18px;
+}
+
+.analyticsRow{
+display:flex;
+justify-content:space-between;
+padding:10px 0;
+border-bottom:1px solid #263442;
+}
+
+.empty{
+text-align:center;
+color:#66778c;
+}
+
+.status{
+padding:12px;
+border-radius:10px;
+margin-bottom:15px;
+background:#102238;
+color:#9dc9ff;
+}
+
+@media(max-width:800px){
+.grid,
+.analyticsGrid{
+grid-template-columns:1fr;
+}
+
+.wide{
+grid-column:auto;
+}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header class="siteHeader">
+<div class="avatar"></div>
+<div class="headerText">
+<h1>Trade Journal</h1>
+<p>Журнал сделок и аналитика трейдера</p>
+</div>
+</header>
+
+<div id="status" class="status">
+Подключение к базе данных...
+</div>
+
+<nav class="nav">
+<button class="active" data-page="home">📊 Главная</button>
+<button data-page="add">➕ Сделка</button>
+<button data-page="history">📋 История</button>
+<button data-page="analytics">🧠 Аналитика</button>
+<button data-page="charts">📈 График</button>
+<button data-page="settings">⚙️ Настройки</button>
+</nav>
+
+
+<section id="home" class="page active">
+
+<div class="stats">
+
+<div class="card">
+<span>Сделок</span>
+<strong id="count">0</strong>
+</div>
+
+<div class="card">
+<span>Win Rate</span>
+<strong id="winrate">0%</strong>
+</div>
+
+<div class="card">
+<span>Соблюдение стратегии</span>
+<strong id="discipline">0%</strong>
+</div>
+
+<div class="card">
+<span>Результат</span>
+<strong id="pnl">0%</strong>
+</div>
+
+<div class="card">
+<span>P/L в $</span>
+<strong id="pnlDollar">$0.00</strong>
+</div>
+
+<div class="card">
+<span>Баланс</span>
+<strong id="balance">$0.00</strong>
+</div>
+
+<div class="card">
+<span>Средняя сделка</span>
+<strong id="avg">0%</strong>
+</div>
+
+<div class="card">
+<span>TP</span>
+<strong id="tpCount">0</strong>
+</div>
+
+<div class="card">
+<span>SL</span>
+<strong id="slCount">0</strong>
+</div>
+
+<div class="card">
+<span>BE</span>
+<strong id="beCount">0</strong>
+</div>
+
+<div class="card">
+<span>Лучшая сделка</span>
+<strong id="bestTrade">0%</strong>
+</div>
+
+<div class="card">
+<span>Макс. просадка</span>
+<strong id="drawdown">0%</strong>
+</div>
+
+</div>
+
+<div class="panel" style="margin-top:20px">
+<h2>📈 Кривая баланса</h2>
+<canvas id="equity" width="1100" height="320"></canvas>
+</div>
+
+</section>
+
+
+<section id="add" class="page">
+
+<div class="panel">
+
+<h2>➕ Добавить сделку</h2>
+
+<form id="tradeForm">
+
+<div class="grid">
+
+<label>
+Дата
+<input type="date" id="date" required>
+</label>
+
+<label>
+Инструмент
+<input id="symbol" value="BTCUSDT" required>
+</label>
+
+<label>
+Сессия
+<select id="session">
+<option value="London">London</option>
+<option value="New York">New York</option>
+</select>
+</label>
+
+<label>
+Направление
+<select id="direction">
+<option value="LONG">LONG</option>
+<option value="SHORT">SHORT</option>
+</select>
+</label>
+
+<label>
+Результат
+<select id="result">
+<option value="win">TP</option>
+<option value="loss">SL</option>
+<option value="be">BE</option>
+</select>
+</label>
+
+<label>
+P/L, %
+<input id="pl" type="number" step="0.01" required placeholder="например 3.5">
+</label>
+
+<label class="wide">
+Причина входа
+<input id="setup" placeholder="Liquidity Sweep + BOS + FVG">
+</label>
+
+<label>
+Час входа
+<input id="entryTime" type="time">
+</label>
+
+<label>
+Соблюдал стратегию?
+<select id="disciplineInput">
+<option value="yes">Да</option>
+<option value="no">Нет</option>
+</select>
+</label>
+
+<label class="wide">
+Комментарий
+<textarea id="comment"></textarea>
+</label>
+
+</div>
+
+<button class="primary" type="submit">
+Добавить сделку
+</button>
+
+</form>
+
+</div>
+
+</section>
+
+
+<section id="history" class="page">
+
+<div class="panel">
+
+<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+
+<h2>📋 История сделок</h2>
+
+<div>
+<button id="export" class="secondary" type="button">
+Экспорт CSV
+</button>
+
+<button id="clearAll" class="danger" type="button">
+Очистить историю
+</button>
+</div>
+
+</div>
+
+<div class="tableWrap">
+
+<table>
+
+<thead>
+<tr>
+<th>Дата</th>
+<th>Инструмент</th>
+<th>Сессия</th>
+<th>Направление</th>
+<th>Результат</th>
+<th>P/L</th>
+<th>Стратегия</th>
+<th>Комментарий</th>
+</tr>
+</thead>
+
+<tbody id="trades"></tbody>
+
+</table>
+
+</div>
+
+<p id="empty" class="empty">
+Пока нет сделок.
+</p>
+
+</div>
+
+</section>
+
+
+<section id="analytics" class="page">
+
+<div class="panel">
+
+<h2>🧠 Расширенная аналитика</h2>
+
+<div class="analyticsGrid">
+
+<div class="analyticsBox">
+
+<h3>🏆 Общая статистика</h3>
+
+<div class="analyticsRow">
+<span>Win Rate</span>
+<strong id="aWinrate">0%</strong>
+</div>
+
+<div class="analyticsRow">
+<span>Profit Factor</span>
+<strong id="profitFactor">0.00</strong>
+</div>
+
+<div class="analyticsRow">
+<span>Средний TP</span>
+<strong id="avgTP">0%</strong>
+</div>
+
+<div class="analyticsRow">
+<span>Средний SL</span>
+<strong id="avgSL">0%</strong>
+</div>
+
+</div>
+
+
+<div class="analyticsBox">
+
+<h3>🌍 Сессии</h3>
+
+<div class="analyticsRow">
+<span>London</span>
+<strong id="londonCount">0</strong>
+</div>
+
+<div class="analyticsRow">
+<span>London Win Rate</span>
+<strong id="londonWinrate">0%</strong>
+</div>
+
+<div class="analyticsRow">
+<span>London P/L</span>
+<strong id="londonPL">0%</strong>
+</div>
+
+<div class="analyticsRow">
+<span>New York</span>
+<strong id="nyCount">0</strong>
+</div>
+
+<div class="analyticsRow">
+<span>New York Win Rate</span>
+<strong id="nyWinrate">0%</strong>
+</div>
+
+<div class="analyticsRow">
+<span>New York P/L</span>
+<strong id="nyPL">0%</strong>
+</div>
+
+</div>
+
+
+<div class="analyticsBox">
+
+<h3>📈 Направление</h3>
+
+<div class="analyticsRow">
+<span>LONG</span>
+<strong id="longCount">0</strong>
+</div>
+
+<div class="analyticsRow">
+<span>LONG Win Rate</span>
+<strong id="longWinrate">0%</strong>
+</div>
+
+<div class="analyticsRow">
+<span>LONG P/L</span>
+<strong id="longPL">0%</strong>
+</div>
+
+<div class="analyticsRow">
+<span>SHORT</span>
+<strong id="shortCount">0</strong>
+</div>
+
+<div class="analyticsRow">
+<span>SHORT Win Rate</span>
+<strong id="shortWinrate">0%</strong>
+</div>
+
+<div class="analyticsRow">
+<span>SHORT P/L</span>
+<strong id="shortPL">0%</strong>
+</div>
+
+</div>
+
+
+<div class="analyticsBox">
+
+<h3>🧠 Дисциплина</h3>
+
+<div class="analyticsRow">
+<span>Соблюдал</span>
+<strong id="yesCount">0</strong>
+</div>
+
+<div class="analyticsRow">
+<span>Win Rate</span>
+<strong id="yesWinrate">0%</strong>
+</div>
+
+<div class="analyticsRow">
+<span>P/L</span>
+<strong id="yesPL">0%</strong>
+</div>
+
+<div class="analyticsRow">
+<span>Нарушал</span>
+<strong id="noCount">0</strong>
+</div>
+
+<div class="analyticsRow">
+<span>Win Rate</span>
+<strong id="noWinrate">0%</strong>
+</div>
+
+<div class="analyticsRow">
+<span>P/L</span>
+<strong id="noPL">0%</strong>
+</div>
+
+</div>
+
+
+<div class="analyticsBox">
+
+<h3>🔥 Серии</h3>
+
+<div class="analyticsRow">
+<span>Макс. серия побед</span>
+<strong id="maxWinStreak">0</strong>
+</div>
+
+<div class="analyticsRow">
+<span>Макс. серия убытков</span>
+<strong id="maxLossStreak">0</strong>
+</div>
+
+<div class="analyticsRow">
+<span>Текущая серия</span>
+<strong id="currentStreak">0</strong>
+</div>
+
+<div class="analyticsRow">
+<span>Тип серии</span>
+<strong id="currentStreakType">—</strong>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<section id="charts" class="page">
+
+<div class="panel">
+
+<h2>📈 Кривая баланса</h2>
+
+<canvas id="equity2" width="1100" height="400"></canvas>
+
+</div>
+
+</section>
+
+
+<section id="settings" class="page">
+
+<div class="panel">
+
+<h2>⚙️ Настройки</h2>
+
+<div class="grid">
+
+<label>
+Начальный депозит, $
+<input id="initialDeposit" type="number" step="0.01" value="100">
+</label>
+
+<label>
+Риск на сделку, %
+<input id="riskPercent" type="number" step="0.1" value="1">
+</label>
+
+</div>
+
+<button id="saveSettings" class="primary" type="button">
+Сохранить
+</button>
+
+</div>
+
+</section>
+
+
+<footer>
+Trade Journal • Данные хранятся в Supabase.
+<br>
+Это не финансовая рекомендация.
+</footer>
+
+</div>
+
+
 <script>
-/* =========================================================
-   TRADE JOURNAL — SUPABASE VERSION
-   ========================================================= */
+
+/* =========================================
+   SUPABASE
+========================================= */
 
 const SUPABASE_URL =
-  "https://mocxiqabmoehjkpsddld.supabase.co";
+"https://mocxiqabmoehjkpsddld.supabase.co";
 
 const SUPABASE_KEY =
-  "sb_publishable_LdhC8_unv5Yiq5cevuPxqw_MWxnMiau";
+"sb_publishable_LdhC8_unv5Yiq5cevuPxqw_MWxnMiau";
 
-const TRADES_KEY = "tradeJournalV1";
-const SETTINGS_KEY = "tradeJournalSettings";
+const supabaseClient =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
 
-const $ = id => document.getElementById(id);
+
+/* =========================================
+   ОСНОВНЫЕ ПЕРЕМЕННЫЕ
+========================================= */
+
+const $ = id =>
+document.getElementById(id);
 
 let trades = [];
-let settings = {
-  deposit: 100,
-  risk: 1
-};
 
-let currentUser = null;
+let settings = JSON.parse(
+localStorage.getItem("tradeJournalSettings") ||
+'{"deposit":100,"risk":1}'
+);
 
 
-/* =========================================================
-   SUPABASE REQUEST
-   ========================================================= */
+/* =========================================
+   ДАТА
+========================================= */
 
-async function supabaseRequest(
-  endpoint,
-  options = {}
-) {
-  const headers = {
-    apikey: SUPABASE_KEY,
-    "Content-Type": "application/json",
-    ...options.headers
-  };
+$("date").value =
+new Date().toISOString().slice(0,10);
 
-  if (currentUser?.access_token) {
-    headers.Authorization =
-      "Bearer " + currentUser.access_token;
-  }
+$("initialDeposit").value =
+settings.deposit;
 
-  const response = await fetch(
-    SUPABASE_URL + endpoint,
-    {
-      ...options,
-      headers
-    }
-  );
+$("riskPercent").value =
+settings.risk;
 
-  const text = await response.text();
 
-  let data = null;
+/* =========================================
+   СТАТУС
+========================================= */
 
-  try {
-    data = text ? JSON.parse(text) : null;
-  } catch {
-    data = text;
-  }
+function status(text,error=false){
 
-  if (!response.ok) {
-    throw new Error(
-      data?.message ||
-      data?.error_description ||
-      data?.error ||
-      text ||
-      "Ошибка Supabase"
-    );
-  }
+const el=$("status");
 
-  return data;
-}
+el.textContent=text;
 
+el.style.background=
+error ? "#351414" : "#102238";
 
-/* =========================================================
-   AUTH
-   ========================================================= */
-
-async function getSession() {
-  try {
-    const saved =
-      localStorage.getItem("tradeJournalSession");
-
-    if (!saved) return null;
-
-    const session = JSON.parse(saved);
-
-    if (
-      !session ||
-      !session.access_token ||
-      !session.user
-    ) {
-      return null;
-    }
-
-    currentUser = session;
-
-    return session;
-
-  } catch (error) {
-    console.error(
-      "Ошибка загрузки сессии:",
-      error
-    );
-
-    return null;
-  }
-}
-
-
-async function login(email, password) {
-
-  const data = await supabaseRequest(
-    "/auth/v1/token?grant_type=password",
-    {
-      method: "POST",
-      body: JSON.stringify({
-        email,
-        password
-      })
-    }
-  );
-
-  currentUser = data;
-
-  localStorage.setItem(
-    "tradeJournalSession",
-    JSON.stringify(data)
-  );
-
-  return data;
-}
-
-
-async function register(email, password) {
-
-  const data = await supabaseRequest(
-    "/auth/v1/signup",
-    {
-      method: "POST",
-      body: JSON.stringify({
-        email,
-        password
-      })
-    }
-  );
-
-  if (data?.access_token) {
-    currentUser = data;
-
-    localStorage.setItem(
-      "tradeJournalSession",
-      JSON.stringify(data)
-    );
-  }
-
-  return data;
-}
-
-
-async function logout() {
-
-  try {
-
-    if (currentUser?.access_token) {
-
-      await supabaseRequest(
-        "/auth/v1/logout",
-        {
-          method: "POST"
-        }
-      );
-
-    }
-
-  } catch (error) {
-
-    console.warn(
-      "Logout:",
-      error
-    );
-
-  }
-
-  currentUser = null;
-
-  localStorage.removeItem(
-    "tradeJournalSession"
-  );
-
-  trades = [];
-
-  render();
-}
-
-
-/* =========================================================
-   ЗАГРУЗКА СДЕЛОК
-   ========================================================= */
-
-async function loadTradesFromSupabase() {
-
-  if (!currentUser?.user?.id) {
-
-    console.warn(
-      "Пользователь не авторизован"
-    );
-
-    return;
-
-  }
-
-  try {
-
-    const userId =
-      currentUser.user.id;
-
-    const data =
-      await supabaseRequest(
-        "/rest/v1/trades?select=*&user_id=eq." +
-        encodeURIComponent(userId) +
-        "&order=date.desc",
-        {
-          method: "GET"
-        }
-      );
-
-    trades =
-      Array.isArray(data)
-        ? data
-        : [];
-
-    /*
-      Сохраняем локальную копию.
-      Но основной источник теперь Supabase.
-    */
-
-    localStorage.setItem(
-      TRADES_KEY,
-      JSON.stringify(trades)
-    );
-
-    render();
-
-    console.log(
-      "Сделки загружены:",
-      trades.length
-    );
-
-  } catch (error) {
-
-    console.error(
-      "Ошибка загрузки сделок:",
-      error
-    );
-
-    alert(
-      "Не удалось загрузить сделки.\n\n" +
-      error.message
-    );
-
-  }
-}
-
-
-/* =========================================================
-   ДОБАВЛЕНИЕ СДЕЛКИ
-   ========================================================= */
-
-async function saveTradeToSupabase(trade) {
-
-  if (!currentUser?.user?.id) {
-
-    throw new Error(
-      "Сначала необходимо войти в аккаунт."
-    );
-
-  }
-
-  const row = {
-
-    user_id:
-      currentUser.user.id,
-
-    date:
-      trade.date || null,
-
-    symbol:
-      trade.symbol || "BTCUSDT",
-
-    session:
-      trade.session || null,
-
-    direction:
-      trade.direction || null,
-
-    result:
-      trade.result || null,
-
-    pl:
-      Number(trade.pl || 0),
-
-    setup:
-      trade.setup || "",
-
-    entry_time:
-      trade.entryTime || null,
-
-    discipline:
-      trade.discipline || "yes",
-
-    comment:
-      trade.comment || ""
-
-  };
-
-
-  const data =
-    await supabaseRequest(
-      "/rest/v1/trades",
-      {
-        method: "POST",
-
-        headers: {
-          Prefer:
-            "return=representation"
-        },
-
-        body:
-          JSON.stringify(row)
-      }
-    );
-
-  return Array.isArray(data)
-    ? data[0]
-    : data;
-}
-
-
-/* =========================================================
-   УДАЛЕНИЕ ВСЕХ СДЕЛОК ПОЛЬЗОВАТЕЛЯ
-   ========================================================= */
-
-async function deleteAllTradesFromSupabase() {
-
-  if (!currentUser?.user?.id) {
-
-    throw new Error(
-      "Пользователь не авторизован."
-    );
-
-  }
-
-  const userId =
-    currentUser.user.id;
-
-  await supabaseRequest(
-    "/rest/v1/trades?user_id=eq." +
-    encodeURIComponent(userId),
-    {
-      method: "DELETE"
-    }
-  );
+el.style.color=
+error ? "#ff8585" : "#9dc9ff";
 
 }
 
 
-/* =========================================================
+/* =========================================
+   ЭКРАНИРОВАНИЕ
+========================================= */
+
+function esc(value){
+
+return String(value ?? "")
+.replace(/[&<>"']/g,m=>({
+
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#039;"
+
+}[m]));
+
+}
+
+
+/* =========================================
    ФОРМАТ
-   ========================================================= */
+========================================= */
 
-function formatPL(value) {
+function formatPL(value){
 
-  value =
-    Number(value) || 0;
+value=Number(value)||0;
 
-  return (
-    value >= 0 ? "+" : ""
-  ) +
-  value.toFixed(2) +
-  "%";
+return(
+value>=0 ? "+" : ""
+)+value.toFixed(2)+"%";
 
 }
 
 
-function formatDollar(value) {
+/* =========================================
+   ПОЛУЧИТЬ ПОЛЬЗОВАТЕЛЯ
+========================================= */
 
-  value =
-    Number(value) || 0;
+async function getUser(){
 
-  return (
-    value >= 0 ? "+" : "-"
-  ) +
-  "$" +
-  Math.abs(value).toFixed(2);
+const {
+data,
+error
+} =
+await supabaseClient.auth.getUser();
+
+if(error)
+throw error;
+
+if(!data.user){
+
+throw new Error(
+"Пользователь не авторизован. Сначала войди в аккаунт."
+);
+
+}
+
+return data.user;
 
 }
 
 
-function escapeHtml(value) {
+/* =========================================
+   ЗАГРУЗКА СДЕЛОК
+========================================= */
 
-  return String(
-    value ?? ""
-  ).replace(
-    /[&<>"']/g,
-    m => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;"
-    }[m])
-  );
+async function loadTrades(){
+
+try{
+
+status("Загрузка сделок из Supabase...");
+
+const user =
+await getUser();
+
+const {
+data,
+error
+} =
+await supabaseClient
+.from("trades")
+.select("*")
+.eq("user_id",user.id)
+.order("date",{ascending:true});
+
+if(error)
+throw error;
+
+trades =
+Array.isArray(data)
+? data
+: [];
+
+status(
+"✓ Supabase подключен • Загружено сделок: "
++trades.length
+);
+
+render();
+
+}
+catch(error){
+
+console.error(error);
+
+status(
+"Ошибка загрузки сделок: "
++(error.message || error),
+true
+);
+
+}
 
 }
 
 
-/* =========================================================
-   СТАТИСТИКА
-   ========================================================= */
-
-function stats(list) {
-
-  const count =
-    list.length;
-
-  const wins =
-    list.filter(
-      t => t.result === "win"
-    ).length;
-
-  const pl =
-    list.reduce(
-      (s, t) =>
-        s + Number(t.pl || 0),
-      0
-    );
-
-  return {
-
-    count,
-
-    winrate:
-      count
-        ? Math.round(
-            wins / count * 100
-          )
-        : 0,
-
-    pl
-
-  };
-
-}
-
-
-/* =========================================================
-   ФИЛЬТР
-   ========================================================= */
-
-function getFilteredTrades() {
-
-  const from =
-    $("filterFrom").value;
-
-  const to =
-    $("filterTo").value;
-
-  const session =
-    $("filterSession").value;
-
-  const direction =
-    $("filterDirection").value;
-
-  const result =
-    $("filterResult").value;
-
-  const discipline =
-    $("filterDiscipline").value;
-
-
-  return trades.filter(t => {
-
-    if (
-      from &&
-      t.date < from
-    )
-      return false;
-
-    if (
-      to &&
-      t.date > to
-    )
-      return false;
-
-    if (
-      session !== "all" &&
-      t.session !== session
-    )
-      return false;
-
-    if (
-      direction !== "all" &&
-      t.direction !== direction
-    )
-      return false;
-
-    if (
-      result !== "all" &&
-      t.result !== result
-    )
-      return false;
-
-    if (
-      discipline !== "all" &&
-      t.discipline !== discipline
-    )
-      return false;
-
-    return true;
-
-  });
-
-}
-
-
-/* =========================================================
-   АНАЛИТИКА
-   ========================================================= */
-
-function renderAnalytics() {
-
-  const london =
-    stats(
-      trades.filter(
-        t => t.session === "London"
-      )
-    );
-
-  const ny =
-    stats(
-      trades.filter(
-        t => t.session === "New York"
-      )
-    );
-
-  const long =
-    stats(
-      trades.filter(
-        t => t.direction === "LONG"
-      )
-    );
-
-  const short =
-    stats(
-      trades.filter(
-        t => t.direction === "SHORT"
-      )
-    );
-
-  const yes =
-    stats(
-      trades.filter(
-        t => t.discipline === "yes"
-      )
-    );
-
-  const no =
-    stats(
-      trades.filter(
-        t => t.discipline === "no"
-      )
-    );
-
-
-  $("londonCount").textContent =
-    london.count;
-
-  $("londonWinrate").textContent =
-    london.winrate + "%";
-
-  $("londonPL").textContent =
-    formatPL(london.pl);
-
-
-  $("nyCount").textContent =
-    ny.count;
-
-  $("nyWinrate").textContent =
-    ny.winrate + "%";
-
-  $("nyPL").textContent =
-    formatPL(ny.pl);
-
-
-  $("longCount").textContent =
-    long.count;
-
-  $("longWinrate").textContent =
-    long.winrate + "%";
-
-  $("longPL").textContent =
-    formatPL(long.pl);
-
-
-  $("shortCount").textContent =
-    short.count;
-
-  $("shortWinrate").textContent =
-    short.winrate + "%";
-
-  $("shortPL").textContent =
-    formatPL(short.pl);
-
-
-  $("yesCount").textContent =
-    yes.count;
-
-  $("yesWinrate").textContent =
-    yes.winrate + "%";
-
-  $("yesPL").textContent =
-    formatPL(yes.pl);
-
-
-  $("noCount").textContent =
-    no.count;
-
-  $("noWinrate").textContent =
-    no.winrate + "%";
-
-  $("noPL").textContent =
-    formatPL(no.pl);
-
-
-  $("disciplineDifference").textContent =
-    formatPL(
-      yes.pl - no.pl
-    );
-
-
-  $("bestSession").textContent =
-    london.count || ny.count
-      ? (
-          london.pl >= ny.pl
-            ? "London"
-            : "New York"
-        )
-      : "—";
-
-
-  $("bestDirection").textContent =
-    long.count || short.count
-      ? (
-          long.pl >= short.pl
-            ? "LONG"
-            : "SHORT"
-        )
-      : "—";
-
-}
-
-
-/* =========================================================
-   РАСШИРЕННАЯ АНАЛИТИКА
-   ========================================================= */
-
-function renderAdvancedAnalytics() {
-
-  const winning =
-    trades.filter(
-      t => t.result === "win"
-    );
-
-  const losing =
-    trades.filter(
-      t => t.result === "loss"
-    );
-
-
-  const grossProfit =
-    winning.reduce(
-      (s, t) =>
-        s +
-        Math.max(
-          0,
-          Number(t.pl || 0)
-        ),
-      0
-    );
-
-
-  const grossLoss =
-    Math.abs(
-      losing.reduce(
-        (s, t) =>
-          s +
-          Math.min(
-            0,
-            Number(t.pl || 0)
-          ),
-        0
-      )
-    );
-
-
-  let factor = 0;
-
-
-  if (grossLoss > 0)
-    factor =
-      grossProfit /
-      grossLoss;
-
-
-  if (
-    grossProfit > 0 &&
-    grossLoss === 0
-  )
-    factor = Infinity;
-
-
-  $("profitFactor").textContent =
-    factor === Infinity
-      ? "∞"
-      : factor.toFixed(2);
-
-
-  $("ratingPF").textContent =
-    factor === Infinity
-      ? "∞"
-      : factor.toFixed(2);
-
-
-  const avgTP =
-    winning.length
-      ? winning.reduce(
-          (s, t) =>
-            s +
-            Number(t.pl || 0),
-          0
-        ) / winning.length
-      : 0;
-
-
-  const avgSL =
-    losing.length
-      ? losing.reduce(
-          (s, t) =>
-            s +
-            Number(t.pl || 0),
-          0
-        ) / losing.length
-      : 0;
-
-
-  $("avgTP").textContent =
-    formatPL(avgTP);
-
-  $("avgSL").textContent =
-    formatPL(avgSL);
-
-  $("avgWin").textContent =
-    formatPL(avgTP);
-
-  $("avgLoss").textContent =
-    formatPL(avgSL);
-
-
-  /* СЕРИИ */
-
-  let currentWin = 0;
-  let currentLoss = 0;
-
-  let maxWin = 0;
-  let maxLoss = 0;
-
-
-  for (const t of trades) {
-
-    if (
-      t.result === "win"
-    ) {
-
-      currentWin++;
-      currentLoss = 0;
-
-      maxWin =
-        Math.max(
-          maxWin,
-          currentWin
-        );
-
-    }
-
-    else if (
-      t.result === "loss"
-    ) {
-
-      currentLoss++;
-      currentWin = 0;
-
-      maxLoss =
-        Math.max(
-          maxLoss,
-          currentLoss
-        );
-
-    }
-
-    else {
-
-      currentWin = 0;
-      currentLoss = 0;
-
-    }
-
-  }
-
-
-  $("maxWinStreak").textContent =
-    maxWin;
-
-  $("maxLossStreak").textContent =
-    maxLoss;
-
-
-  let streak = 0;
-  let type = "";
-
-
-  if (trades.length) {
-
-    const last =
-      trades[
-        trades.length - 1
-      ].result;
-
-
-    if (
-      last === "win" ||
-      last === "loss"
-    ) {
-
-      type = last;
-
-      for (
-        let i =
-          trades.length - 1;
-        i >= 0;
-        i--
-      ) {
-
-        if (
-          trades[i].result === last
-        )
-          streak++;
-
-        else
-          break;
-
-      }
-
-    }
-
-  }
-
-
-  $("currentStreak").textContent =
-    streak;
-
-
-  $("currentStreakType").textContent =
-    type === "win"
-      ? "Победы"
-      : type === "loss"
-        ? "Убытки"
-        : "—";
-
-
-  /* ДНИ */
-
-  const daily = {};
-
-
-  for (const t of trades) {
-
-    if (!daily[t.date])
-      daily[t.date] = 0;
-
-    daily[t.date] +=
-      Number(t.pl || 0);
-
-  }
-
-
-  const days =
-    Object.entries(daily);
-
-
-  if (days.length) {
-
-    let best = days[0];
-    let worst = days[0];
-
-
-    for (const d of days) {
-
-      if (
-        d[1] > best[1]
-      )
-        best = d;
-
-      if (
-        d[1] < worst[1]
-      )
-        worst = d;
-
-    }
-
-
-    $("bestDay").textContent =
-      best[0];
-
-    $("bestDayPL").textContent =
-      formatPL(best[1]);
-
-
-    $("worstDay").textContent =
-      worst[0];
-
-    $("worstDayPL").textContent =
-      formatPL(worst[1]);
-
-  }
-
-  else {
-
-    $("bestDay").textContent =
-      "—";
-
-    $("worstDay").textContent =
-      "—";
-
-    $("bestDayPL").textContent =
-      "0%";
-
-    $("worstDayPL").textContent =
-      "0%";
-
-  }
-
-
-  /* МЕСЯЦЫ */
-
-  const months = {};
-
-
-  for (const t of trades) {
-
-    const m =
-      t.date
-        ? t.date.slice(0, 7)
-        : "";
-
-    if (!m)
-      continue;
-
-
-    if (!months[m]) {
-
-      months[m] = {
-        count: 0,
-        wins: 0,
-        pl: 0
-      };
-
-    }
-
-
-    months[m].count++;
-
-    months[m].pl +=
-      Number(t.pl || 0);
-
-
-    if (
-      t.result === "win"
-    )
-      months[m].wins++;
-
-  }
-
-
-  let bestMonth = null;
-
-
-  for (
-    const m of
-    Object.entries(months)
-  ) {
-
-    if (
-      !bestMonth ||
-      m[1].pl >
-        bestMonth[1].pl
-    )
-      bestMonth = m;
-
-  }
-
-
-  if (bestMonth) {
-
-    $("bestMonth").textContent =
-      bestMonth[0];
-
-    $("bestMonthPL").textContent =
-      formatPL(
-        bestMonth[1].pl
-      );
-
-    $("bestMonthWinrate").textContent =
-      Math.round(
-        bestMonth[1].wins /
-        bestMonth[1].count *
-        100
-      ) + "%";
-
-    $("bestMonthCount").textContent =
-      bestMonth[1].count;
-
-  }
-
-  else {
-
-    $("bestMonth").textContent =
-      "—";
-
-    $("bestMonthPL").textContent =
-      "0%";
-
-    $("bestMonthWinrate").textContent =
-      "0%";
-
-    $("bestMonthCount").textContent =
-      "0";
-
-  }
-
-
-  /* РЕЙТИНГ */
-
-  const count =
-    trades.length;
-
-  const wins =
-    trades.filter(
-      t => t.result === "win"
-    ).length;
-
-  const disciplined =
-    trades.filter(
-      t => t.discipline === "yes"
-    ).length;
-
-
-  const winRate =
-    count
-      ? wins / count * 100
-      : 0;
-
-
-  const disciplineRate =
-    count
-      ? disciplined /
-        count *
-        100
-      : 0;
-
-
-  let pfScore = 0;
-
-
-  if (
-    factor === Infinity
-  )
-    pfScore = 100;
-
-  else if (
-    factor > 0
-  )
-    pfScore =
-      Math.min(
-        100,
-        factor / 2 * 100
-      );
-
-
-  const rating =
-    Math.round(
-      Math.min(
-        100,
-        winRate * .4 +
-        disciplineRate * .4 +
-        pfScore * .2
-      )
-    );
-
-
-  $("rating").textContent =
-    rating;
-
-  $("ratingBar").style.width =
-    rating + "%";
-
-
-  $("ratingWinrate").textContent =
-    Math.round(winRate) + "%";
-
-  $("ratingDiscipline").textContent =
-    Math.round(
-      disciplineRate
-    ) + "%";
-
-
-  $("ratingTitle").textContent =
-    !count
-      ? "Нет данных"
-      : rating >= 80
-        ? "🔥 Отличная торговля"
-        : rating >= 60
-          ? "💪 Хороший результат"
-          : rating >= 40
-            ? "⚠️ Есть что улучшить"
-            : "🛑 Нужно пересмотреть торговлю";
-
-
-  /* РИСК */
-
-  const deposit =
-    Number(settings.deposit) ||
-    0;
-
-  const risk =
-    Number(settings.risk) ||
-    0;
-
-  const riskDollar =
-    deposit *
-    risk /
-    100;
-
-
-  $("riskDisplay").textContent =
-    risk.toFixed(2) + "%";
-
-  $("riskDollar").textContent =
-    riskDollar.toFixed(2) + "$";
-
-  $("rewardDollar").textContent =
-    (riskDollar * 2)
-      .toFixed(2) + "$";
-
-}
-
-
-/* =========================================================
-   СЕТАПЫ
-   ========================================================= */
-
-function renderSetupAnalytics() {
-
-  const names = [
-    "Liquidity Sweep",
-    "BOS",
-    "FVG"
-  ];
-
-
-  const data = {};
-
-
-  names.forEach(n => {
-
-    data[n] = {
-      count: 0,
-      wins: 0,
-      tp: 0,
-      sl: 0,
-      pl: 0
-    };
-
-  });
-
-
-  let comboTrades = 0;
-  let comboWins = 0;
-  let comboPL = 0;
-
-
-  for (const t of trades) {
-
-    const text =
-      (
-        (t.setup || "") +
-        " " +
-        (t.comment || "")
-      ).toLowerCase();
-
-
-    const found = [];
-
-
-    if (
-      text.includes(
-        "liquidity sweep"
-      ) ||
-      text.includes(
-        "liquidity"
-      ) ||
-      text.includes(
-        "sweep"
-      )
-    )
-      found.push(
-        "Liquidity Sweep"
-      );
-
-
-    if (
-      text.includes("bos") ||
-      text.includes(
-        "break of structure"
-      )
-    )
-      found.push("BOS");
-
-
-    if (
-      text.includes("fvg") ||
-      text.includes(
-        "fair value gap"
-      )
-    )
-      found.push("FVG");
-
-
-    if (
-      found.length >= 2
-    ) {
-
-      comboTrades++;
-
-      comboPL +=
-        Number(t.pl || 0);
-
-      if (
-        t.result === "win"
-      )
-        comboWins++;
-
-    }
-
-
-    for (const n of found) {
-
-      data[n].count++;
-
-      data[n].pl +=
-        Number(t.pl || 0);
-
-
-      if (
-        t.result === "win"
-      ) {
-
-        data[n].wins++;
-        data[n].tp++;
-
-      }
-
-
-      if (
-        t.result === "loss"
-      )
-        data[n].sl++;
-
-    }
-
-  }
-
-
-  $("setupStats").innerHTML =
-    names.map(n => {
-
-      const d =
-        data[n];
-
-      const wr =
-        d.count
-          ? Math.round(
-              d.wins /
-              d.count *
-              100
-            )
-          : 0;
-
-      const avg =
-        d.count
-          ? d.pl / d.count
-          : 0;
-
-
-      return `
-        <tr>
-          <td>
-            <strong>${n}</strong>
-          </td>
-
-          <td>${d.count}</td>
-
-          <td>${wr}%</td>
-
-          <td>${d.tp}</td>
-
-          <td>${d.sl}</td>
-
-          <td class="${
-            d.pl >= 0
-              ? "win"
-              : "loss"
-          }">
-            ${formatPL(d.pl)}
-          </td>
-
-          <td class="${
-            avg >= 0
-              ? "win"
-              : "loss"
-          }">
-            ${formatPL(avg)}
-          </td>
-        </tr>
-      `;
-
-    }).join("");
-
-
-  const available =
-    names
-      .map(
-        n => [n, data[n]]
-      )
-      .filter(
-        x => x[1].count > 0
-      );
-
-
-  if (
-    available.length
-  ) {
-
-    let best =
-      available[0];
-
-    let worst =
-      available[0];
-
-
-    for (
-      const x of available
-    ) {
-
-      if (
-        x[1].pl >
-        best[1].pl
-      )
-        best = x;
-
-
-      if (
-        x[1].pl <
-        worst[1].pl
-      )
-        worst = x;
-
-    }
-
-
-    $("bestSetup").textContent =
-      best[0];
-
-    $("bestSetupPL").textContent =
-      formatPL(
-        best[1].pl
-      );
-
-    $("bestSetupWinrate").textContent =
-      Math.round(
-        best[1].wins /
-        best[1].count *
-        100
-      ) + "%";
-
-
-    $("worstSetup").textContent =
-      worst[0];
-
-    $("worstSetupPL").textContent =
-      formatPL(
-        worst[1].pl
-      );
-
-    $("worstSetupWinrate").textContent =
-      Math.round(
-        worst[1].wins /
-        worst[1].count *
-        100
-      ) + "%";
-
-  }
-
-
-  else {
-
-    $("bestSetup").textContent =
-      "—";
-
-    $("bestSetupPL").textContent =
-      "0%";
-
-    $("bestSetupWinrate").textContent =
-      "0%";
-
-
-    $("worstSetup").textContent =
-      "—";
-
-    $("worstSetupPL").textContent =
-      "0%";
-
-    $("worstSetupWinrate").textContent =
-      "0%";
-
-  }
-
-
-  $("comboCount").textContent =
-    comboTrades;
-
-
-  $("comboWinrate").textContent =
-    comboTrades
-      ? Math.round(
-          comboWins /
-          comboTrades *
-          100
-        ) + "%"
-      : "0%";
-
-
-  $("comboPL").textContent =
-    formatPL(comboPL);
-
-}
-
-
-/* =========================================================
-   ЧАСЫ
-   ========================================================= */
-
-function renderHourAnalytics() {
-
-  const hours = {};
-
-
-  for (const t of trades) {
-
-    if (!t.entry_time)
-      continue;
-
-
-    const hour =
-      String(
-        t.entry_time
-      ).slice(0, 2);
-
-
-    if (!hours[hour]) {
-
-      hours[hour] = {
-        count: 0,
-        wins: 0,
-        pl: 0
-      };
-
-    }
-
-
-    hours[hour].count++;
-
-    hours[hour].pl +=
-      Number(t.pl || 0);
-
-
-    if (
-      t.result === "win"
-    )
-      hours[hour].wins++;
-
-  }
-
-
-  const entries =
-    Object.entries(hours)
-      .sort(
-        (a, b) =>
-          a[0].localeCompare(
-            b[0]
-          )
-      );
-
-
-  $("hourEmpty").style.display =
-    entries.length
-      ? "none"
-      : "block";
-
-
-  $("hourStats").innerHTML =
-    entries.map(
-      ([hour, d]) => {
-
-        const wr =
-          Math.round(
-            d.wins /
-            d.count *
-            100
-          );
-
-        const avg =
-          d.pl / d.count;
-
-
-        return `
-          <tr>
-
-            <td>
-              <strong>
-                ${hour}:00
-              </strong>
-            </td>
-
-            <td>
-              ${d.count}
-            </td>
-
-            <td>
-              ${wr}%
-            </td>
-
-            <td class="${
-              d.pl >= 0
-                ? "win"
-                : "loss"
-            }">
-              ${formatPL(d.pl)}
-            </td>
-
-            <td class="${
-              avg >= 0
-                ? "win"
-                : "loss"
-            }">
-              ${formatPL(avg)}
-            </td>
-
-          </tr>
-        `;
-
-      }
-    ).join("");
-
-}
-
-
-/* =========================================================
-   МЕСЯЦЫ
-   ========================================================= */
-
-function renderMonthly() {
-
-  const months = {};
-
-
-  for (const t of trades) {
-
-    const m =
-      t.date
-        ? t.date.slice(0, 7)
-        : "";
-
-
-    if (!m)
-      continue;
-
-
-    if (!months[m]) {
-
-      months[m] = {
-        count: 0,
-        wins: 0,
-        tp: 0,
-        sl: 0,
-        pl: 0
-      };
-
-    }
-
-
-    months[m].count++;
-
-    months[m].pl +=
-      Number(t.pl || 0);
-
-
-    if (
-      t.result === "win"
-    ) {
-
-      months[m].wins++;
-      months[m].tp++;
-
-    }
-
-
-    if (
-      t.result === "loss"
-    )
-      months[m].sl++;
-
-  }
-
-
-  const entries =
-    Object.entries(months)
-      .sort(
-        (a, b) =>
-          b[0].localeCompare(
-            a[0]
-          )
-      );
-
-
-  $("monthlyEmpty").style.display =
-    entries.length
-      ? "none"
-      : "block";
-
-
-  $("monthlyStats").innerHTML =
-    entries.map(
-      ([m, d]) => `
-
-        <tr>
-
-          <td>
-            ${escapeHtml(m)}
-          </td>
-
-          <td>
-            ${d.count}
-          </td>
-
-          <td>
-            ${Math.round(
-              d.wins /
-              d.count *
-              100
-            )}%
-          </td>
-
-          <td>
-            ${d.tp}
-          </td>
-
-          <td>
-            ${d.sl}
-          </td>
-
-          <td class="${
-            d.pl >= 0
-              ? "win"
-              : "loss"
-          }">
-            ${formatPL(d.pl)}
-          </td>
-
-        </tr>
-
-      `
-    ).join("");
-
-}
-
-
-/* =========================================================
-   ГРАФИК
-   ========================================================= */
-
-function drawCanvas(canvasId) {
-
-  const canvas =
-    $(canvasId);
-
-  if (!canvas)
-    return;
-
-
-  const ctx =
-    canvas.getContext("2d");
-
-  const W =
-    canvas.width;
-
-  const H =
-    canvas.height;
-
-
-  ctx.clearRect(
-    0,
-    0,
-    W,
-    H
-  );
-
-
-  let balance =
-    Number(settings.deposit) ||
-    0;
-
-
-  const values =
-    [balance];
-
-
-  for (const t of trades) {
-
-    balance *=
-      1 +
-      Number(t.pl || 0) /
-      100;
-
-    values.push(
-      balance
-    );
-
-  }
-
-
-  if (
-    values.length < 2
-  ) {
-
-    ctx.fillStyle =
-      "#66778c";
-
-    ctx.font =
-      "16px Arial";
-
-    ctx.fillText(
-      "Добавь сделки, чтобы увидеть график",
-      25,
-      40
-    );
-
-    return;
-
-  }
-
-
-  let min =
-    Math.min(
-      ...values
-    );
-
-  let max =
-    Math.max(
-      ...values
-    );
-
-
-  if (
-    min === max
-  ) {
-
-    min -= 1;
-    max += 1;
-
-  }
-
-
-  ctx.strokeStyle =
-    "#1b2b3c";
-
-  ctx.lineWidth = 1;
-
-
-  for (
-    let i = 1;
-    i < 5;
-    i++
-  ) {
-
-    const y =
-      25 +
-      i *
-      (H - 50) /
-      5;
-
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-      25,
-      y
-    );
-
-    ctx.lineTo(
-      W - 25,
-      y
-    );
-
-    ctx.stroke();
-
-  }
-
-
-  ctx.beginPath();
-
-
-  values.forEach(
-    (value, i) => {
-
-      const x =
-        25 +
-        i *
-        (W - 50) /
-        (values.length - 1);
-
-
-      const y =
-        H -
-        25 -
-        (value - min) /
-        (max - min) *
-        (H - 50);
-
-
-      if (
-        i === 0
-      )
-        ctx.moveTo(
-          x,
-          y
-        );
-
-      else
-        ctx.lineTo(
-          x,
-          y
-        );
-
-    }
-  );
-
-
-  ctx.strokeStyle =
-    "#60a5fa";
-
-  ctx.lineWidth = 3;
-
-  ctx.stroke();
-
-
-  ctx.fillStyle =
-    "#60a5fa";
-
-
-  values.forEach(
-    (value, i) => {
-
-      const x =
-        25 +
-        i *
-        (W - 50) /
-        (values.length - 1);
-
-
-      const y =
-        H -
-        25 -
-        (value - min) /
-        (max - min) *
-        (H - 50);
-
-
-      ctx.beginPath();
-
-      ctx.arc(
-        x,
-        y,
-        4,
-        0,
-        Math.PI * 2
-      );
-
-      ctx.fill();
-
-    }
-  );
-
-}
-
-
-function drawEquity2() {
-
-  drawCanvas(
-    "equity2"
-  );
-
-}
-
-
-/* =========================================================
-   ОСНОВНОЙ RENDER
-   ========================================================= */
-
-function render() {
-
-  const count =
-    trades.length;
-
-
-  const wins =
-    trades.filter(
-      t => t.result === "win"
-    ).length;
-
-
-  const tp =
-    wins;
-
-
-  const sl =
-    trades.filter(
-      t => t.result === "loss"
-    ).length;
-
-
-  const be =
-    trades.filter(
-      t => t.result === "be"
-    ).length;
-
-
-  const disciplined =
-    trades.filter(
-      t => t.discipline === "yes"
-    ).length;
-
-
-  const totalPL =
-    trades.reduce(
-      (s, t) =>
-        s + Number(t.pl || 0),
-      0
-    );
-
-
-  const average =
-    count
-      ? totalPL / count
-      : 0;
-
-
-  const initial =
-    Number(settings.deposit) ||
-    0;
-
-
-  let balance =
-    initial;
-
-  let peak =
-    initial;
-
-  let maxDD =
-    0;
-
-  let bestTrade =
-    0;
-
-
-  const values =
-    [balance];
-
-
-  for (const t of trades) {
-
-    const pl =
-      Number(t.pl || 0);
-
-
-    bestTrade =
-      Math.max(
-        bestTrade,
-        pl
-      );
-
-
-    balance *=
-      1 + pl / 100;
-
-
-    values.push(
-      balance
-    );
-
-
-    if (
-      balance > peak
-    )
-      peak = balance;
-
-
-    if (
-      peak > 0
-    ) {
-
-      const dd =
-        (
-          peak -
-          balance
-        ) /
-        peak *
-        100;
-
-
-      maxDD =
-        Math.max(
-          maxDD,
-          dd
-        );
-
-    }
-
-  }
-
-
-  $("count").textContent =
-    count;
-
-
-  $("winrate").textContent =
-    count
-      ? Math.round(
-          wins /
-          count *
-          100
-        ) + "%"
-      : "0%";
-
-
-  $("discipline").textContent =
-    count
-      ? Math.round(
-          disciplined /
-          count *
-          100
-        ) + "%"
-      : "0%";
-
-
-  $("pnl").textContent =
-    formatPL(
-      totalPL
-    );
-
-
-  $("pnlDollar").textContent =
-    formatDollar(
-      balance - initial
-    );
-
-
-  $("balance").textContent =
-    "$" +
-    balance.toFixed(2);
-
-
-  $("avg").textContent =
-    formatPL(
-      average
-    );
-
-
-  $("tpCount").textContent =
-    tp;
-
-  $("slCount").textContent =
-    sl;
-
-  $("beCount").textContent =
-    be;
-
-
-  $("bestTrade").textContent =
-    formatPL(
-      bestTrade
-    );
-
-
-  $("drawdown").textContent =
-    "-" +
-    maxDD.toFixed(2) +
-    "%";
-
-
-  $("riskDrawdown").textContent =
-    "-" +
-    maxDD.toFixed(2) +
-    "%";
-
-
-  const filtered =
-    getFilteredTrades();
-
-
-  $("empty").style.display =
-    filtered.length
-      ? "none"
-      : "block";
-
-
-  $("trades").innerHTML =
-    filtered
-      .slice()
-      .reverse()
-      .map(
-        t => `
-
-          <tr>
-
-            <td>
-              ${escapeHtml(t.date)}
-            </td>
-
-            <td>
-              ${escapeHtml(t.symbol)}
-            </td>
-
-            <td>
-              ${escapeHtml(t.session)}
-            </td>
-
-            <td>
-              ${escapeHtml(t.direction)}
-            </td>
-
-            <td class="${t.result}">
-
-              <span
-                class="badge ${t.result}"
-              >
-
-                ${
-                  t.result === "win"
-                    ? "TP"
-                    : t.result === "loss"
-                      ? "SL"
-                      : "BE"
-                }
-
-              </span>
-
-            </td>
-
-            <td class="${
-              Number(t.pl || 0) >= 0
-                ? "win"
-                : "loss"
-            }">
-
-              ${
-                Number(t.pl || 0) >= 0
-                  ? "+"
-                  : ""
-              }${
-                Number(t.pl || 0)
-                  .toFixed(2)
-              }%
-
-            </td>
-
-            <td>
-              ${
-                t.discipline === "yes"
-                  ? "Да"
-                  : "Нет"
-              }
-            </td>
-
-            <td>
-              ${escapeHtml(
-                t.comment ||
-                t.setup ||
-                "—"
-              )}
-            </td>
-
-          </tr>
-
-        `
-      )
-      .join("");
-
-
-  renderAnalytics();
-  renderAdvancedAnalytics();
-  renderSetupAnalytics();
-  renderHourAnalytics();
-  renderMonthly();
-
-
-  if (
-    $("chartDeposit")
-  )
-    $("chartDeposit").textContent =
-      "$" +
-      initial.toFixed(2);
-
-
-  if (
-    $("chartBalance")
-  )
-    $("chartBalance").textContent =
-      "$" +
-      balance.toFixed(2);
-
-
-  if (
-    $("chartPL")
-  )
-    $("chartPL").textContent =
-      formatPL(totalPL);
-
-
-  if (
-    $("chartDD")
-  )
-    $("chartDD").textContent =
-      "-" +
-      maxDD.toFixed(2) +
-      "%";
-
-
-  if (
-    $("equity")
-  )
-    drawCanvas(
-      "equity"
-    );
-
-
-  if (
-    $("equity2")
-  )
-    drawEquity2();
-
-}
-
-
-/* =========================================================
-   НАВИГАЦИЯ
-   ========================================================= */
-
-document
-  .querySelectorAll(
-    ".nav button"
-  )
-  .forEach(btn => {
-
-    btn.onclick = () => {
-
-      document
-        .querySelectorAll(
-          ".nav button"
-        )
-        .forEach(
-          b =>
-            b.classList.remove(
-              "active"
-            )
-        );
-
-
-      btn.classList.add(
-        "active"
-      );
-
-
-      document
-        .querySelectorAll(
-          ".page"
-        )
-        .forEach(
-          p =>
-            p.classList.remove(
-              "active"
-            )
-        );
-
-
-      $(btn.dataset.page)
-        .classList.add(
-          "active"
-        );
-
-
-      if (
-        btn.dataset.page ===
-        "charts"
-      )
-        drawEquity2();
-
-
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-
-    };
-
-  });
-
-
-function openPage(name) {
-
-  document
-    .querySelectorAll(
-      ".nav button"
-    )
-    .forEach(
-      b =>
-        b.classList.toggle(
-          "active",
-          b.dataset.page === name
-        )
-    );
-
-
-  document
-    .querySelectorAll(
-      ".page"
-    )
-    .forEach(
-      p =>
-        p.classList.toggle(
-          "active",
-          p.id === name
-        )
-    );
-
-
-  if (
-    name === "charts"
-  )
-    drawEquity2();
-
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
-
-}
-
-
-/* =========================================================
-   НАСТРОЙКИ
-   ========================================================= */
-
-$("saveSettings").onclick =
-  () => {
-
-    settings = {
-
-      deposit:
-        Number(
-          $("initialDeposit")
-            .value
-        ) || 0,
-
-      risk:
-        Number(
-          $("riskPercent")
-            .value
-        ) || 0
-
-    };
-
-
-    localStorage.setItem(
-      SETTINGS_KEY,
-      JSON.stringify(
-        settings
-      )
-    );
-
-
-    render();
-
-    alert(
-      "Настройки сохранены"
-    );
-
-  };
-
-
-/* =========================================================
+/* =========================================
    ДОБАВЛЕНИЕ СДЕЛКИ
-   ========================================================= */
+========================================= */
 
 $("tradeForm").onsubmit =
-  async e => {
+async function(e){
 
-    e.preventDefault();
+e.preventDefault();
 
+try{
 
-    if (
-      !currentUser?.user?.id
-    ) {
+const user =
+await getUser();
 
-      alert(
-        "Сначала войдите в аккаунт."
-      );
+const trade={
 
-      return;
+user_id:user.id,
 
-    }
+date:$("date").value,
 
+symbol:
+$("symbol").value.trim(),
 
-    const trade = {
+session:
+$("session").value,
 
-      date:
-        $("date").value,
+direction:
+$("direction").value,
 
-      symbol:
-        $("symbol")
-          .value
-          .trim(),
+result:
+$("result").value,
 
-      session:
-        $("session").value,
+pl:
+Number($("pl").value)||0,
 
-      direction:
-        $("direction").value,
+setup:
+$("setup").value.trim(),
 
-      result:
-        $("result").value,
+entry_time:
+$("entryTime").value || null,
 
-      pl:
-        Number(
-          $("pl").value
-        ),
+discipline:
+$("disciplineInput").value,
 
-      setup:
-        $("setup")
-          .value
-          .trim(),
+comment:
+$("comment").value.trim()
 
-      entryTime:
-        $("entryTime").value,
-
-      discipline:
-        $("disciplineInput")
-          .value,
-
-      comment:
-        $("comment")
-          .value
-          .trim()
-
-    };
+};
 
 
-    try {
+status("Сохраняем сделку...");
 
-      const saved =
-        await saveTradeToSupabase(
-          trade
-        );
+const {
+data,
+error
+} =
+await supabaseClient
+.from("trades")
+.insert([trade])
+.select()
+.single();
 
+if(error)
+throw error;
 
-      /*
-        В Supabase колонка называется
-        entry_time, поэтому приводим
-        обратно к формату сайта.
-      */
+trades.push(data);
 
-      const localTrade = {
+render();
 
-        ...saved,
+e.target.reset();
 
-        entryTime:
-          saved.entry_time || ""
+$("date").value =
+new Date().toISOString().slice(0,10);
 
-      };
+$("symbol").value="BTCUSDT";
 
+status(
+"✓ Сделка сохранена в Supabase"
+);
 
-      trades.push(
-        localTrade
-      );
+openPage("history");
 
+}
+catch(error){
 
-      localStorage.setItem(
-        TRADES_KEY,
-        JSON.stringify(
-          trades
-        )
-      );
+console.error(error);
 
+status(
+"Ошибка сохранения: "
++(error.message || error),
+true
+);
 
-      e.target.reset();
+}
 
-
-      $("date").value =
-        new Date()
-          .toISOString()
-          .slice(0, 10);
-
-
-      $("symbol").value =
-        "BTCUSDT";
+};
 
 
-      render();
+/* =========================================
+   НАВИГАЦИЯ
+========================================= */
 
+document
+.querySelectorAll(".nav button")
+.forEach(button=>{
 
-      alert(
-        "Сделка сохранена в аккаунт."
-      );
+button.onclick=()=>{
 
+openPage(
+button.dataset.page
+);
 
-      openPage(
-        "history"
-      );
-
-
-    } catch (error) {
-
-      console.error(
-        "Ошибка сохранения:",
-        error
-      );
-
-
-      alert(
-        "Не удалось сохранить сделку.\n\n" +
-        error.message
-      );
-
-    }
-
-  };
-
-
-/* =========================================================
-   ФИЛЬТРЫ
-   ========================================================= */
-
-[
-  "filterFrom",
-  "filterTo",
-  "filterSession",
-  "filterDirection",
-  "filterResult",
-  "filterDiscipline"
-].forEach(id => {
-
-  if ($(id)) {
-
-    $(id).addEventListener(
-      "change",
-      render
-    );
-
-  }
+};
 
 });
 
 
-$("resetFilters").onclick =
-  () => {
+function openPage(name){
 
-    $("filterFrom").value =
-      "";
+document
+.querySelectorAll(".nav button")
+.forEach(button=>{
 
-    $("filterTo").value =
-      "";
+button.classList.toggle(
+"active",
+button.dataset.page===name
+);
 
-    $("filterSession").value =
-      "all";
+});
 
-    $("filterDirection").value =
-      "all";
+document
+.querySelectorAll(".page")
+.forEach(page=>{
 
-    $("filterResult").value =
-      "all";
+page.classList.toggle(
+"active",
+page.id===name
+);
 
-    $("filterDiscipline").value =
-      "all";
+});
 
-    render();
+if(name==="charts")
+drawCanvas("equity2");
 
-  };
-
-
-/* =========================================================
-   ОЧИСТИТЬ ИСТОРИЮ
-   ========================================================= */
-
-$("clearAll").onclick =
-  async () => {
-
-    if (
-      !currentUser?.user?.id
-    ) {
-
-      alert(
-        "Сначала войдите в аккаунт."
-      );
-
-      return;
-
-    }
-
-
-    if (
-      !confirm(
-        "Удалить всю историю сделок?"
-      )
-    )
-      return;
-
-
-    try {
-
-      await deleteAllTradesFromSupabase();
-
-
-      trades = [];
-
-
-      localStorage.setItem(
-        TRADES_KEY,
-        "[]"
-      );
-
-
-      render();
-
-
-      alert(
-        "История удалена."
-      );
-
-
-    } catch (error) {
-
-      console.error(
-        error
-      );
-
-
-      alert(
-        "Не удалось удалить историю.\n\n" +
-        error.message
-      );
-
-    }
-
-  };
-
-
-/* =========================================================
-   ЭКСПОРТ CSV
-   ========================================================= */
-
-function exportCSV() {
-
-  const rows = [
-
-    [
-      "Дата",
-      "Инструмент",
-      "Сессия",
-      "Направление",
-      "Результат",
-      "P/L %",
-      "Сетап",
-      "Время входа",
-      "Стратегия",
-      "Комментарий"
-    ],
-
-    ...getFilteredTrades()
-      .map(
-        t => [
-
-          t.date,
-
-          t.symbol,
-
-          t.session,
-
-          t.direction,
-
-          t.result,
-
-          t.pl,
-
-          t.setup,
-
-          t.entry_time ||
-            t.entryTime ||
-            "",
-
-          t.discipline,
-
-          t.comment || ""
-
-        ]
-      )
-
-  ];
-
-
-  const csv =
-    "\ufeff" +
-    rows
-      .map(
-        row =>
-          row
-            .map(
-              value =>
-                `"${String(
-                  value ?? ""
-                ).replace(
-                  /"/g,
-                  '""'
-                )}"`
-            )
-            .join(",")
-      )
-      .join("\n");
-
-
-  const link =
-    document.createElement(
-      "a"
-    );
-
-
-  link.href =
-    URL.createObjectURL(
-      new Blob(
-        [csv],
-        {
-          type:
-            "text/csv;charset=utf-8"
-        }
-      )
-    );
-
-
-  link.download =
-    "trade-journal.csv";
-
-
-  link.click();
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
 
 }
 
 
-$("export").onclick =
-  exportCSV;
+/* =========================================
+   РЕНДЕР
+========================================= */
 
-$("exportSettings").onclick =
-  exportCSV;
+function render(){
+
+const count =
+trades.length;
+
+const wins =
+trades.filter(
+t=>t.result==="win"
+).length;
+
+const losses =
+trades.filter(
+t=>t.result==="loss"
+).length;
+
+const bes =
+trades.filter(
+t=>t.result==="be"
+).length;
+
+const disciplined =
+trades.filter(
+t=>t.discipline==="yes"
+).length;
+
+const totalPL =
+trades.reduce(
+(sum,t)=>
+sum+Number(t.pl||0),
+0
+);
+
+const average =
+count ? totalPL/count : 0;
+
+const initial =
+Number(settings.deposit)||0;
+
+let balance=initial;
+
+let peak=initial;
+
+let maxDD=0;
+
+let bestTrade=0;
+
+const values=[initial];
+
+for(const trade of trades){
+
+const pl =
+Number(trade.pl)||0;
+
+bestTrade =
+Math.max(bestTrade,pl);
+
+balance *=
+1+pl/100;
+
+values.push(balance);
+
+if(balance>peak)
+peak=balance;
+
+if(peak>0){
+
+const dd =
+(peak-balance)/peak*100;
+
+maxDD =
+Math.max(maxDD,dd);
+
+}
+
+}
 
 
-/* =========================================================
+/* HOME */
+
+$("count").textContent=count;
+
+$("winrate").textContent=
+count
+? Math.round(wins/count*100)+"%"
+:"0%";
+
+$("discipline").textContent=
+count
+? Math.round(disciplined/count*100)+"%"
+:"0%";
+
+$("pnl").textContent=
+formatPL(totalPL);
+
+$("pnlDollar").textContent=
+(balance-initial>=0?"+":"-")+
+"$"+
+Math.abs(balance-initial).toFixed(2);
+
+$("balance").textContent=
+"$"+balance.toFixed(2);
+
+$("avg").textContent=
+formatPL(average);
+
+$("tpCount").textContent=wins;
+
+$("slCount").textContent=losses;
+
+$("beCount").textContent=bes;
+
+$("bestTrade").textContent=
+formatPL(bestTrade);
+
+$("drawdown").textContent=
+"-"+maxDD.toFixed(2)+"%";
+
+
+/* HISTORY */
+
+$("empty").style.display=
+count ? "none":"block";
+
+$("trades").innerHTML =
+trades
+.slice()
+.reverse()
+.map(t=>`
+
+<tr>
+
+<td>${esc(t.date)}</td>
+
+<td>${esc(t.symbol)}</td>
+
+<td>${esc(t.session)}</td>
+
+<td>${esc(t.direction)}</td>
+
+<td class="${t.result}">
+
+${
+t.result==="win"
+?"TP"
+:t.result==="loss"
+?"SL"
+:"BE"
+}
+
+</td>
+
+<td class="${
+Number(t.pl)>=0
+?"win"
+:"loss"
+}">
+
+${formatPL(t.pl)}
+
+</td>
+
+<td>
+${t.discipline==="yes"
+?"Да"
+:"Нет"}
+</td>
+
+<td>
+${esc(
+t.comment ||
+t.setup ||
+"—"
+)}
+</td>
+
+</tr>
+
+`)
+.join("");
+
+
+renderAnalytics();
+
+drawEquity(values);
+
+drawCanvas("equity2");
+
+}
+
+
+/* =========================================
+   АНАЛИТИКА
+========================================= */
+
+function getStats(list){
+
+const count=list.length;
+
+const wins =
+list.filter(
+t=>t.result==="win"
+).length;
+
+const pl =
+list.reduce(
+(s,t)=>s+Number(t.pl||0),
+0
+);
+
+return {
+
+count,
+
+wins,
+
+winrate:
+count
+?wins/count*100
+:0,
+
+pl
+
+};
+
+}
+
+
+function renderAnalytics(){
+
+const all=getStats(trades);
+
+$("aWinrate").textContent=
+Math.round(all.winrate)+"%";
+
+
+/* PROFIT FACTOR */
+
+const profits =
+trades
+.filter(t=>Number(t.pl)>0)
+.reduce(
+(s,t)=>s+Number(t.pl),
+0
+);
+
+const losses =
+Math.abs(
+trades
+.filter(t=>Number(t.pl)<0)
+.reduce(
+(s,t)=>s+Number(t.pl),
+0
+)
+);
+
+const pf =
+losses>0
+?profits/losses
+:profits>0
+?Infinity
+:0;
+
+$("profitFactor").textContent=
+pf===Infinity
+?"∞"
+:pf.toFixed(2);
+
+
+/* AVG TP / SL */
+
+const tp =
+trades.filter(
+t=>t.result==="win"
+);
+
+const sl =
+trades.filter(
+t=>t.result==="loss"
+);
+
+const avgTP =
+tp.length
+?tp.reduce(
+(s,t)=>s+Number(t.pl||0),0
+)/tp.length
+:0;
+
+const avgSL =
+sl.length
+?sl.reduce(
+(s,t)=>s+Number(t.pl||0),0
+)/sl.length
+:0;
+
+$("avgTP").textContent=
+formatPL(avgTP);
+
+$("avgSL").textContent=
+formatPL(avgSL);
+
+
+/* SESSIONS */
+
+const london =
+getStats(
+trades.filter(
+t=>t.session==="London"
+)
+);
+
+const ny =
+getStats(
+trades.filter(
+t=>t.session==="New York"
+)
+);
+
+$("londonCount").textContent=
+london.count;
+
+$("londonWinrate").textContent=
+Math.round(london.winrate)+"%";
+
+$("londonPL").textContent=
+formatPL(london.pl);
+
+$("nyCount").textContent=
+ny.count;
+
+$("nyWinrate").textContent=
+Math.round(ny.winrate)+"%";
+
+$("nyPL").textContent=
+formatPL(ny.pl);
+
+
+/* DIRECTIONS */
+
+const long =
+getStats(
+trades.filter(
+t=>t.direction==="LONG"
+)
+);
+
+const short =
+getStats(
+trades.filter(
+t=>t.direction==="SHORT"
+)
+);
+
+$("longCount").textContent=
+long.count;
+
+$("longWinrate").textContent=
+Math.round(long.winrate)+"%";
+
+$("longPL").textContent=
+formatPL(long.pl);
+
+$("shortCount").textContent=
+short.count;
+
+$("shortWinrate").textContent=
+Math.round(short.winrate)+"%";
+
+$("shortPL").textContent=
+formatPL(short.pl);
+
+
+/* DISCIPLINE */
+
+const yes =
+getStats(
+trades.filter(
+t=>t.discipline==="yes"
+)
+);
+
+const no =
+getStats(
+trades.filter(
+t=>t.discipline==="no"
+)
+);
+
+$("yesCount").textContent=
+yes.count;
+
+$("yesWinrate").textContent=
+Math.round(yes.winrate)+"%";
+
+$("yesPL").textContent=
+formatPL(yes.pl);
+
+$("noCount").textContent=
+no.count;
+
+$("noWinrate").textContent=
+Math.round(no.winrate)+"%";
+
+$("noPL").textContent=
+formatPL(no.pl);
+
+
+/* STREAKS */
+
+let maxWin=0;
+let maxLoss=0;
+
+let winStreak=0;
+let lossStreak=0;
+
+for(const trade of trades){
+
+if(trade.result==="win"){
+
+winStreak++;
+lossStreak=0;
+
+maxWin=
+Math.max(maxWin,winStreak);
+
+}
+
+else if(trade.result==="loss"){
+
+lossStreak++;
+winStreak=0;
+
+maxLoss=
+Math.max(maxLoss,lossStreak);
+
+}
+
+else{
+
+winStreak=0;
+lossStreak=0;
+
+}
+
+}
+
+$("maxWinStreak").textContent=
+maxWin;
+
+$("maxLossStreak").textContent=
+maxLoss;
+
+
+/* CURRENT STREAK */
+
+let current=0;
+let currentType="—";
+
+if(trades.length){
+
+const last=
+trades[trades.length-1].result;
+
+if(last==="win"||last==="loss"){
+
+currentType=
+last==="win"
+?"Победы"
+:"Убытки";
+
+for(
+let i=trades.length-1;
+i>=0;
+i--
+){
+
+if(trades[i].result===last)
+current++;
+else
+break;
+
+}
+
+}
+
+}
+
+$("currentStreak").textContent=
+current;
+
+$("currentStreakType").textContent=
+currentType;
+
+}
+
+
+/* =========================================
+   ГРАФИК
+========================================= */
+
+function drawEquity(values){
+
+const canvas=$("equity");
+
+if(!canvas)
+return;
+
+drawCanvasFromValues(
+canvas,
+values
+);
+
+
+}
+
+
+function drawCanvas(id){
+
+const canvas=$(id);
+
+if(!canvas)
+return;
+
+let balance=
+Number(settings.deposit)||0;
+
+const values=[balance];
+
+for(const trade of trades){
+
+balance *=
+1+Number(trade.pl||0)/100;
+
+values.push(balance);
+
+}
+
+drawCanvasFromValues(
+canvas,
+values
+);
+
+}
+
+
+function drawCanvasFromValues(canvas,values){
+
+const ctx=
+canvas.getContext("2d");
+
+const W=canvas.width;
+const H=canvas.height;
+
+ctx.clearRect(
+0,0,W,H
+);
+
+if(values.length<2){
+
+ctx.fillStyle="#66778c";
+
+ctx.font="16px Arial";
+
+ctx.fillText(
+"Добавь сделки, чтобы увидеть график",
+25,
+40
+);
+
+return;
+
+}
+
+let min=Math.min(...values);
+
+let max=Math.max(...values);
+
+if(min===max){
+
+min-=1;
+max+=1;
+
+}
+
+
+/* GRID */
+
+ctx.strokeStyle="#1b2b3c";
+ctx.lineWidth=1;
+
+for(let i=1;i<5;i++){
+
+const y=
+25+i*(H-50)/5;
+
+ctx.beginPath();
+
+ctx.moveTo(25,y);
+
+ctx.lineTo(W-25,y);
+
+ctx.stroke();
+
+}
+
+
+/* LINE */
+
+ctx.beginPath();
+
+values.forEach(
+(value,index)=>{
+
+const x=
+25+
+index*
+(W-50)/
+(values.length-1);
+
+const y=
+H-25-
+(value-min)/
+(max-min)*
+(H-50);
+
+if(index===0)
+ctx.moveTo(x,y);
+else
+ctx.lineTo(x,y);
+
+}
+);
+
+ctx.strokeStyle="#60a5fa";
+ctx.lineWidth=3;
+ctx.stroke();
+
+
+/* POINTS */
+
+ctx.fillStyle="#60a5fa";
+
+values.forEach(
+(value,index)=>{
+
+const x=
+25+
+index*
+(W-50)/
+(values.length-1);
+
+const y=
+H-25-
+(value-min)/
+(max-min)*
+(H-50);
+
+ctx.beginPath();
+
+ctx.arc(
+x,y,4,0,Math.PI*2
+);
+
+ctx.fill();
+
+}
+);
+
+}
+
+
+/* =========================================
+   НАСТРОЙКИ
+========================================= */
+
+$("saveSettings").onclick=()=>{
+
+settings={
+
+deposit:
+Number(
+$("initialDeposit").value
+)||0,
+
+risk:
+Number(
+$("riskPercent").value
+)||0
+
+};
+
+localStorage.setItem(
+"tradeJournalSettings",
+JSON.stringify(settings)
+);
+
+render();
+
+status(
+"✓ Настройки сохранены"
+);
+
+};
+
+
+/* =========================================
+   УДАЛЕНИЕ ВСЕХ СДЕЛОК
+========================================= */
+
+$("clearAll").onclick=
+async()=>{
+
+if(!confirm(
+"Удалить ВСЕ сделки из Supabase?"
+))
+return;
+
+try{
+
+const user=
+await getUser();
+
+const {
+error
+}=
+await supabaseClient
+.from("trades")
+.delete()
+.eq("user_id",user.id);
+
+if(error)
+throw error;
+
+trades=[];
+
+render();
+
+status(
+"✓ История сделок очищена"
+);
+
+}
+catch(error){
+
+console.error(error);
+
+status(
+"Ошибка удаления: "
++error.message,
+true
+);
+
+}
+
+};
+
+
+/* =========================================
+   CSV
+========================================= */
+
+$("export").onclick=()=>{
+
+const rows=[
+
+[
+"Дата",
+"Инструмент",
+"Сессия",
+"Направление",
+"Результат",
+"P/L %",
+"Сетап",
+"Время входа",
+"Стратегия",
+"Комментарий"
+],
+
+...trades.map(t=>[
+
+t.date,
+t.symbol,
+t.session,
+t.direction,
+t.result,
+t.pl,
+t.setup,
+t.entry_time || "",
+t.discipline,
+t.comment || ""
+
+])
+
+];
+
+const csv=
+"\ufeff"+
+rows
+.map(row=>
+row
+.map(value=>
+`"${String(
+value??""
+).replace(/"/g,'""')}"`
+)
+.join(",")
+)
+.join("\n");
+
+const blob=
+new Blob(
+[csv],
+{
+type:"text/csv;charset=utf-8"
+}
+);
+
+const url=
+URL.createObjectURL(blob);
+
+const a=
+document.createElement("a");
+
+a.href=url;
+
+a.download=
+"trade-journal.csv";
+
+a.click();
+
+URL.revokeObjectURL(url);
+
+};
+
+
+/* =========================================
+   АВТОРИЗАЦИЯ
+========================================= */
+
+supabaseClient.auth.onAuthStateChange(
+(event,session)=>{
+
+if(session){
+
+loadTrades();
+
+}
+
+}
+);
+
+
+/* =========================================
    ЗАПУСК
-   ========================================================= */
+========================================= */
 
-async function startApp() {
-
-  try {
-
-    const session =
-      await getSession();
-
-
-    if (
-      session?.user?.id
-    ) {
-
-      console.log(
-        "Авторизован:",
-        session.user.email
-      );
-
-
-      await loadTradesFromSupabase();
-
-    }
-
-    else {
-
-      /*
-        Если аккаунта пока нет,
-        показываем пустой журнал.
-      */
-
-      trades = [];
-
-      render();
-
-    }
-
-
-  } catch (error) {
-
-    console.error(
-      "Ошибка запуска:",
-      error
-    );
-
-    render();
-
-  }
-
-}
-
-
-startApp();
+loadTrades();
 
 </script>
+
+</body>
+</html>
