@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Trade Journal</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+$("getProBtn").onclick=()=>{const box=$("proStatus");box.textContent="🔥 PRO уже готов! Подключение оплаты добавим следующим этапом.";box.style.display="block"};
+</script>
 <style>
 *{box-sizing:border-box}html{scroll-behavior:smooth}
 body{margin:0;color:#eef4ff;font-family:Arial,sans-serif;background:#050912;overflow-x:hidden}
@@ -46,6 +48,13 @@ canvas{width:100%;height:320px;background:linear-gradient(145deg,rgba(5,13,23,.9
 footer{text-align:center;color:#66778c;font-size:13px;padding:25px}
 @media(max-width:950px){.analyticsGrid{grid-template-columns:1fr 1fr}.filters{grid-template-columns:1fr 1fr}}
 @media(max-width:800px){.grid,.settings,.analyticsGrid{grid-template-columns:1fr}.wide{grid-column:auto}.filters{grid-template-columns:1fr}.nav{position:static}.siteHeader{padding:18px}.headerText h1{font-size:24px}.userbar{width:100%;margin-left:0}}
+
+.proCard{position:relative;overflow:hidden;margin-bottom:20px;padding:24px;border-radius:20px;background:linear-gradient(145deg,rgba(24,35,58,.95),rgba(8,15,28,.95));border:1px solid rgba(250,204,21,.35);box-shadow:0 15px 50px rgba(0,0,0,.3),0 0 35px rgba(250,204,21,.06)}
+.proCard:before{content:"";position:absolute;width:260px;height:260px;right:-100px;top:-130px;background:radial-gradient(circle,rgba(250,204,21,.16),transparent 70%);pointer-events:none}
+.proHeader{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}.proTitle{display:flex;align-items:center;gap:12px}.proCrown{width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:14px;background:linear-gradient(135deg,#facc15,#f59e0b);color:#171000;font-size:25px;box-shadow:0 0 25px rgba(250,204,21,.2)}
+.proTitle h2{margin:0;color:#fff}.proTitle p{margin:5px 0 0;color:#94a3b8;font-size:13px}.proBadge{padding:7px 12px;border-radius:8px;background:rgba(250,204,21,.12);border:1px solid rgba(250,204,21,.25);color:#facc15;font-size:12px;font-weight:bold}
+.proFeatures{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px}.proFeature{padding:15px;background:rgba(5,12,21,.55);border:1px solid rgba(100,130,160,.18);border-radius:13px}.proFeature strong{display:block;margin-bottom:5px;color:#eef4ff}.proFeature span{color:#718096;font-size:12px}.proButton{margin-top:20px;background:linear-gradient(135deg,#facc15,#f59e0b);color:#171000;box-shadow:0 8px 25px rgba(250,204,21,.15)}.proStatus{display:none;margin-top:12px;padding:11px 14px;border-radius:10px;background:rgba(250,204,21,.07);border:1px solid rgba(250,204,21,.15);color:#d9c875;font-size:13px}
+@media(max-width:800px){.proFeatures{grid-template-columns:1fr 1fr}}@media(max-width:500px){.proFeatures{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -132,6 +141,21 @@ footer{text-align:center;color:#66778c;font-size:13px;padding:25px}
 </div></section>
 
 <section id="analytics" class="page">
+<div class="proCard">
+<div class="proHeader"><div class="proTitle"><div class="proCrown">👑</div><div><h2>Trade Journal PRO</h2><p>Профессиональная аналитика твоей торговли</p></div></div><div class="proBadge">PRO</div></div>
+<div class="proFeatures">
+<div class="proFeature"><strong>📊 Расширенная аналитика</strong><span>Глубокий анализ результатов торговли</span></div>
+<div class="proFeature"><strong>♾️ Неограниченные сделки</strong><span>Храни всю историю без ограничений</span></div>
+<div class="proFeature"><strong>📈 Графики</strong><span>Кривая баланса и динамика результата</span></div>
+<div class="proFeature"><strong>🎯 Анализ сетапов</strong><span>Liquidity Sweep, BOS, FVG и комбинации</span></div>
+<div class="proFeature"><strong>🧠 Дисциплина</strong><span>Сравнение сделок по соблюдению стратегии</span></div>
+<div class="proFeature"><strong>⏰ Анализ времени</strong><span>Определи самые результативные часы</span></div>
+<div class="proFeature"><strong>📅 Статистика месяцев</strong><span>Лучшие и худшие периоды торговли</span></div>
+<div class="proFeature"><strong>🔥 Серии сделок</strong><span>Победы, убытки и текущие серии</span></div>
+</div>
+<button id="getProBtn" class="proButton" type="button">👑 Получить PRO</button>
+<div id="proStatus" class="proStatus"></div>
+</div>
 <div class="panel"><h2>🧠 Расширенная аналитика</h2><div class="analyticsGrid">
 <div class="analyticsBox"><h3>🏆 Рейтинг торговли</h3><div class="rating"><div class="ratingCircle" id="rating">0</div><div class="ratingText"><strong id="ratingTitle">Нет данных</strong><div class="progress"><div class="progressBar" id="ratingBar"></div></div></div></div><div class="analyticsRow"><span>Win Rate</span><strong id="ratingWinrate">0%</strong></div><div class="analyticsRow"><span>Дисциплина</span><strong id="ratingDiscipline">0%</strong></div><div class="analyticsRow"><span>Profit Factor</span><strong id="ratingPF">0.00</strong></div></div>
 <div class="analyticsBox"><h3>🌍 Сессии</h3><div class="analyticsRow"><span>London сделок</span><strong id="londonCount">0</strong></div><div class="analyticsRow"><span>London Win Rate</span><strong id="londonWinrate">0%</strong></div><div class="analyticsRow"><span>London P/L</span><strong id="londonPL">0%</strong></div><div class="analyticsRow"><span>New York сделок</span><strong id="nyCount">0</strong></div><div class="analyticsRow"><span>New York Win Rate</span><strong id="nyWinrate">0%</strong></div><div class="analyticsRow"><span>New York P/L</span><strong id="nyPL">0%</strong></div><div class="analyticsRow"><span>Лучшая сессия</span><strong id="bestSession">—</strong></div></div>
