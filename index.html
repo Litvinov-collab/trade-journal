@@ -1,43 +1,3842 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Trade Journal</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Trade Journal</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-*{box-sizing:border-box}body{margin:0;color:#eef4ff;font-family:Arial,sans-serif;background:#050912}body:before{content:"";position:fixed;inset:0;z-index:-2;background:linear-gradient(#030812bb,#030812e8),url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=2000&q=85') center/cover}.container{max-width:1280px;margin:auto;padding:24px 18px}.siteHeader,.nav,.panel,.card{background:linear-gradient(145deg,#101b2ae6,#080f1ae6);border:1px solid #678ed533;border-radius:18px;box-shadow:0 15px 45px #0004}.siteHeader{display:flex;align-items:center;gap:18px;padding:22px 24px;margin-bottom:16px}.avatar{width:66px;height:66px;border-radius:50%;border:2px solid #4da3ff;background:#10233d;position:relative}.avatar:before{content:'';position:absolute;width:22px;height:22px;border:3px solid white;border-radius:50%;top:9px;left:19px}.avatar:after{content:'';position:absolute;width:40px;height:20px;border:3px solid white;border-radius:25px 25px 10px 10px;bottom:7px;left:10px}.headerText h1{margin:0;font-size:30px}.headerText p,.subtitle{color:#8495aa}.userbar{margin-left:auto;display:flex;align-items:center;gap:8px}.nickname{font-weight:bold}.nav{display:flex;gap:8px;flex-wrap:wrap;padding:10px;margin-bottom:20px;position:sticky;top:8px;z-index:10}.nav button{background:#182638bf;color:#aebbd0;border:1px solid #263c56}.nav button.active{background:linear-gradient(135deg,#60a5fa,#38bdf8);color:#04101d}.page{display:none}.page.active{display:block}.panel{padding:22px;margin-bottom:20px}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}.card{padding:19px}.card span{display:block;font-size:13px;color:#8090a4;margin-bottom:9px}.card strong{font-size:24px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.wide{grid-column:1/-1}label{display:flex;flex-direction:column;gap:8px;color:#aebbd0;font-size:14px}input,select,textarea{width:100%;background:#050c15dd;border:1px solid #263b53;border-radius:10px;padding:12px;color:white;outline:none}textarea{min-height:90px}button{border:0;border-radius:10px;padding:11px 16px;cursor:pointer;font-weight:bold}.primary{background:linear-gradient(135deg,#60a5fa,#38bdf8);color:#03101b;margin-top:18px}.secondary{background:#223348;color:white;border:1px solid #304861}.danger{background:#7f1d1d;color:white}.auth{max-width:500px;margin:50px auto}.auth .panel{padding:28px}.authBtns{display:flex;gap:10px}.authBtns button{flex:1}.status{margin-top:12px;padding:10px;border-radius:10px;background:#60a5fa14;color:#9fb3ca;display:none}.status.show{display:block}.tableHead{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.actions{display:flex;gap:8px;flex-wrap:wrap}.filters{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:15px 0}.tableWrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:800px}th,td{padding:12px;border-bottom:1px solid #465f7833;text-align:left}th{color:#7f91a8;font-size:13px}.win{color:#4ade80}.loss{color:#f87171}.be{color:#facc15}.empty{text-align:center;color:#66778c}.analyticsGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.analyticsBox{background:#050d17ad;border:1px solid #557da533;border-radius:14px;padding:18px}.analyticsRow{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #465f7833}.rating{display:flex;gap:15px;align-items:center}.ratingCircle{width:82px;height:82px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#142338;border:4px solid #60a5fa;font-size:24px;font-weight:bold}.progress{height:10px;background:#182536;border-radius:10px;overflow:hidden;margin-top:8px}.progressBar{height:100%;background:linear-gradient(90deg,#60a5fa,#38bdf8)}canvas{width:100%;height:320px;background:#050d17e6;border:1px solid #5a8cbe26;border-radius:14px}.badge{padding:5px 9px;border-radius:7px;font-size:12px;font-weight:bold}.badge.win{background:#12351f}.badge.loss{background:#3a1515}.badge.be{background:#3a3210}.proCard{padding:24px;border-radius:20px;background:linear-gradient(145deg,#18233af5,#080f1cf5);border:1px solid #facc1559;margin-bottom:20px}.proHeader{display:flex;justify-content:space-between;align-items:center}.proTitle{display:flex;gap:12px;align-items:center}.proCrown{width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:14px;background:linear-gradient(135deg,#facc15,#f59e0b);font-size:25px}.proBadge{color:#facc15;border:1px solid #facc1540;padding:7px 12px;border-radius:8px}.proFeatures{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px}.proFeature{padding:15px;background:#050c158c;border:1px solid #6482a02e;border-radius:13px}.proFeature strong{display:block;margin-bottom:5px}.proFeature span{color:#718096;font-size:12px}.proButton{margin-top:20px;background:linear-gradient(135deg,#facc15,#f59e0b);color:#171000}.proLocked{position:relative}.proLock{position:absolute;inset:0;background:#030812d9;backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;z-index:5;border-radius:18px;text-align:center}.proLockBox{max-width:420px;padding:20px}.proLockBox p{color:#9fb0c5}.proLockBox button{background:linear-gradient(135deg,#facc15,#f59e0b);color:#171000}.limitBox{padding:14px;border-radius:12px;background:#60a5fa12;border:1px solid #60a5fa2e;color:#b8c8dc;margin:15px 0}.limitBox strong{color:#60a5fa}footer{text-align:center;color:#66778c;font-size:13px;padding:25px}@media(max-width:950px){.analyticsGrid,.proFeatures{grid-template-columns:1fr 1fr}.filters{grid-template-columns:1fr 1fr}}@media(max-width:800px){.grid,.analyticsGrid,.settings{grid-template-columns:1fr}.wide{grid-column:auto}.filters{grid-template-columns:1fr}.nav{position:static}.userbar{width:100%;margin-left:0}}@media(max-width:500px){.proFeatures{grid-template-columns:1fr}}
-</style></head><body>
-<div id="authScreen" class="auth"><div class="panel"><h2>🔐 Trade Journal</h2><p class="subtitle">Войди в аккаунт, чтобы загрузить свои сделки из Supabase.</p><label>Email<input id="authEmail" type="email"></label><br><label>Пароль<input id="authPassword" type="password"></label><div class="authBtns"><button id="loginBtn" class="primary">Войти</button><button id="registerBtn" class="secondary">Регистрация</button></div><div id="authStatus" class="status"></div></div></div>
-<div id="app" style="display:none"><div class="container"><header class="siteHeader"><div class="avatar"></div><div class="headerText"><h1>Trade Journal</h1><p>Журнал сделок и аналитика трейдера</p></div><div class="userbar"><span id="userNickname" class="nickname"></span><button id="logoutBtn" class="secondary">Выйти</button></div></header>
-<nav class="nav"><button class="active" data-page="home">📊 Главная</button><button data-page="add">➕ Сделка</button><button data-page="history">📋 История</button><button data-page="analytics">🧠 Аналитика</button><button data-page="charts">📈 График</button><button data-page="settings">⚙️ Настройки</button></nav>
-<section id="home" class="page active"><div class="stats"><div class="card"><span>Сделок</span><strong id="count">0</strong></div><div class="card"><span>Win Rate</span><strong id="winrate">0%</strong></div><div class="card"><span>Соблюдение стратегии</span><strong id="discipline">0%</strong></div><div class="card"><span>Результат</span><strong id="pnl">0%</strong></div><div class="card"><span>P/L в $</span><strong id="pnlDollar">$0.00</strong></div><div class="card"><span>Баланс</span><strong id="balance">$0.00</strong></div><div class="card"><span>Средняя сделка</span><strong id="avg">0%</strong></div><div class="card"><span>TP</span><strong id="tpCount">0</strong></div><div class="card"><span>SL</span><strong id="slCount">0</strong></div><div class="card"><span>BE</span><strong id="beCount">0</strong></div><div class="card"><span>Лучшая сделка</span><strong id="bestTrade">0%</strong></div><div class="card"><span>Макс. просадка</span><strong id="drawdown">0%</strong></div></div><div id="tradeLimitBox" class="limitBox"></div><div class="panel"><h2>📈 Кривая баланса</h2><canvas id="equity" width="1100" height="320"></canvas></div></section>
-<section id="add" class="page"><div class="panel"><h2>➕ Добавить сделку</h2><div id="addLimitNotice"></div><form id="tradeForm"><div class="grid"><label>Дата<input type="date" id="date" required></label><label>Инструмент<input id="symbol" value="BTCUSDT" required></label><label>Сессия<select id="session"><option>London</option><option>New York</option></select></label><label>Направление<select id="direction"><option>LONG</option><option>SHORT</option></select></label><label>Результат<select id="result"><option value="win">TP</option><option value="loss">SL</option><option value="be">BE</option></select></label><label>P/L, %<input id="pl" type="number" step="0.01" required></label><label class="wide">Причина входа<input id="setup" placeholder="Liquidity Sweep + BOS + FVG"></label><label>Час входа<input id="entryTime" type="time"></label><label>Соблюдал стратегию?<select id="disciplineInput"><option value="yes">Да</option><option value="no">Нет</option></select></label><label class="wide">Комментарий<textarea id="comment"></textarea></label></div><button id="addTradeBtn" class="primary">Добавить сделку</button></form></div></section>
-<section id="history" class="page"><div class="panel"><div class="tableHead"><h2>📋 История сделок</h2><div class="actions"><button id="export" class="secondary">Экспорт CSV</button><button id="clearAll" class="danger">Очистить историю</button></div></div><div class="filters"><label>От даты<input type="date" id="filterFrom"></label><label>До даты<input type="date" id="filterTo"></label><label>Сессия<select id="filterSession"><option value="all">Все</option><option>London</option><option>New York</option></select></label><label>Направление<select id="filterDirection"><option value="all">Все</option><option>LONG</option><option>SHORT</option></select></label><label>Результат<select id="filterResult"><option value="all">Все</option><option value="win">TP</option><option value="loss">SL</option><option value="be">BE</option></select></label><label>Стратегия<select id="filterDiscipline"><option value="all">Все</option><option value="yes">Соблюдал</option><option value="no">Нарушал</option></select></label><button id="resetFilters" class="secondary">Сбросить</button></div><div class="tableWrap"><table><thead><tr><th>Дата</th><th>Инструмент</th><th>Сессия</th><th>Направление</th><th>Результат</th><th>P/L</th><th>Стратегия</th><th>Комментарий</th></tr></thead><tbody id="trades"></tbody></table></div><p id="empty" class="empty">Пока нет сделок.</p></div></section>
-<section id="analytics" class="page"><div id="proPromo" class="proCard"><div class="proHeader"><div class="proTitle"><div class="proCrown">👑</div><div><h2>Trade Journal PRO</h2><p>Профессиональная аналитика твоей торговли</p></div></div><div class="proBadge">PRO</div></div><div class="proFeatures"><div class="proFeature"><strong>📊 Расширенная аналитика</strong><span>Глубокий анализ результатов торговли</span></div><div class="proFeature"><strong>♾️ Неограниченные сделки</strong><span>Храни всю историю без ограничений</span></div><div class="proFeature"><strong>📈 Графики</strong><span>Кривая баланса и динамика результата</span></div><div class="proFeature"><strong>🎯 Анализ сетапов</strong><span>Liquidity Sweep, BOS, FVG и комбинации</span></div><div class="proFeature"><strong>🧠 Дисциплина</strong><span>Сравнение сделок по стратегии</span></div><div class="proFeature"><strong>⏰ Анализ времени</strong><span>Самые результативные часы</span></div><div class="proFeature"><strong>📅 Статистика месяцев</strong><span>Лучшие и худшие периоды</span></div><div class="proFeature"><strong>🔥 Серии сделок</strong><span>Победы, убытки и текущие серии</span></div></div><button id="getProBtn" class="proButton">👑 Получить PRO</button><div id="proStatus" class="status"></div></div>
-<div id="freeAnalytics" class="panel"><h2>🧠 Обычная аналитика</h2><div class="stats"><div class="card"><span>Всего сделок</span><strong id="freeCount">0</strong></div><div class="card"><span>Win Rate</span><strong id="freeWinrate">0%</strong></div><div class="card"><span>P/L</span><strong id="freePL">0%</strong></div><div class="card"><span>TP</span><strong id="freeTP">0</strong></div><div class="card"><span>SL</span><strong id="freeSL">0</strong></div><div class="card"><span>BE</span><strong id="freeBE">0</strong></div><div class="card"><span>Дисциплина</span><strong id="freeDiscipline">0%</strong></div></div></div>
-<div id="proAnalytics" class="proLocked"><div class="proLock"><div class="proLockBox"><h3>👑 Расширенная аналитика доступна в PRO</h3><p>Оформи PRO, чтобы открыть все профессиональные инструменты.</p><button class="openProBtn">Получить PRO</button></div></div><div class="panel"><h2>🧠 Расширенная аналитика</h2><div class="analyticsGrid"><div class="analyticsBox"><h3>🏆 Рейтинг</h3><div class="rating"><div class="ratingCircle" id="rating">0</div><div><strong id="ratingTitle">Нет данных</strong><div class="progress"><div id="ratingBar" class="progressBar"></div></div></div></div><div class="analyticsRow"><span>Win Rate</span><strong id="ratingWinrate">0%</strong></div><div class="analyticsRow"><span>Дисциплина</span><strong id="ratingDiscipline">0%</strong></div><div class="analyticsRow"><span>Profit Factor</span><strong id="ratingPF">0</strong></div></div><div class="analyticsBox"><h3>🌍 Сессии</h3><div class="analyticsRow"><span>London</span><strong id="londonCount">0</strong></div><div class="analyticsRow"><span>London Win Rate</span><strong id="londonWinrate">0%</strong></div><div class="analyticsRow"><span>London P/L</span><strong id="londonPL">0%</strong></div><div class="analyticsRow"><span>New York</span><strong id="nyCount">0</strong></div><div class="analyticsRow"><span>New York Win Rate</span><strong id="nyWinrate">0%</strong></div><div class="analyticsRow"><span>New York P/L</span><strong id="nyPL">0%</strong></div><div class="analyticsRow"><span>Лучшая</span><strong id="bestSession">—</strong></div></div><div class="analyticsBox"><h3>📈 Направление</h3><div class="analyticsRow"><span>LONG</span><strong id="longCount">0</strong></div><div class="analyticsRow"><span>LONG Win Rate</span><strong id="longWinrate">0%</strong></div><div class="analyticsRow"><span>LONG P/L</span><strong id="longPL">0%</strong></div><div class="analyticsRow"><span>SHORT</span><strong id="shortCount">0</strong></div><div class="analyticsRow"><span>SHORT Win Rate</span><strong id="shortWinrate">0%</strong></div><div class="analyticsRow"><span>SHORT P/L</span><strong id="shortPL">0%</strong></div><div class="analyticsRow"><span>Лучшее</span><strong id="bestDirection">—</strong></div></div><div class="analyticsBox"><h3>🧠 Стратегия</h3><div class="analyticsRow"><span>Соблюдал</span><strong id="yesCount">0</strong></div><div class="analyticsRow"><span>Win Rate</span><strong id="yesWinrate">0%</strong></div><div class="analyticsRow"><span>P/L</span><strong id="yesPL">0%</strong></div><div class="analyticsRow"><span>Нарушал</span><strong id="noCount">0</strong></div><div class="analyticsRow"><span>Win Rate</span><strong id="noWinrate">0%</strong></div><div class="analyticsRow"><span>P/L</span><strong id="noPL">0%</strong></div><div class="analyticsRow"><span>Разница P/L</span><strong id="disciplineDifference">0%</strong></div></div><div class="analyticsBox"><h3>🎯 Результативность</h3><div class="analyticsRow"><span>Profit Factor</span><strong id="profitFactor">0</strong></div><div class="analyticsRow"><span>Средний TP</span><strong id="avgTP">0%</strong></div><div class="analyticsRow"><span>Средний SL</span><strong id="avgSL">0%</strong></div><div class="analyticsRow"><span>Средний выигрыш</span><strong id="avgWin">0%</strong></div><div class="analyticsRow"><span>Средний убыток</span><strong id="avgLoss">0%</strong></div></div><div class="analyticsBox"><h3>🔥 Серии</h3><div class="analyticsRow"><span>Макс. побед</span><strong id="maxWinStreak">0</strong></div><div class="analyticsRow"><span>Макс. убытков</span><strong id="maxLossStreak">0</strong></div><div class="analyticsRow"><span>Текущая</span><strong id="currentStreak">0</strong></div><div class="analyticsRow"><span>Тип</span><strong id="currentStreakType">—</strong></div></div><div class="analyticsBox"><h3>📅 Лучший / худший день</h3><div class="analyticsRow"><span>Лучший</span><strong id="bestDay">—</strong></div><div class="analyticsRow"><span>P/L</span><strong id="bestDayPL">0%</strong></div><div class="analyticsRow"><span>Худший</span><strong id="worstDay">—</strong></div><div class="analyticsRow"><span>P/L</span><strong id="worstDayPL">0%</strong></div></div><div class="analyticsBox"><h3>📆 Лучший месяц</h3><div class="analyticsRow"><span>Месяц</span><strong id="bestMonth">—</strong></div><div class="analyticsRow"><span>P/L</span><strong id="bestMonthPL">0%</strong></div><div class="analyticsRow"><span>Win Rate</span><strong id="bestMonthWinrate">0%</strong></div><div class="analyticsRow"><span>Сделок</span><strong id="bestMonthCount">0</strong></div></div><div class="analyticsBox"><h3>🛡️ Риск</h3><div class="analyticsRow"><span>Риск</span><strong id="riskDisplay">0%</strong></div><div class="analyticsRow"><span>Риск в $</span><strong id="riskDollar">0$</strong></div><div class="analyticsRow"><span>TP 1:2</span><strong id="rewardDollar">0$</strong></div><div class="analyticsRow"><span>Просадка</span><strong id="riskDrawdown">0%</strong></div></div></div></div></div>
-<div class="panel"><h2>🎯 Анализ сетапов</h2><table><thead><tr><th>Сетап</th><th>Сделок</th><th>Win Rate</th><th>TP</th><th>SL</th><th>P/L</th><th>Средний</th></tr></thead><tbody id="setupStats"></tbody></table></div><div class="panel"><h2>⏰ Анализ по времени входа</h2><table><thead><tr><th>Час</th><th>Сделок</th><th>Win Rate</th><th>P/L</th><th>Средний</th></tr></thead><tbody id="hourStats"></tbody></table><p id="hourEmpty" class="empty">Добавь сделки со временем входа.</p></div><div class="panel"><h2>📆 Статистика по месяцам</h2><table><thead><tr><th>Месяц</th><th>Сделок</th><th>Win Rate</th><th>TP</th><th>SL</th><th>P/L</th></tr></thead><tbody id="monthlyStats"></tbody></table></div></section>
-<section id="charts" class="page"><div id="proCharts" class="proLocked"><div class="proLock"><div class="proLockBox"><h3>👑 Графики доступны в PRO</h3><p>В PRO открывается кривая баланса и расширенная динамика результата.</p><button class="openProBtn">Получить PRO</button></div></div><div class="panel"><h2>📈 Кривая баланса</h2><canvas id="equity2" width="1100" height="400"></canvas></div><div class="panel"><div class="stats"><div class="card"><span>Начальный депозит</span><strong id="chartDeposit">$0</strong></div><div class="card"><span>Текущий баланс</span><strong id="chartBalance">$0</strong></div><div class="card"><span>Общий P/L</span><strong id="chartPL">0%</strong></div><div class="card"><span>Просадка</span><strong id="chartDD">0%</strong></div></div></div></div></section>
-<section id="settings" class="page"><div class="panel"><h2>⚙️ Профиль</h2><div class="settings"><label>Твой ник<input id="nicknameInput" maxlength="24"></label><button id="saveNickname" class="primary">Сохранить ник</button></div></div><div class="panel"><h2>💰 Торговые настройки</h2><div class="settings"><label>Начальный депозит, $<input id="initialDeposit" type="number" step="0.01"></label><label>Риск на сделку, %<input id="riskPercent" type="number" step="0.1"></label><button id="saveSettings" class="primary">Сохранить</button></div></div><div class="panel"><h2>💾 Данные</h2><button id="exportSettings" class="secondary">Экспортировать сделки</button></div></section>
-<footer>Trade Journal • Данные сохраняются в Supabase.<br>Это не финансовая рекомендация.</footer></div></div>
+*{box-sizing:border-box}
+
+body{
+ margin:0;
+ color:#eef4ff;
+ font-family:Arial,sans-serif;
+ background:#050912
+}
+
+body:before{
+ content:"";
+ position:fixed;
+ inset:0;
+ z-index:-2;
+ background:
+ linear-gradient(#030812bb,#030812e8),
+ url("https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=2000&q=85")
+ center/cover
+}
+
+.container{
+ max-width:1280px;
+ margin:auto;
+ padding:24px 18px
+}
+
+.siteHeader,.nav,.panel,.card{
+ background:linear-gradient(145deg,#101b2ae6,#080f1ae6);
+ border:1px solid #678ed533;
+ border-radius:18px;
+ box-shadow:0 15px 45px #0004
+}
+
+.siteHeader{
+ display:flex;
+ align-items:center;
+ gap:18px;
+ padding:22px 24px;
+ margin-bottom:16px
+}
+
+.avatar{
+ width:66px;
+ height:66px;
+ border-radius:50%;
+ border:2px solid #4da3ff;
+ background:#10233d;
+ position:relative
+}
+
+.avatar:before{
+ content:"";
+ position:absolute;
+ width:22px;
+ height:22px;
+ border:3px solid white;
+ border-radius:50%;
+ top:9px;
+ left:19px
+}
+
+.avatar:after{
+ content:"";
+ position:absolute;
+ width:40px;
+ height:20px;
+ border:3px solid white;
+ border-radius:25px 25px 10px 10px;
+ bottom:7px;
+ left:10px
+}
+
+.headerText h1{
+ margin:0;
+ font-size:30px
+}
+
+.headerText p,.subtitle{
+ color:#8495aa
+}
+
+.userbar{
+ margin-left:auto;
+ display:flex;
+ align-items:center;
+ gap:8px
+}
+
+.nickname{
+ font-weight:bold
+}
+
+.nav{
+ display:flex;
+ gap:8px;
+ flex-wrap:wrap;
+ padding:10px;
+ margin-bottom:20px;
+ position:sticky;
+ top:8px;
+ z-index:10
+}
+
+.nav button{
+ background:#182638bf;
+ color:#aebbd0;
+ border:1px solid #263c56
+}
+
+.nav button.active{
+ background:linear-gradient(135deg,#60a5fa,#38bdf8);
+ color:#04101d
+}
+
+.page{
+ display:none
+}
+
+.page.active{
+ display:block
+}
+
+.panel{
+ padding:22px;
+ margin-bottom:20px
+}
+
+.stats{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+ gap:14px
+}
+
+.card{
+ padding:19px
+}
+
+.card span{
+ display:block;
+ font-size:13px;
+ color:#8090a4;
+ margin-bottom:9px
+}
+
+.card strong{
+ font-size:24px
+}
+
+.grid{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:15px
+}
+
+.wide{
+ grid-column:1/-1
+}
+
+label{
+ display:flex;
+ flex-direction:column;
+ gap:8px;
+ color:#aebbd0;
+ font-size:14px
+}
+
+input,select,textarea{
+ width:100%;
+ background:#050c15dd;
+ border:1px solid #263b53;
+ border-radius:10px;
+ padding:12px;
+ color:white;
+ outline:none
+}
+
+textarea{
+ min-height:90px
+}
+
+button{
+ border:0;
+ border-radius:10px;
+ padding:11px 16px;
+ cursor:pointer;
+ font-weight:bold
+}
+
+button:disabled{
+ opacity:.5;
+ cursor:not-allowed
+}
+
+.primary{
+ background:linear-gradient(135deg,#60a5fa,#38bdf8);
+ color:#03101b;
+ margin-top:18px
+}
+
+.secondary{
+ background:#223348;
+ color:white;
+ border:1px solid #304861
+}
+
+.danger{
+ background:#7f1d1d;
+ color:white
+}
+
+.auth{
+ max-width:500px;
+ margin:50px auto
+}
+
+.auth .panel{
+ padding:28px
+}
+
+.authBtns{
+ display:flex;
+ gap:10px
+}
+
+.authBtns button{
+ flex:1
+}
+
+.status{
+ margin-top:12px;
+ padding:10px;
+ border-radius:10px;
+ background:#60a5fa14;
+ color:#9fb3ca;
+ display:none
+}
+
+.status.show{
+ display:block
+}
+
+.tableHead{
+ display:flex;
+ justify-content:space-between;
+ gap:10px;
+ flex-wrap:wrap
+}
+
+.actions{
+ display:flex;
+ gap:8px;
+ flex-wrap:wrap
+}
+
+.filters{
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ gap:12px;
+ margin:15px 0
+}
+
+.tableWrap{
+ overflow-x:auto
+}
+
+table{
+ width:100%;
+ border-collapse:collapse;
+ min-width:800px
+}
+
+th,td{
+ padding:12px;
+ border-bottom:1px solid #465f7833;
+ text-align:left
+}
+
+th{
+ color:#7f91a8;
+ font-size:13px
+}
+
+.win{
+ color:#4ade80
+}
+
+.loss{
+ color:#f87171
+}
+
+.be{
+ color:#facc15
+}
+
+.empty{
+ text-align:center;
+ color:#66778c
+}
+
+.analyticsGrid{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:15px
+}
+
+.analyticsBox{
+ background:#050d17ad;
+ border:1px solid #557da533;
+ border-radius:14px;
+ padding:18px
+}
+
+.analyticsRow{
+ display:flex;
+ justify-content:space-between;
+ padding:10px 0;
+ border-bottom:1px solid #465f7833
+}
+
+.rating{
+ display:flex;
+ gap:15px;
+ align-items:center
+}
+
+.ratingCircle{
+ width:82px;
+ height:82px;
+ border-radius:50%;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ background:#142338;
+ border:4px solid #60a5fa;
+ font-size:24px;
+ font-weight:bold
+}
+
+.progress{
+ height:10px;
+ background:#182536;
+ border-radius:10px;
+ overflow:hidden;
+ margin-top:8px
+}
+
+.progressBar{
+ height:100%;
+ background:linear-gradient(90deg,#60a5fa,#38bdf8);
+ width:0%
+}
+
+canvas{
+ width:100%;
+ height:320px;
+ background:#050d17e6;
+ border:1px solid #5a8cbe26;
+ border-radius:14px
+}
+
+.badge{
+ padding:5px 9px;
+ border-radius:7px;
+ font-size:12px;
+ font-weight:bold
+}
+
+.badge.win{
+ background:#12351f
+}
+
+.badge.loss{
+ background:#3a1515
+}
+
+.badge.be{
+ background:#3a3210
+}
+
+.proCard{
+ padding:24px;
+ border-radius:20px;
+ background:linear-gradient(145deg,#18233af5,#080f1cf5);
+ border:1px solid #facc1559;
+ margin-bottom:20px
+}
+
+.proHeader{
+ display:flex;
+ justify-content:space-between;
+ align-items:center
+}
+
+.proTitle{
+ display:flex;
+ gap:12px;
+ align-items:center
+}
+
+.proCrown{
+ width:48px;
+ height:48px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ border-radius:14px;
+ background:linear-gradient(135deg,#facc15,#f59e0b);
+ font-size:25px
+}
+
+.proBadge{
+ color:#facc15;
+ border:1px solid #facc1540;
+ padding:7px 12px;
+ border-radius:8px
+}
+
+.proFeatures{
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ gap:12px;
+ margin-top:20px
+}
+
+.proFeature{
+ padding:15px;
+ background:#050c158c;
+ border:1px solid #6482a02e;
+ border-radius:13px
+}
+
+.proFeature strong{
+ display:block;
+ margin-bottom:5px
+}
+
+.proFeature span{
+ color:#718096;
+ font-size:12px
+}
+
+.proButton{
+ margin-top:20px;
+ background:linear-gradient(135deg,#facc15,#f59e0b);
+ color:#171000
+}
+
+.proLocked{
+ position:relative
+}
+
+.proLock{
+ position:absolute;
+ inset:0;
+ background:#030812d9;
+ backdrop-filter:blur(5px);
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ z-index:5;
+ border-radius:18px;
+ text-align:center
+}
+
+.proLockBox{
+ max-width:420px;
+ padding:20px
+}
+
+.proLockBox p{
+ color:#9fb0c5
+}
+
+.proLockBox button{
+ background:linear-gradient(135deg,#facc15,#f59e0b);
+ color:#171000
+}
+
+.limitBox{
+ padding:14px;
+ border-radius:12px;
+ background:#60a5fa12;
+ border:1px solid #60a5fa2e;
+ color:#b8c8dc;
+ margin:15px 0
+}
+
+.limitBox strong{
+ color:#60a5fa
+}
+
+.checkoutBox{
+ margin-top:15px;
+ padding:15px;
+ border-radius:12px;
+ background:#facc1510;
+ border:1px solid #facc1530;
+ color:#cbd5e1;
+ display:none
+}
+
+.checkoutBox.show{
+ display:block
+}
+
+footer{
+ text-align:center;
+ color:#66778c;
+ font-size:13px;
+ padding:25px
+}
+
+.settings{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:15px
+}
+
+@media(max-width:950px){
+ .analyticsGrid,.proFeatures{
+  grid-template-columns:1fr 1fr
+ }
+
+ .filters{
+  grid-template-columns:1fr 1fr
+ }
+}
+
+@media(max-width:800px){
+ .grid,.analyticsGrid,.settings{
+  grid-template-columns:1fr
+ }
+
+ .wide{
+  grid-column:auto
+ }
+
+ .filters{
+  grid-template-columns:1fr
+ }
+
+ .nav{
+  position:static
+ }
+
+ .userbar{
+  width:100%;
+  margin-left:0
+ }
+}
+
+@media(max-width:500px){
+ .proFeatures{
+  grid-template-columns:1fr
+ }
+}
+</style>
+</head>
+
+<body>
+
+<div id="authScreen" class="auth">
+ <div class="panel">
+  <h2>🔐 Trade Journal</h2>
+  <p class="subtitle">
+   Войди в аккаунт, чтобы загрузить свои сделки из Supabase.
+  </p>
+
+  <label>
+   Email
+   <input id="authEmail" type="email">
+  </label>
+
+  <br>
+
+  <label>
+   Пароль
+   <input id="authPassword" type="password">
+  </label>
+
+  <div class="authBtns">
+   <button id="loginBtn" class="primary">Войти</button>
+   <button id="registerBtn" class="secondary">Регистрация</button>
+  </div>
+
+  <div id="authStatus" class="status"></div>
+ </div>
+</div>
+
+<div id="app" style="display:none">
+
+<div class="container">
+
+<header class="siteHeader">
+
+ <div class="avatar"></div>
+
+ <div class="headerText">
+  <h1>Trade Journal</h1>
+  <p>Журнал сделок и аналитика трейдера</p>
+ </div>
+
+ <div class="userbar">
+  <span id="userNickname" class="nickname"></span>
+  <button id="logoutBtn" class="secondary">Выйти</button>
+ </div>
+
+</header>
+
+<nav class="nav">
+
+ <button class="active" data-page="home">
+  📊 Главная
+ </button>
+
+ <button data-page="add">
+  ➕ Сделка
+ </button>
+
+ <button data-page="history">
+  📋 История
+ </button>
+
+ <button data-page="analytics">
+  🧠 Аналитика
+ </button>
+
+ <button data-page="charts">
+  📈 График
+ </button>
+
+ <button data-page="settings">
+  ⚙️ Настройки
+ </button>
+
+</nav>
+
+<!-- HOME -->
+
+<section id="home" class="page active">
+
+ <div class="stats">
+
+  <div class="card">
+   <span>Сделок</span>
+   <strong id="count">0</strong>
+  </div>
+
+  <div class="card">
+   <span>Win Rate</span>
+   <strong id="winrate">0%</strong>
+  </div>
+
+  <div class="card">
+   <span>Соблюдение стратегии</span>
+   <strong id="discipline">0%</strong>
+  </div>
+
+  <div class="card">
+   <span>Результат</span>
+   <strong id="pnl">0%</strong>
+  </div>
+
+  <div class="card">
+   <span>P/L в $</span>
+   <strong id="pnlDollar">$0.00</strong>
+  </div>
+
+  <div class="card">
+   <span>Баланс</span>
+   <strong id="balance">$0.00</strong>
+  </div>
+
+  <div class="card">
+   <span>Средняя сделка</span>
+   <strong id="avg">0%</strong>
+  </div>
+
+  <div class="card">
+   <span>TP</span>
+   <strong id="tpCount">0</strong>
+  </div>
+
+  <div class="card">
+   <span>SL</span>
+   <strong id="slCount">0</strong>
+  </div>
+
+  <div class="card">
+   <span>BE</span>
+   <strong id="beCount">0</strong>
+  </div>
+
+  <div class="card">
+   <span>Лучшая сделка</span>
+   <strong id="bestTrade">0%</strong>
+  </div>
+
+  <div class="card">
+   <span>Макс. просадка</span>
+   <strong id="drawdown">0%</strong>
+  </div>
+
+ </div>
+
+ <div id="tradeLimitBox" class="limitBox"></div>
+
+ <div class="panel">
+  <h2>📈 Кривая баланса</h2>
+  <canvas id="equity" width="1100" height="320"></canvas>
+ </div>
+
+</section>
+
+<!-- ADD -->
+
+<section id="add" class="page">
+
+ <div class="panel">
+
+  <h2>➕ Добавить сделку</h2>
+
+  <div id="addLimitNotice"></div>
+
+  <form id="tradeForm">
+
+   <div class="grid">
+
+    <label>
+     Дата
+     <input type="date" id="date" required>
+    </label>
+
+    <label>
+     Инструмент
+     <input id="symbol" value="BTCUSDT" required>
+    </label>
+
+    <label>
+     Сессия
+     <select id="session">
+      <option>London</option>
+      <option>New York</option>
+     </select>
+    </label>
+
+    <label>
+     Направление
+     <select id="direction">
+      <option>LONG</option>
+      <option>SHORT</option>
+     </select>
+    </label>
+
+    <label>
+     Результат
+     <select id="result">
+      <option value="win">TP</option>
+      <option value="loss">SL</option>
+      <option value="be">BE</option>
+     </select>
+    </label>
+
+    <label>
+     P/L, %
+     <input id="pl" type="number" step="0.01" required>
+    </label>
+
+    <label class="wide">
+     Причина входа
+     <input id="setup" placeholder="Liquidity Sweep + BOS + FVG">
+    </label>
+
+    <label>
+     Час входа
+     <input id="entryTime" type="time">
+    </label>
+
+    <label>
+     Соблюдал стратегию?
+     <select id="disciplineInput">
+      <option value="yes">Да</option>
+      <option value="no">Нет</option>
+     </select>
+    </label>
+
+    <label class="wide">
+     Комментарий
+     <textarea id="comment"></textarea>
+    </label>
+
+   </div>
+
+   <button id="addTradeBtn" class="primary">
+    Добавить сделку
+   </button>
+
+  </form>
+
+ </div>
+
+</section>
+
+<!-- HISTORY -->
+
+<section id="history" class="page">
+
+ <div class="panel">
+
+  <div class="tableHead">
+
+   <h2>📋 История сделок</h2>
+
+   <div class="actions">
+    <button id="export" class="secondary">
+     Экспорт CSV
+    </button>
+
+    <button id="clearAll" class="danger">
+     Очистить историю
+    </button>
+   </div>
+
+  </div>
+
+  <div class="filters">
+
+   <label>
+    От даты
+    <input type="date" id="filterFrom">
+   </label>
+
+   <label>
+    До даты
+    <input type="date" id="filterTo">
+   </label>
+
+   <label>
+    Сессия
+    <select id="filterSession">
+     <option value="all">Все</option>
+     <option>London</option>
+     <option>New York</option>
+    </select>
+   </label>
+
+   <label>
+    Направление
+    <select id="filterDirection">
+     <option value="all">Все</option>
+     <option>LONG</option>
+     <option>SHORT</option>
+    </select>
+   </label>
+
+   <label>
+    Результат
+    <select id="filterResult">
+     <option value="all">Все</option>
+     <option value="win">TP</option>
+     <option value="loss">SL</option>
+     <option value="be">BE</option>
+    </select>
+   </label>
+
+   <label>
+    Стратегия
+    <select id="filterDiscipline">
+     <option value="all">Все</option>
+     <option value="yes">Соблюдал</option>
+     <option value="no">Нарушал</option>
+    </select>
+   </label>
+
+   <button id="resetFilters" class="secondary">
+    Сбросить
+   </button>
+
+  </div>
+
+  <div class="tableWrap">
+
+   <table>
+
+    <thead>
+     <tr>
+      <th>Дата</th>
+      <th>Инструмент</th>
+      <th>Сессия</th>
+      <th>Направление</th>
+      <th>Результат</th>
+      <th>P/L</th>
+      <th>Стратегия</th>
+      <th>Комментарий</th>
+     </tr>
+    </thead>
+
+    <tbody id="trades"></tbody>
+
+   </table>
+
+  </div>
+
+  <p id="empty" class="empty">
+   Пока нет сделок.
+  </p>
+
+ </div>
+
+</section>
+
+<!-- ANALYTICS -->
+
+<section id="analytics" class="page">
+
+ <div id="proPromo" class="proCard">
+
+  <div class="proHeader">
+
+   <div class="proTitle">
+
+    <div class="proCrown">👑</div>
+
+    <div>
+     <h2>Trade Journal PRO</h2>
+     <p>Профессиональная аналитика твоей торговли</p>
+    </div>
+
+   </div>
+
+   <div class="proBadge">
+    PRO
+   </div>
+
+  </div>
+
+  <div class="proFeatures">
+
+   <div class="proFeature">
+    <strong>📊 Расширенная аналитика</strong>
+    <span>Глубокий анализ результатов торговли</span>
+   </div>
+
+   <div class="proFeature">
+    <strong>♾️ Неограниченные сделки</strong>
+    <span>Храни всю историю без ограничений</span>
+   </div>
+
+   <div class="proFeature">
+    <strong>📈 Графики</strong>
+    <span>Кривая баланса и динамика результата</span>
+   </div>
+
+   <div class="proFeature">
+    <strong>🎯 Анализ сетапов</strong>
+    <span>Liquidity Sweep, BOS, FVG</span>
+   </div>
+
+   <div class="proFeature">
+    <strong>🧠 Дисциплина</strong>
+    <span>Сравнение сделок по стратегии</span>
+   </div>
+
+   <div class="proFeature">
+    <strong>⏰ Анализ времени</strong>
+    <span>Самые результативные часы</span>
+   </div>
+
+   <div class="proFeature">
+    <strong>📅 Статистика месяцев</strong>
+    <span>Лучшие и худшие периоды</span>
+   </div>
+
+   <div class="proFeature">
+    <strong>🔥 Серии сделок</strong>
+    <span>Победы, убытки и текущие серии</span>
+   </div>
+
+  </div>
+
+  <button id="getProBtn" class="proButton">
+   👑 Получить PRO
+  </button>
+
+  <div id="checkoutStatus" class="checkoutBox"></div>
+
+  <div id="proStatus" class="status"></div>
+
+ </div>
+
+ <div id="freeAnalytics" class="panel">
+
+  <h2>🧠 Обычная аналитика</h2>
+
+  <div class="stats">
+
+   <div class="card">
+    <span>Всего сделок</span>
+    <strong id="freeCount">0</strong>
+   </div>
+
+   <div class="card">
+    <span>Win Rate</span>
+    <strong id="freeWinrate">0%</strong>
+   </div>
+
+   <div class="card">
+    <span>P/L</span>
+    <strong id="freePL">0%</strong>
+   </div>
+
+   <div class="card">
+    <span>TP</span>
+    <strong id="freeTP">0</strong>
+   </div>
+
+   <div class="card">
+    <span>SL</span>
+    <strong id="freeSL">0</strong>
+   </div>
+
+   <div class="card">
+    <span>BE</span>
+    <strong id="freeBE">0</strong>
+   </div>
+
+   <div class="card">
+    <span>Дисциплина</span>
+    <strong id="freeDiscipline">0%</strong>
+   </div>
+
+  </div>
+
+ </div>
+
+ <div id="proAnalytics" class="proLocked">
+
+  <div class="proLock">
+
+   <div class="proLockBox">
+
+    <h3>👑 Расширенная аналитика доступна в PRO</h3>
+
+    <p>
+     Оформи PRO, чтобы открыть все профессиональные инструменты.
+    </p>
+
+    <button class="openProBtn">
+     Получить PRO
+    </button>
+
+   </div>
+
+  </div>
+
+  <div class="panel">
+
+   <h2>🧠 Расширенная аналитика</h2>
+
+   <div class="analyticsGrid">
+
+    <div class="analyticsBox">
+
+     <h3>🏆 Рейтинг</h3>
+
+     <div class="rating">
+
+      <div class="ratingCircle" id="rating">
+       0
+      </div>
+
+      <div>
+
+       <strong id="ratingTitle">
+        Нет данных
+       </strong>
+
+       <div class="progress">
+        <div id="ratingBar" class="progressBar"></div>
+       </div>
+
+      </div>
+
+     </div>
+
+     <div class="analyticsRow">
+      <span>Win Rate</span>
+      <strong id="ratingWinrate">0%</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>Дисциплина</span>
+      <strong id="ratingDiscipline">0%</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>Profit Factor</span>
+      <strong id="ratingPF">0</strong>
+     </div>
+
+    </div>
+
+    <div class="analyticsBox">
+
+     <h3>🌍 Сессии</h3>
+
+     <div class="analyticsRow">
+      <span>London</span>
+      <strong id="londonCount">0</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>London Win Rate</span>
+      <strong id="londonWinrate">0%</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>London P/L</span>
+      <strong id="londonPL">0%</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>New York</span>
+      <strong id="nyCount">0</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>New York Win Rate</span>
+      <strong id="nyWinrate">0%</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>New York P/L</span>
+      <strong id="nyPL">0%</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>Лучшая</span>
+      <strong id="bestSession">—</strong>
+     </div>
+
+    </div>
+
+    <div class="analyticsBox">
+
+     <h3>📈 Направление</h3>
+
+     <div class="analyticsRow">
+      <span>LONG</span>
+      <strong id="longCount">0</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>LONG Win Rate</span>
+      <strong id="longWinrate">0%</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>LONG P/L</span>
+      <strong id="longPL">0%</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>SHORT</span>
+      <strong id="shortCount">0</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>SHORT Win Rate</span>
+      <strong id="shortWinrate">0%</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>SHORT P/L</span>
+      <strong id="shortPL">0%</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>Лучшее</span>
+      <strong id="bestDirection">—</strong>
+     </div>
+
+    </div>
+
+    <div class="analyticsBox">
+
+     <h3>🧠 Стратегия</h3>
+
+     <div class="analyticsRow">
+      <span>Соблюдал</span>
+      <strong id="yesCount">0</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>Win Rate</span>
+      <strong id="yesWinrate">0%</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>P/L</span>
+      <strong id="yesPL">0%</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>Нарушал</span>
+      <strong id="noCount">0</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>Win Rate</span>
+      <strong id="noWinrate">0%</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>P/L</span>
+      <strong id="noPL">0%</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>Разница P/L</span>
+      <strong id="disciplineDifference">0%</strong>
+     </div>
+
+    </div>
+
+    <div class="analyticsBox">
+
+     <h3>🎯 Результативность</h3>
+
+     <div class="analyticsRow">
+      <span>Profit Factor</span>
+      <strong id="profitFactor">0</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>Средний TP</span>
+      <strong id="avgTP">0%</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>Средний SL</span>
+      <strong id="avgSL">0%</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>Средний выигрыш</span>
+      <strong id="avgWin">0%</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>Средний убыток</span>
+      <strong id="avgLoss">0%</strong>
+     </div>
+
+    </div>
+
+    <div class="analyticsBox">
+
+     <h3>🔥 Серии</h3>
+
+     <div class="analyticsRow">
+      <span>Макс. побед</span>
+      <strong id="maxWinStreak">0</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>Макс. убытков</span>
+      <strong id="maxLossStreak">0</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>Текущая</span>
+      <strong id="currentStreak">0</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>Тип</span>
+      <strong id="currentStreakType">—</strong>
+     </div>
+
+    </div>
+
+    <div class="analyticsBox">
+
+     <h3>📅 Лучший / худший день</h3>
+
+     <div class="analyticsRow">
+      <span>Лучший</span>
+      <strong id="bestDay">—</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>P/L</span>
+      <strong id="bestDayPL">0%</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>Худший</span>
+      <strong id="worstDay">—</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>P/L</span>
+      <strong id="worstDayPL">0%</strong>
+     </div>
+
+    </div>
+
+    <div class="analyticsBox">
+
+     <h3>📆 Лучший месяц</h3>
+
+     <div class="analyticsRow">
+      <span>Месяц</span>
+      <strong id="bestMonth">—</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>P/L</span>
+      <strong id="bestMonthPL">0%</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>Win Rate</span>
+      <strong id="bestMonthWinrate">0%</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>Сделок</span>
+      <strong id="bestMonthCount">0</strong>
+     </div>
+
+    </div>
+
+    <div class="analyticsBox">
+
+     <h3>🛡️ Риск</h3>
+
+     <div class="analyticsRow">
+      <span>Риск</span>
+      <strong id="riskDisplay">0%</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>Риск в $</span>
+      <strong id="riskDollar">0$</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>TP 1:2</span>
+      <strong id="rewardDollar">0$</strong>
+     </div>
+
+     <div class="analyticsRow">
+      <span>Просадка</span>
+      <strong id="riskDrawdown">0%</strong>
+     </div>
+
+    </div>
+
+   </div>
+
+  </div>
+
+ </div>
+
+ <div class="panel">
+
+  <h2>🎯 Анализ сетапов</h2>
+
+  <table>
+
+   <thead>
+    <tr>
+     <th>Сетап</th>
+     <th>Сделок</th>
+     <th>Win Rate</th>
+     <th>TP</th>
+     <th>SL</th>
+     <th>P/L</th>
+     <th>Средний</th>
+    </tr>
+   </thead>
+
+   <tbody id="setupStats"></tbody>
+
+  </table>
+
+ </div>
+
+ <div class="panel">
+
+  <h2>⏰ Анализ по времени входа</h2>
+
+  <table>
+
+   <thead>
+    <tr>
+     <th>Час</th>
+     <th>Сделок</th>
+     <th>Win Rate</th>
+     <th>P/L</th>
+     <th>Средний</th>
+    </tr>
+   </thead>
+
+   <tbody id="hourStats"></tbody>
+
+  </table>
+
+  <p id="hourEmpty" class="empty">
+   Добавь сделки со временем входа.
+  </p>
+
+ </div>
+
+ <div class="panel">
+
+  <h2>📆 Статистика по месяцам</h2>
+
+  <table>
+
+   <thead>
+    <tr>
+     <th>Месяц</th>
+     <th>Сделок</th>
+     <th>Win Rate</th>
+     <th>TP</th>
+     <th>SL</th>
+     <th>P/L</th>
+    </tr>
+   </thead>
+
+   <tbody id="monthlyStats"></tbody>
+
+  </table>
+
+ </div>
+
+</section>
+
+<!-- CHARTS -->
+
+<section id="charts" class="page">
+
+ <div id="proCharts" class="proLocked">
+
+  <div class="proLock">
+
+   <div class="proLockBox">
+
+    <h3>👑 Графики доступны в PRO</h3>
+
+    <p>
+     В PRO открывается кривая баланса и расширенная динамика результата.
+    </p>
+
+    <button class="openProBtn">
+     Получить PRO
+    </button>
+
+   </div>
+
+  </div>
+
+  <div class="panel">
+
+   <h2>📈 Кривая баланса</h2>
+
+   <canvas id="equity2" width="1100" height="400"></canvas>
+
+  </div>
+
+  <div class="panel">
+
+   <div class="stats">
+
+    <div class="card">
+     <span>Начальный депозит</span>
+     <strong id="chartDeposit">$0</strong>
+    </div>
+
+    <div class="card">
+     <span>Текущий баланс</span>
+     <strong id="chartBalance">$0</strong>
+    </div>
+
+    <div class="card">
+     <span>Общий P/L</span>
+     <strong id="chartPL">0%</strong>
+    </div>
+
+    <div class="card">
+     <span>Просадка</span>
+     <strong id="chartDD">0%</strong>
+    </div>
+
+   </div>
+
+  </div>
+
+ </div>
+
+</section>
+
+<!-- SETTINGS -->
+
+<section id="settings" class="page">
+
+ <div class="panel">
+
+  <h2>⚙️ Профиль</h2>
+
+  <div class="settings">
+
+   <label>
+    Твой ник
+    <input id="nicknameInput" maxlength="24">
+   </label>
+
+   <button id="saveNickname" class="primary">
+    Сохранить ник
+   </button>
+
+  </div>
+
+ </div>
+
+ <div class="panel">
+
+  <h2>💰 Торговые настройки</h2>
+
+  <div class="settings">
+
+   <label>
+    Начальный депозит, $
+    <input id="initialDeposit" type="number" step="0.01">
+   </label>
+
+   <label>
+    Риск на сделку, %
+    <input id="riskPercent" type="number" step="0.1">
+   </label>
+
+   <button id="saveSettings" class="primary">
+    Сохранить
+   </button>
+
+  </div>
+
+ </div>
+
+ <div class="panel">
+
+  <h2>💾 Данные</h2>
+
+  <button id="exportSettings" class="secondary">
+   Экспортировать сделки
+  </button>
+
+ </div>
+
+</section>
+
+<footer>
+ Trade Journal • Данные сохраняются в Supabase.
+ <br>
+ Это не финансовая рекомендация.
+</footer>
+
+</div>
+</div>
+
 <script>
-const SUPABASE_URL='https://mocxiqabmoehjkpsddld.supabase.co',SUPABASE_KEY='sb_publishable_LdhC8_unv5Yiq5cevuPxqw_MWxnMiau';const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{autoRefreshToken:true,persistSession:true,detectSessionInUrl:true}}),$=id=>document.getElementById(id),FREE_TRADE_LIMIT=10,SETTINGS_KEY='tradeJournalSettings';let trades=[],settings={deposit:100,risk:1},currentUser=null,isPro=false;
-function status(m,e=false){let x=$('authStatus');x.textContent=m;x.classList.add('show');x.style.color=e?'#f87171':'#9fb3ca'}function pl(v){v=+v||0;return(v>=0?'+':'')+v.toFixed(2)+'%'}function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}function stat(a){let n=a.length,w=a.filter(x=>x.result==='win').length,p=a.reduce((s,x)=>s+(+x.pl||0),0);return{n,w,p,wr:n?Math.round(w/n*100):0}}
-function loadLocal(){try{let s=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}');if(s.deposit!=null)settings.deposit=+s.deposit;if(s.risk!=null)settings.risk=+s.risk;isPro=localStorage.getItem('tradeJournalPRO')==='true'}catch(e){}}function proUI(){$('proPromo').style.display=isPro?'none':'block';['proAnalytics','proCharts'].forEach(id=>{let x=$(id);x.classList.toggle('proLocked',!isPro);let l=x.querySelector('.proLock');if(l)l.style.display=isPro?'none':'flex'})}function activatePro(){isPro=true;localStorage.setItem('tradeJournalPRO','true');proUI();$('proStatus').style.display='block';$('proStatus').textContent='🔥 PRO активирован. Оплату подключим следующим этапом.';render()}
-function limitUI(){let n=trades.length,r=Math.max(0,FREE_TRADE_LIMIT-n);$('tradeLimitBox').innerHTML=isPro?'👑 <strong>PRO активен</strong> — количество сделок не ограничено.':`Бесплатная версия: <strong>${n}/${FREE_TRADE_LIMIT}</strong> сделок. Осталось: <strong>${r}</strong>.`;$('addLimitNotice').innerHTML=isPro?'':`<div class="limitBox">🔒 Лимит бесплатной версии: <strong>${n}/${FREE_TRADE_LIMIT}</strong> сделок.</div>`;$('addTradeBtn').disabled=!isPro&&n>=FREE_TRADE_LIMIT}
-function showAuth(m='',e=false){$('app').style.display='none';$('authScreen').style.display='block';if(m)status(m,e)}function nick(){return(currentUser?.user_metadata?.nickname||'').trim()}function updateNick(){$('userNickname').textContent=nick()?'@'+nick():(currentUser?.email||'');$('nicknameInput').value=nick()}
-async function loadTrades(){if(!currentUser)return;let {data,error}=await client.from('trades').select('*').eq('user_id',currentUser.id).order('date',{ascending:true});if(error){if(/jwt|expired|invalid/i.test(error.message||'')){await client.auth.signOut({scope:'local'});return showAuth('Сессия истекла.',true)}throw error}trades=(data||[]).map(x=>({...x,pl:+x.pl||0}));render()}
-async function init(){let {data}=await client.auth.getSession();if(data.session?.user){currentUser=data.session.user;loadLocal();$('authScreen').style.display='none';$('app').style.display='block';$('initialDeposit').value=settings.deposit;$('riskPercent').value=settings.risk;$('date').value=new Date().toISOString().slice(0,10);updateNick();proUI();await loadTrades()}else showAuth()}
-$('loginBtn').onclick=async()=>{let email=$('authEmail').value.trim(),password=$('authPassword').value;if(!email||!password)return status('Введи email и пароль.',true);let {data,error}=await client.auth.signInWithPassword({email,password});if(error)return status(error.message,true);currentUser=data.user;loadLocal();$('authScreen').style.display='none';$('app').style.display='block';updateNick();proUI();await loadTrades()};$('registerBtn').onclick=async()=>{let email=$('authEmail').value.trim(),password=$('authPassword').value;if(!email||password.length<6)return status('Введи email и пароль минимум 6 символов.',true);let {data,error}=await client.auth.signUp({email,password});if(error)return status(error.message,true);if(data.session){currentUser=data.user;loadLocal();$('authScreen').style.display='none';$('app').style.display='block';updateNick();proUI();await loadTrades()}else status('Аккаунт создан. Подтверди email и затем войди.')};$('logoutBtn').onclick=async()=>{await client.auth.signOut({scope:'local'});currentUser=null;trades=[];showAuth('Ты вышел из аккаунта.')};
-document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id===b.dataset.page));if(b.dataset.page==='charts')draw('equity2');scrollTo({top:0,behavior:'smooth'})});
-function filtered(){let f=$('filterFrom').value,t=$('filterTo').value,s=$('filterSession').value,d=$('filterDirection').value,r=$('filterResult').value,c=$('filterDiscipline').value;return trades.filter(x=>(!f||x.date>=f)&&(!t||x.date<=t)&&(s==='all'||x.session===s)&&(d==='all'||x.direction===d)&&(r==='all'||x.result===r)&&(c==='all'||x.discipline===c))}
-function advanced(){let win=trades.filter(x=>x.result==='win'),loss=trades.filter(x=>x.result==='loss'),gp=win.reduce((s,x)=>s+Math.max(0,+x.pl||0),0),gl=Math.abs(loss.reduce((s,x)=>s+Math.min(0,+x.pl||0),0)),pf=gl?gp/gl:gp?Infinity:0;['profitFactor','ratingPF'].forEach(id=>$(id).textContent=pf===Infinity?'∞':pf.toFixed(2));let aw=win.length?win.reduce((s,x)=>s+x.pl,0)/win.length:0,al=loss.length?loss.reduce((s,x)=>s+x.pl,0)/loss.length:0;[['avgTP',aw],['avgWin',aw],['avgSL',al],['avgLoss',al]].forEach(([id,v])=>$(id).textContent=pl(v));let cw=0,cl=0,mw=0,ml=0;trades.forEach(x=>{if(x.result==='win'){cw++;cl=0;mw=Math.max(mw,cw)}else if(x.result==='loss'){cl++;cw=0;ml=Math.max(ml,cl)}else{cw=cl=0}});$('maxWinStreak').textContent=mw;$('maxLossStreak').textContent=ml;let st=0,typ='';if(trades.length&&['win','loss'].includes(trades.at(-1).result)){typ=trades.at(-1).result;for(let i=trades.length-1;i>=0&&trades[i].result===typ;i--)st++}$('currentStreak').textContent=st;$('currentStreakType').textContent=typ==='win'?'Победы':typ==='loss'?'Убытки':'—';let daily={};trades.forEach(x=>daily[x.date]=(daily[x.date]||0)+x.pl);let ds=Object.entries(daily);if(ds.length){let b=ds.reduce((a,x)=>x[1]>a[1]?x:a),w=ds.reduce((a,x)=>x[1]<a[1]?x:a);$('bestDay').textContent=b[0];$('bestDayPL').textContent=pl(b[1]);$('worstDay').textContent=w[0];$('worstDayPL').textContent=pl(w[1])}let mon={};trades.forEach(x=>{let m=x.date?.slice(0,7);if(!m)return;(mon[m]??={n:0,w:0,p:0});mon[m].n++;mon[m].p+=x.pl;if(x.result==='win')mon[m].w++});let me=Object.entries(mon);if(me.length){let b=me.reduce((a,x)=>x[1].p>a[1].p?x:a);$('bestMonth').textContent=b[0];$('bestMonthPL').textContent=pl(b[1].p);$('bestMonthWinrate').textContent=Math.round(b[1].w/b[1].n*100)+'%';$('bestMonthCount').textContent=b[1].n}let n=trades.length,wr=n?win.length/n*100:0,dr=n?trades.filter(x=>x.discipline==='yes').length/n*100:0,score=pf===Infinity?100:Math.min(100,pf/2*100),rating=Math.round(Math.min(100,wr*.4+dr*.4+score*.2));$('rating').textContent=rating;$('ratingBar').style.width=rating+'%';$('ratingWinrate').textContent=Math.round(wr)+'%';$('ratingDiscipline').textContent=Math.round(dr)+'%';$('ratingTitle').textContent=rating>=80?'🔥 Отличная торговля':rating>=60?'💪 Хороший результат':rating>=40?'⚠️ Есть что улучшить':'🛑 Нужно пересмотреть торговлю';let rd=settings.deposit*settings.risk/100;$('riskDisplay').textContent=settings.risk.toFixed(2)+'%';$('riskDollar').textContent=rd.toFixed(2)+'$';$('rewardDollar').textContent=(rd*2).toFixed(2)+'$'}
-function groupStats(){let groups={london:trades.filter(x=>x.session==='London'),ny:trades.filter(x=>x.session==='New York'),long:trades.filter(x=>x.direction==='LONG'),short:trades.filter(x=>x.direction==='SHORT'),yes:trades.filter(x=>x.discipline==='yes'),no:trades.filter(x=>x.discipline==='no')};for(let [k,a] of Object.entries(groups)){let s=stat(a);$(k+'Count').textContent=s.n;$(k+'Winrate').textContent=s.wr+'%';$(k+'PL').textContent=pl(s.p)}let y=stat(groups.yes),n=stat(groups.no),l=stat(groups.london),ny=stat(groups.ny),lo=stat(groups.long),sh=stat(groups.short);$('disciplineDifference').textContent=pl(y.p-n.p);$('bestSession').textContent=l.n||ny.n?(l.p>=ny.p?'London':'New York'):'—';$('bestDirection').textContent=lo.n||sh.n?(lo.p>=sh.p?'LONG':'SHORT'):'—'}
-function setupAnalytics(){let names=['Liquidity Sweep','BOS','FVG'],d={};names.forEach(n=>d[n]={n:0,w:0,tp:0,sl:0,p:0});trades.forEach(x=>{let q=(x.setup||'').toLowerCase(),f=[];if(/liquidity|sweep/.test(q))f.push('Liquidity Sweep');if(/bos|break of structure/.test(q))f.push('BOS');if(/fvg|fair value gap/.test(q))f.push('FVG');f.forEach(n=>{d[n].n++;d[n].p+=x.pl;if(x.result==='win'){d[n].w++;d[n].tp++}if(x.result==='loss')d[n].sl++})});$('setupStats').innerHTML=names.map(n=>{let x=d[n];return `<tr><td>${n}</td><td>${x.n}</td><td>${x.n?Math.round(x.w/x.n*100):0}%</td><td>${x.tp}</td><td>${x.sl}</td><td class="${x.p>=0?'win':'loss'}">${pl(x.p)}</td><td>${pl(x.n?x.p/x.n:0)}</td></tr>`}).join('')}
-function timeMonthly(){let h={},m={};trades.forEach(x=>{let tm=x.entry_time||x.entryTime;if(tm){let k=tm.slice(0,2);(h[k]??={n:0,w:0,p:0});h[k].n++;h[k].p+=x.pl;if(x.result==='win')h[k].w++}let mo=x.date?.slice(0,7);if(mo){(m[mo]??={n:0,w:0,tp:0,sl:0,p:0});m[mo].n++;m[mo].p+=x.pl;if(x.result==='win'){m[mo].w++;m[mo].tp++}if(x.result==='loss')m[mo].sl++}});let he=Object.entries(h).sort();$('hourStats').innerHTML=he.map(([k,x])=>`<tr><td>${k}:00</td><td>${x.n}</td><td>${Math.round(x.w/x.n*100)}%</td><td>${pl(x.p)}</td><td>${pl(x.p/x.n)}</td></tr>`).join('');$('hourEmpty').style.display=he.length?'none':'block';$('monthlyStats').innerHTML=Object.entries(m).sort().reverse().map(([k,x])=>`<tr><td>${k}</td><td>${x.n}</td><td>${Math.round(x.w/x.n*100)}%</td><td>${x.tp}</td><td>${x.sl}</td><td>${pl(x.p)}</td></tr>`).join('')}
-function draw(id){let c=$(id);if(!c)return;let ctx=c.getContext('2d'),W=c.width,H=c.height,b=+settings.deposit||0,v=[b];trades.forEach(x=>{b*=1+x.pl/100;v.push(b)});ctx.clearRect(0,0,W,H);if(v.length<2){ctx.fillStyle='#66778c';ctx.font='16px Arial';ctx.fillText('Добавь сделки, чтобы увидеть график',25,40);return}let mn=Math.min(...v),mx=Math.max(...v);if(mn===mx){mn--;mx++}ctx.strokeStyle='#1b2b3c';for(let i=1;i<5;i++){let y=25+i*(H-50)/5;ctx.beginPath();ctx.moveTo(25,y);ctx.lineTo(W-25,y);ctx.stroke()}ctx.beginPath();v.forEach((x,i)=>{let px=25+i*(W-50)/(v.length-1),py=H-25-(x-mn)/(mx-mn)*(H-50);i?ctx.lineTo(px,py):ctx.moveTo(px,py)});ctx.strokeStyle='#60a5fa';ctx.lineWidth=3;ctx.stroke()}
-function render(){let n=trades.length,w=trades.filter(x=>x.result==='win').length,sl=trades.filter(x=>x.result==='loss').length,be=trades.filter(x=>x.result==='be').length,p=trades.reduce((s,x)=>s+x.pl,0),disc=trades.filter(x=>x.discipline==='yes').length,bal=+settings.deposit||0,peak=bal,dd=0,best=0;trades.forEach(x=>{best=Math.max(best,x.pl);bal*=1+x.pl/100;peak=Math.max(peak,bal);dd=Math.max(dd,(peak-bal)/peak*100)});$('count').textContent=n;$('winrate').textContent=n?Math.round(w/n*100)+'%':'0%';$('discipline').textContent=n?Math.round(disc/n*100)+'%':'0%';$('pnl').textContent=pl(p);$('pnlDollar').textContent=(bal-(+settings.deposit||0)).toFixed(2)+'$';$('balance').textContent='$'+bal.toFixed(2);$('avg').textContent=pl(n?p/n:0);$('tpCount').textContent=w;$('slCount').textContent=sl;$('beCount').textContent=be;$('bestTrade').textContent=pl(best);$('drawdown').textContent='-'+dd.toFixed(2)+'%';let a=filtered();$('empty').style.display=a.length?'none':'block';$('trades').innerHTML=a.slice().reverse().map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.symbol)}</td><td>${esc(x.session)}</td><td>${esc(x.direction)}</td><td><span class="badge ${x.result}">${x.result==='win'?'TP':x.result==='loss'?'SL':'BE'}</span></td><td class="${x.pl>=0?'win':'loss'}">${pl(x.pl)}</td><td>${x.discipline==='yes'?'Да':'Нет'}</td><td>${esc(x.comment||x.setup||'—')}</td></tr>`).join('');let s=stat(trades);$('freeCount').textContent=s.n;$('freeWinrate').textContent=s.wr+'%';$('freePL').textContent=pl(s.p);$('freeTP').textContent=w;$('freeSL').textContent=sl;$('freeBE').textContent=be;$('freeDiscipline').textContent=n?Math.round(disc/n*100)+'%':'0%';limitUI();groupStats();advanced();setupAnalytics();timeMonthly();draw('equity');draw('equity2');$('chartDeposit').textContent='$'+(+settings.deposit||0).toFixed(2);$('chartBalance').textContent='$'+bal.toFixed(2);$('chartPL').textContent=pl(p);$('chartDD').textContent='-'+dd.toFixed(2)+'%'}
-$('getProBtn').onclick=activatePro;document.querySelectorAll('.openProBtn').forEach(b=>b.onclick=activatePro);$('saveSettings').onclick=()=>{settings={deposit:+$('initialDeposit').value||0,risk:+$('riskPercent').value||0};localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings));render();alert('Настройки сохранены')};$('saveNickname').onclick=async()=>{let n=$('nicknameInput').value.trim();if(n.length<3)return alert('Ник должен содержать минимум 3 символа.');let {data,error}=await client.auth.updateUser({data:{nickname:n}});if(error)return alert(error.message);currentUser=data.user;updateNick()};
-$('tradeForm').onsubmit=async e=>{e.preventDefault();if(!isPro&&trades.length>=FREE_TRADE_LIMIT){alert('Бесплатная версия ограничена 10 сделками. Для новых сделок нужен PRO.');return}let t={user_id:currentUser.id,date:$('date').value,symbol:$('symbol').value.trim(),session:$('session').value,direction:$('direction').value,result:$('result').value,pl:+$('pl').value,setup:$('setup').value.trim(),entry_time:$('entryTime').value||null,discipline:$('disciplineInput').value,comment:$('comment').value.trim()};let {data,error}=await client.from('trades').insert(t).select().single();if(error)return alert(error.message);trades.push({...data,pl:+data.pl||0});render();e.target.reset();$('date').value=new Date().toISOString().slice(0,10);$('symbol').value='BTCUSDT';alert('Сделка добавлена')};
-['filterFrom','filterTo','filterSession','filterDirection','filterResult','filterDiscipline'].forEach(id=>$(id).onchange=render);$('resetFilters').onclick=()=>{['filterFrom','filterTo'].forEach(id=>$(id).value='');['filterSession','filterDirection','filterResult','filterDiscipline'].forEach(id=>$(id).value='all');render()};$('clearAll').onclick=async()=>{if(confirm('Удалить всю историю сделок?')){let {error}=await client.from('trades').delete().eq('user_id',currentUser.id);if(error)return alert(error.message);trades=[];render()}};function exportCSV(){let rows=[['Дата','Инструмент','Сессия','Направление','Результат','P/L %','Сетап','Время','Стратегия','Комментарий'],...filtered().map(x=>[x.date,x.symbol,x.session,x.direction,x.result,x.pl,x.setup,x.entry_time||'',x.discipline,x.comment||''])],csv='\ufeff'+rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\n'),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='trade-journal.csv';a.click()}$('export').onclick=exportCSV;$('exportSettings').onclick=exportCSV;
-client.auth.onAuthStateChange((e,s)=>{if(e==='SIGNED_OUT')showAuth()});init();
-</script></body></html>
+
+const SUPABASE_URL =
+"https://mocxiqabmoehjkpsddld.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_LdhC8_unv5Yiq5cevuPxqw_MWxnMiau";
+
+const CHECKOUT_URL =
+"https://mocxiqabmoehjkpsddld.supabase.co/functions/v1/create-checkout";
+
+const client =
+window.supabase.createClient(
+ SUPABASE_URL,
+ SUPABASE_KEY,
+ {
+  auth:{
+   autoRefreshToken:true,
+   persistSession:true,
+   detectSessionInUrl:true
+  }
+ }
+);
+
+const $ = id => document.getElementById(id);
+
+const FREE_TRADE_LIMIT = 10;
+
+const SETTINGS_KEY =
+"tradeJournalSettings";
+
+let trades = [];
+
+let settings = {
+ deposit:100,
+ risk:1
+};
+
+let currentUser = null;
+
+let isPro = false;
+
+
+/* =========================
+   HELPERS
+========================= */
+
+function status(message,error=false){
+
+ const el = $("authStatus");
+
+ el.textContent = message;
+
+ el.classList.add("show");
+
+ el.style.color =
+ error ? "#f87171" : "#9fb3ca";
+}
+
+
+function pl(value){
+
+ value = Number(value) || 0;
+
+ return (
+  value >= 0 ? "+" : ""
+ ) + value.toFixed(2) + "%";
+}
+
+
+function esc(value){
+
+ return String(value ?? "")
+ .replace(/[&<>"']/g,m=>({
+  "&":"&amp;",
+  "<":"&lt;",
+  ">":"&gt;",
+  '"':"&quot;",
+  "'":"&#039;"
+ }[m]));
+
+}
+
+
+function stat(array){
+
+ const n = array.length;
+
+ const w =
+ array.filter(x=>x.result==="win").length;
+
+ const p =
+ array.reduce(
+  (sum,x)=>sum+(Number(x.pl)||0),
+  0
+ );
+
+ return {
+  n,
+  w,
+  p,
+  wr:n ? Math.round(w/n*100) : 0
+ };
+
+}
+
+
+/* =========================
+   LOCAL SETTINGS
+========================= */
+
+function loadLocal(){
+
+ try{
+
+  const saved =
+  JSON.parse(
+   localStorage.getItem(SETTINGS_KEY)||"{}"
+  );
+
+  if(saved.deposit!=null)
+   settings.deposit=Number(saved.deposit);
+
+  if(saved.risk!=null)
+   settings.risk=Number(saved.risk);
+
+ }catch(e){
+
+  console.error(e);
+
+ }
+
+}
+
+
+/* =========================
+   PRO STATUS
+========================= */
+
+function readProFromUser(user){
+
+ if(!user) return false;
+
+ const metadata =
+ user.user_metadata || {};
+
+ return (
+  metadata.is_pro === true ||
+  metadata.is_pro === "true" ||
+  metadata.pro === true ||
+  metadata.pro === "true" ||
+  metadata.subscription === "pro" ||
+  metadata.plan === "pro"
+ );
+
+}
+
+
+async function syncProStatus(){
+
+ if(!currentUser){
+
+  isPro=false;
+  proUI();
+  return;
+
+ }
+
+ try{
+
+  const {data,error} =
+  await client.auth.getUser();
+
+  if(!error && data?.user){
+
+   currentUser=data.user;
+
+   isPro=readProFromUser(data.user);
+
+  }else{
+
+   isPro=readProFromUser(currentUser);
+
+  }
+
+ }catch(e){
+
+  isPro=readProFromUser(currentUser);
+
+ }
+
+ proUI();
+
+}
+
+
+/* =========================
+   PRO UI
+========================= */
+
+function proUI(){
+
+ const promo =
+ $("proPromo");
+
+ if(promo)
+  promo.style.display =
+   isPro ? "none" : "block";
+
+ ["proAnalytics","proCharts"]
+ .forEach(id=>{
+
+  const box=$(id);
+
+  if(!box) return;
+
+  const lock =
+   box.querySelector(".proLock");
+
+  box.classList.toggle(
+   "proLocked",
+   !isPro
+  );
+
+  if(lock)
+   lock.style.display =
+    isPro ? "none" : "flex";
+
+ });
+
+}
+
+
+function showCheckoutMessage(message){
+
+ const box =
+ $("checkoutStatus");
+
+ box.textContent=message;
+
+ box.classList.add("show");
+
+}
+
+
+/* =========================
+   CREATE STRIPE CHECKOUT
+========================= */
+
+async function startCheckout(){
+
+ if(!currentUser){
+
+  alert("Сначала войди в аккаунт.");
+
+  return;
+
+ }
+
+ const button =
+ $("getProBtn");
+
+ if(button){
+
+  button.disabled=true;
+  button.textContent="⏳ Создаём оплату...";
+ }
+
+ showCheckoutMessage(
+  "Подготавливаем защищённую страницу оплаты..."
+ );
+
+ try{
+
+  const {
+   data:{
+    session
+   }
+  } =
+  await client.auth.getSession();
+
+  if(!session){
+
+   throw new Error(
+    "Сессия пользователя не найдена. Войди в аккаунт заново."
+   );
+
+  }
+
+  const returnUrl =
+   window.location.origin +
+   window.location.pathname +
+   "?checkout=success";
+
+  const response =
+  await fetch(
+   CHECKOUT_URL,
+   {
+    method:"POST",
+
+    headers:{
+     "Content-Type":"application/json",
+     "Authorization":
+      "Bearer "+session.access_token,
+     "apikey":SUPABASE_KEY
+    },
+
+    body:JSON.stringify({
+     user_id:currentUser.id,
+     email:currentUser.email,
+     return_url:returnUrl
+    })
+   }
+  );
+
+  const text =
+   await response.text();
+
+  let result;
+
+  try{
+
+   result=JSON.parse(text);
+
+  }catch(e){
+
+   result={raw:text};
+
+  }
+
+  if(!response.ok){
+
+   throw new Error(
+    result.error ||
+    result.message ||
+    result.raw ||
+    "Ошибка создания платежа."
+   );
+
+  }
+
+  const checkoutUrl =
+   result.url ||
+   result.checkout_url ||
+   result.checkoutUrl ||
+   result.session_url ||
+   result.sessionUrl;
+
+  if(!checkoutUrl){
+
+   console.error(
+    "Ответ create-checkout:",
+    result
+   );
+
+   throw new Error(
+    "Сервер оплаты не вернул ссылку на Checkout."
+   );
+
+  }
+
+  showCheckoutMessage(
+   "Перенаправляем на защищённую страницу оплаты..."
+  );
+
+  window.location.href =
+   checkoutUrl;
+
+ }catch(error){
+
+  console.error(
+   "Checkout error:",
+   error
+  );
+
+  showCheckoutMessage(
+   "Ошибка оплаты: " +
+   (error.message || "неизвестная ошибка")
+  );
+
+  if(button){
+
+   button.disabled=false;
+   button.textContent="👑 Получить PRO";
+
+  }
+
+ }
+
+}
+
+
+/* =========================
+   CHECK RETURN FROM PAYMENT
+========================= */
+
+async function handleCheckoutReturn(){
+
+ const params =
+ new URLSearchParams(
+  window.location.search
+ );
+
+ if(
+  params.get("checkout")==="success" ||
+  params.get("success")==="true"
+ ){
+
+  const box =
+   $("proStatus");
+
+  box.style.display="block";
+
+  box.textContent =
+   "⏳ Проверяем оплату и активацию PRO...";
+
+  await new Promise(
+   resolve=>setTimeout(resolve,1500)
+  );
+
+  await syncProStatus();
+
+  if(isPro){
+
+   box.textContent =
+    "👑 PRO успешно активирован!";
+
+  }else{
+
+   box.textContent =
+    "Оплата прошла или находится в обработке. Если PRO ещё не появился, обнови страницу через несколько секунд.";
+
+  }
+
+  window.history.replaceState(
+   {},
+   document.title,
+   window.location.pathname
+  );
+
+ }
+
+}
+
+
+/* =========================
+   LIMIT
+========================= */
+
+function limitUI(){
+
+ const n=trades.length;
+
+ const remaining =
+  Math.max(
+   0,
+   FREE_TRADE_LIMIT-n
+  );
+
+ $("tradeLimitBox").innerHTML =
+  isPro
+
+  ?
+
+  "👑 <strong>PRO активен</strong> — количество сделок не ограничено."
+
+  :
+
+  `Бесплатная версия:
+   <strong>${n}/${FREE_TRADE_LIMIT}</strong>
+   сделок.
+   Осталось:
+   <strong>${remaining}</strong>.`;
+
+ $("addLimitNotice").innerHTML =
+  isPro
+
+  ?
+
+  ""
+
+  :
+
+  `<div class="limitBox">
+   🔒 Лимит бесплатной версии:
+   <strong>${n}/${FREE_TRADE_LIMIT}</strong>
+  </div>`;
+
+ $("addTradeBtn").disabled =
+  !isPro &&
+  n>=FREE_TRADE_LIMIT;
+
+}
+
+
+/* =========================
+   AUTH
+========================= */
+
+function showAuth(message="",error=false){
+
+ $("app").style.display="none";
+
+ $("authScreen").style.display="block";
+
+ if(message)
+  status(message,error);
+
+}
+
+
+function nick(){
+
+ return (
+  currentUser?.user_metadata?.nickname ||
+  ""
+ ).trim();
+
+}
+
+
+function updateNick(){
+
+ $("userNickname").textContent =
+  nick()
+   ? "@"+nick()
+   : (currentUser?.email||"");
+
+ $("nicknameInput").value =
+  nick();
+
+}
+
+
+async function loadTrades(){
+
+ if(!currentUser)
+  return;
+
+ const {
+  data,
+  error
+ } =
+ await client
+  .from("trades")
+  .select("*")
+  .eq("user_id",currentUser.id)
+  .order("date",{ascending:true});
+
+ if(error){
+
+  if(
+   /jwt|expired|invalid/i
+   .test(error.message||"")
+  ){
+
+   await client.auth.signOut({
+    scope:"local"
+   });
+
+   return showAuth(
+    "Сессия истекла.",
+    true
+   );
+
+  }
+
+  console.error(error);
+
+  return;
+
+ }
+
+ trades =
+  (data||[])
+   .map(x=>({
+    ...x,
+    pl:Number(x.pl)||0
+   }));
+
+ render();
+
+}
+
+
+async function init(){
+
+ loadLocal();
+
+ const {
+  data
+ } =
+ await client.auth.getSession();
+
+ if(data.session?.user){
+
+  currentUser =
+   data.session.user;
+
+  $("authScreen").style.display="none";
+
+  $("app").style.display="block";
+
+  $("initialDeposit").value =
+   settings.deposit;
+
+  $("riskPercent").value =
+   settings.risk;
+
+  $("date").value =
+   new Date()
+    .toISOString()
+    .slice(0,10);
+
+  updateNick();
+
+  await syncProStatus();
+
+  await loadTrades();
+
+  await handleCheckoutReturn();
+
+ }else{
+
+  showAuth();
+
+ }
+
+}
+
+
+/* LOGIN */
+
+$("loginBtn").onclick =
+async()=>{
+
+ const email =
+  $("authEmail").value.trim();
+
+ const password =
+  $("authPassword").value;
+
+ if(!email || !password){
+
+  return status(
+   "Введи email и пароль.",
+   true
+  );
+
+ }
+
+ const {
+  data,
+  error
+ } =
+ await client.auth.signInWithPassword({
+  email,
+  password
+ });
+
+ if(error)
+  return status(
+   error.message,
+   true
+  );
+
+ currentUser=data.user;
+
+ loadLocal();
+
+ $("authScreen").style.display="none";
+
+ $("app").style.display="block";
+
+ updateNick();
+
+ await syncProStatus();
+
+ await loadTrades();
+
+};
+
+
+/* REGISTER */
+
+$("registerBtn").onclick =
+async()=>{
+
+ const email =
+  $("authEmail").value.trim();
+
+ const password =
+  $("authPassword").value;
+
+ if(
+  !email ||
+  password.length<6
+ ){
+
+  return status(
+   "Введи email и пароль минимум 6 символов.",
+   true
+  );
+
+ }
+
+ const {
+  data,
+  error
+  } =
+  await client.auth.signUp({
+   email,
+   password
+  });
+
+ if(error)
+  return status(
+   error.message,
+   true
+  );
+
+ if(data.session){
+
+  currentUser=data.user;
+
+  loadLocal();
+
+  $("authScreen").style.display="none";
+
+  $("app").style.display="block";
+
+  updateNick();
+
+  await syncProStatus();
+
+  await loadTrades();
+
+ }else{
+
+  status(
+   "Аккаунт создан. Подтверди email и затем войди."
+  );
+
+ }
+
+};
+
+
+/* LOGOUT */
+
+$("logoutBtn").onclick =
+async()=>{
+
+ await client.auth.signOut({
+  scope:"local"
+ });
+
+ currentUser=null;
+
+ trades=[];
+
+ isPro=false;
+
+ showAuth(
+  "Ты вышел из аккаунта."
+ );
+
+};
+
+
+/* =========================
+   NAVIGATION
+========================= */
+
+document
+.querySelectorAll(".nav button")
+.forEach(button=>{
+
+ button.onclick=()=>{
+
+  document
+   .querySelectorAll(".nav button")
+   .forEach(x=>
+    x.classList.toggle(
+     "active",
+     x===button
+    )
+   );
+
+  document
+   .querySelectorAll(".page")
+   .forEach(x=>
+    x.classList.toggle(
+     "active",
+     x.id===button.dataset.page
+    )
+   );
+
+  if(
+   button.dataset.page==="charts"
+  ){
+
+   draw("equity2");
+
+  }
+
+  scrollTo({
+   top:0,
+   behavior:"smooth"
+  });
+
+ };
+
+});
+
+
+/* =========================
+   FILTERS
+========================= */
+
+function filtered(){
+
+ const f =
+  $("filterFrom").value;
+
+ const t =
+  $("filterTo").value;
+
+ const s =
+  $("filterSession").value;
+
+ const d =
+  $("filterDirection").value;
+
+ const r =
+  $("filterResult").value;
+
+ const c =
+  $("filterDiscipline").value;
+
+ return trades.filter(x=>
+
+  (!f || x.date>=f) &&
+
+  (!t || x.date<=t) &&
+
+  (s==="all" || x.session===s) &&
+
+  (d==="all" || x.direction===d) &&
+
+  (r==="all" || x.result===r) &&
+
+  (c==="all" || x.discipline===c)
+
+ );
+
+}
+
+
+/* =========================
+   ADVANCED
+========================= */
+
+function advanced(){
+
+ const win =
+  trades.filter(
+   x=>x.result==="win"
+  );
+
+ const loss =
+  trades.filter(
+   x=>x.result==="loss"
+  );
+
+ const gp =
+  win.reduce(
+   (s,x)=>s+Math.max(0,Number(x.pl)||0),
+   0
+  );
+
+ const gl =
+  Math.abs(
+   loss.reduce(
+    (s,x)=>s+Math.min(0,Number(x.pl)||0),
+    0
+   )
+  );
+
+ const pf =
+  gl
+   ? gp/gl
+   : gp
+    ? Infinity
+    : 0;
+
+ [
+  "profitFactor",
+  "ratingPF"
+ ].forEach(id=>{
+
+  $(id).textContent =
+   pf===Infinity
+    ? "∞"
+    : pf.toFixed(2);
+
+ });
+
+
+ const aw =
+  win.length
+   ? win.reduce(
+      (s,x)=>s+x.pl,
+      0
+     )/win.length
+   : 0;
+
+ const al =
+  loss.length
+   ? loss.reduce(
+      (s,x)=>s+x.pl,
+      0
+     )/loss.length
+   : 0;
+
+ [
+  ["avgTP",aw],
+  ["avgWin",aw],
+  ["avgSL",al],
+  ["avgLoss",al]
+ ].forEach(([id,v])=>
+  $(id).textContent=pl(v)
+ );
+
+
+ let cw=0;
+ let cl=0;
+ let mw=0;
+ let ml=0;
+
+ trades.forEach(x=>{
+
+  if(x.result==="win"){
+
+   cw++;
+   cl=0;
+   mw=Math.max(mw,cw);
+
+  }else if(x.result==="loss"){
+
+   cl++;
+   cw=0;
+   ml=Math.max(ml,cl);
+
+  }else{
+
+   cw=0;
+   cl=0;
+
+  }
+
+ });
+
+ $("maxWinStreak").textContent=mw;
+
+ $("maxLossStreak").textContent=ml;
+
+
+ let st=0;
+ let typ="";
+
+ if(trades.length){
+
+  const last =
+   trades[trades.length-1].result;
+
+  if(
+   last==="win" ||
+   last==="loss"
+  ){
+
+   typ=last;
+
+   for(
+    let i=trades.length-1;
+    i>=0 &&
+    trades[i].result===typ;
+    i--
+   ){
+
+    st++;
+
+   }
+
+  }
+
+ }
+
+ $("currentStreak").textContent=st;
+
+ $("currentStreakType").textContent =
+  typ==="win"
+   ? "Победы"
+   : typ==="loss"
+    ? "Убытки"
+    : "—";
+
+
+ let daily={};
+
+ trades.forEach(x=>{
+
+  daily[x.date] =
+   (daily[x.date]||0)+x.pl;
+
+ });
+
+ const ds =
+  Object.entries(daily);
+
+ if(ds.length){
+
+  const best =
+   ds.reduce(
+    (a,x)=>x[1]>a[1]?x:a
+   );
+
+  const worst =
+   ds.reduce(
+    (a,x)=>x[1]<a[1]?x:a
+   );
+
+  $("bestDay").textContent=best[0];
+
+  $("bestDayPL").textContent=
+   pl(best[1]);
+
+  $("worstDay").textContent=
+   worst[0];
+
+  $("worstDayPL").textContent=
+   pl(worst[1]);
+
+ }
+
+
+ let mon={};
+
+ trades.forEach(x=>{
+
+  const m =
+   x.date?.slice(0,7);
+
+  if(!m) return;
+
+  if(!mon[m])
+   mon[m]={
+    n:0,
+    w:0,
+    p:0
+   };
+
+  mon[m].n++;
+
+  mon[m].p+=x.pl;
+
+  if(x.result==="win")
+   mon[m].w++;
+
+ });
+
+ const me =
+  Object.entries(mon);
+
+ if(me.length){
+
+  const best =
+   me.reduce(
+    (a,x)=>
+     x[1].p>a[1].p
+      ? x
+      : a
+   );
+
+  $("bestMonth").textContent=
+   best[0];
+
+  $("bestMonthPL").textContent=
+   pl(best[1].p);
+
+  $("bestMonthWinrate").textContent=
+   Math.round(
+    best[1].w/
+    best[1].n*
+    100
+   )+"%";
+
+  $("bestMonthCount").textContent=
+   best[1].n;
+
+ }
+
+
+ const n=trades.length;
+
+ const wr =
+  n
+   ? win.length/n*100
+   : 0;
+
+ const dr =
+  n
+   ? trades.filter(
+      x=>x.discipline==="yes"
+     ).length/n*100
+   : 0;
+
+ const score =
+  pf===Infinity
+   ? 100
+   : Math.min(
+      100,
+      pf/2*100
+     );
+
+ const rating =
+  Math.round(
+   Math.min(
+    100,
+    wr*.4+
+    dr*.4+
+    score*.2
+   )
+  );
+
+ $("rating").textContent=
+  rating;
+
+ $("ratingBar").style.width=
+  rating+"%";
+
+ $("ratingWinrate").textContent=
+  Math.round(wr)+"%";
+
+ $("ratingDiscipline").textContent=
+  Math.round(dr)+"%";
+
+ $("ratingTitle").textContent =
+  rating>=80
+   ? "🔥 Отличная торговля"
+   : rating>=60
+    ? "💪 Хороший результат"
+    : rating>=40
+     ? "⚠️ Есть что улучшить"
+     : "🛑 Нужно пересмотреть торговлю";
+
+
+ const riskDollar =
+  settings.deposit*
+  settings.risk/
+  100;
+
+ $("riskDisplay").textContent=
+  settings.risk.toFixed(2)+"%";
+
+ $("riskDollar").textContent=
+  riskDollar.toFixed(2)+"$";
+
+ $("rewardDollar").textContent=
+  (riskDollar*2).toFixed(2)+"$";
+
+}
+
+
+/* =========================
+   GROUP STATS
+========================= */
+
+function groupStats(){
+
+ const groups={
+
+  london:
+   trades.filter(
+    x=>x.session==="London"
+   ),
+
+  ny:
+   trades.filter(
+    x=>x.session==="New York"
+   ),
+
+  long:
+   trades.filter(
+    x=>x.direction==="LONG"
+   ),
+
+  short:
+   trades.filter(
+    x=>x.direction==="SHORT"
+   ),
+
+  yes:
+   trades.filter(
+    x=>x.discipline==="yes"
+   ),
+
+  no:
+   trades.filter(
+    x=>x.discipline==="no"
+   )
+
+ };
+
+ for(
+  const [key,array]
+  of Object.entries(groups)
+ ){
+
+  const s=stat(array);
+
+  $(key+"Count")
+   .textContent=s.n;
+
+  $(key+"Winrate")
+   .textContent=s.wr+"%";
+
+  $(key+"PL")
+   .textContent=pl(s.p);
+
+ }
+
+
+ const yes=stat(groups.yes);
+ const no=stat(groups.no);
+
+ const london=stat(groups.london);
+ const ny=stat(groups.ny);
+
+ const long=stat(groups.long);
+ const short=stat(groups.short);
+
+
+ $("disciplineDifference")
+  .textContent=
+   pl(yes.p-no.p);
+
+ $("bestSession")
+  .textContent=
+   london.n||ny.n
+    ? london.p>=ny.p
+      ? "London"
+      : "New York"
+    : "—";
+
+ $("bestDirection")
+  .textContent=
+   long.n||short.n
+    ? long.p>=short.p
+      ? "LONG"
+      : "SHORT"
+    : "—";
+
+}
+
+
+/* =========================
+   SETUP ANALYTICS
+========================= */
+
+function setupAnalytics(){
+
+ const names=[
+  "Liquidity Sweep",
+  "BOS",
+  "FVG"
+ ];
+
+ const d={};
+
+ names.forEach(n=>{
+  d[n]={
+   n:0,
+   w:0,
+   tp:0,
+   sl:0,
+   p:0
+  };
+ });
+
+ trades.forEach(x=>{
+
+  const q =
+   (x.setup||"")
+   .toLowerCase();
+
+  const found=[];
+
+  if(
+   /liquidity|sweep/.test(q)
+  )
+   found.push(
+    "Liquidity Sweep"
+   );
+
+  if(
+   /bos|break of structure/.test(q)
+  )
+   found.push("BOS");
+
+  if(
+   /fvg|fair value gap/.test(q)
+  )
+   found.push("FVG");
+
+
+  found.forEach(name=>{
+
+   d[name].n++;
+
+   d[name].p+=x.pl;
+
+   if(x.result==="win"){
+
+    d[name].w++;
+    d[name].tp++;
+
+   }
+
+   if(x.result==="loss")
+    d[name].sl++;
+
+  });
+
+ });
+
+
+ $("setupStats").innerHTML =
+ names.map(name=>{
+
+  const x=d[name];
+
+  return `
+   <tr>
+    <td>${name}</td>
+    <td>${x.n}</td>
+    <td>${x.n?Math.round(x.w/x.n*100):0}%</td>
+    <td>${x.tp}</td>
+    <td>${x.sl}</td>
+    <td class="${x.p>=0?"win":"loss"}">
+     ${pl(x.p)}
+    </td>
+    <td>
+     ${pl(x.n?x.p/x.n:0)}
+    </td>
+   </tr>
+  `;
+
+ }).join("");
+
+}
+
+
+/* =========================
+   TIME + MONTHLY
+========================= */
+
+function timeMonthly(){
+
+ const h={};
+ const m={};
+
+ trades.forEach(x=>{
+
+  const tm =
+   x.entry_time ||
+   x.entryTime;
+
+  if(tm){
+
+   const k =
+    tm.slice(0,2);
+
+   if(!h[k])
+    h[k]={
+     n:0,
+     w:0,
+     p:0
+    };
+
+   h[k].n++;
+
+   h[k].p+=x.pl;
+
+   if(x.result==="win")
+    h[k].w++;
+
+  }
+
+
+  const mo =
+   x.date?.slice(0,7);
+
+  if(mo){
+
+   if(!m[mo])
+    m[mo]={
+     n:0,
+     w:0,
+     tp:0,
+     sl:0,
+     p:0
+    };
+
+   m[mo].n++;
+
+   m[mo].p+=x.pl;
+
+   if(x.result==="win"){
+
+    m[mo].w++;
+    m[mo].tp++;
+
+   }
+
+   if(x.result==="loss")
+    m[mo].sl++;
+
+  }
+
+ });
+
+
+ const he =
+  Object.entries(h)
+   .sort();
+
+ $("hourStats").innerHTML =
+  he.map(([key,x])=>`
+
+   <tr>
+    <td>${key}:00</td>
+    <td>${x.n}</td>
+    <td>${Math.round(x.w/x.n*100)}%</td>
+    <td>${pl(x.p)}</td>
+    <td>${pl(x.p/x.n)}</td>
+   </tr>
+
+  `).join("");
+
+
+ $("hourEmpty").style.display =
+  he.length
+   ? "none"
+   : "block";
+
+
+ $("monthlyStats").innerHTML =
+  Object.entries(m)
+   .sort()
+   .reverse()
+   .map(([key,x])=>`
+
+    <tr>
+     <td>${key}</td>
+     <td>${x.n}</td>
+     <td>${Math.round(x.w/x.n*100)}%</td>
+     <td>${x.tp}</td>
+     <td>${x.sl}</td>
+     <td>${pl(x.p)}</td>
+    </tr>
+
+   `).join("");
+
+}
+
+
+/* =========================
+   CHART
+========================= */
+
+function draw(id){
+
+ const canvas=$(id);
+
+ if(!canvas)
+  return;
+
+ const ctx=
+  canvas.getContext("2d");
+
+ const W=canvas.width;
+ const H=canvas.height;
+
+ let balance=
+  Number(settings.deposit)||0;
+
+ const values=[balance];
+
+ trades.forEach(x=>{
+
+  balance*=
+   1+
+   Number(x.pl||0)/
+   100;
+
+  values.push(balance);
+
+ });
+
+
+ ctx.clearRect(
+  0,
+  0,
+  W,
+  H
+ );
+
+
+ if(values.length<2){
+
+  ctx.fillStyle="#66778c";
+
+  ctx.font="16px Arial";
+
+  ctx.fillText(
+   "Добавь сделки, чтобы увидеть график",
+   25,
+   40
+  );
+
+  return;
+
+ }
+
+
+ let min=Math.min(...values);
+ let max=Math.max(...values);
+
+ if(min===max){
+
+  min--;
+  max++;
+
+ }
+
+
+ ctx.strokeStyle="#1b2b3c";
+
+ for(let i=1;i<5;i++){
+
+  const y=
+   25+
+   i*(H-50)/5;
+
+  ctx.beginPath();
+
+  ctx.moveTo(25,y);
+
+  ctx.lineTo(W-25,y);
+
+  ctx.stroke();
+
+ }
+
+
+ ctx.beginPath();
+
+ values.forEach((value,i)=>{
+
+  const px=
+   25+
+   i*(W-50)/(values.length-1);
+
+  const py=
+   H-
+   25-
+   (value-min)/
+   (max-min)*
+   (H-50);
+
+  if(i)
+   ctx.lineTo(px,py);
+  else
+   ctx.moveTo(px,py);
+
+ });
+
+
+ ctx.strokeStyle="#60a5fa";
+
+ ctx.lineWidth=3;
+
+ ctx.stroke();
+
+}
+
+
+/* =========================
+   RENDER
+========================= */
+
+function render(){
+
+ const n=trades.length;
+
+ const wins =
+  trades.filter(
+   x=>x.result==="win"
+  ).length;
+
+ const losses =
+  trades.filter(
+   x=>x.result==="loss"
+  ).length;
+
+ const bes =
+  trades.filter(
+   x=>x.result==="be"
+  ).length;
+
+ const totalPL =
+  trades.reduce(
+   (s,x)=>s+x.pl,
+   0
+  );
+
+ const disciplined =
+  trades.filter(
+   x=>x.discipline==="yes"
+  ).length;
+
+
+ let balance =
+  Number(settings.deposit)||0;
+
+ let peak=balance;
+
+ let maxDD=0;
+
+ let best=0;
+
+
+ trades.forEach(x=>{
+
+  best=
+   Math.max(
+    best,
+    x.pl
+   );
+
+  balance*=
+   1+
+   x.pl/100;
+
+  peak=
+   Math.max(
+    peak,
+    balance
+   );
+
+  if(peak>0){
+
+   maxDD=
+    Math.max(
+     maxDD,
+     (peak-balance)/
+     peak*
+     100
+    );
+
+  }
+
+ });
+
+
+ $("count").textContent=n;
+
+ $("winrate").textContent =
+  n
+   ? Math.round(wins/n*100)+"%"
+   : "0%";
+
+ $("discipline").textContent =
+  n
+   ? Math.round(
+      disciplined/n*100
+     )+"%"
+   : "0%";
+
+ $("pnl").textContent=
+  pl(totalPL);
+
+ $("pnlDollar").textContent=
+  (balance-settings.deposit)
+   .toFixed(2)+"$";
+
+ $("balance").textContent=
+  "$"+balance.toFixed(2);
+
+ $("avg").textContent=
+  pl(
+   n
+    ? totalPL/n
+    : 0
+  );
+
+ $("tpCount").textContent=wins;
+
+ $("slCount").textContent=losses;
+
+ $("beCount").textContent=bes;
+
+ $("bestTrade").textContent=
+  pl(best);
+
+ $("drawdown").textContent=
+  "-"+maxDD.toFixed(2)+"%";
+
+
+ const visible =
+  filtered();
+
+ $("empty").style.display =
+  visible.length
+   ? "none"
+   : "block";
+
+
+ $("trades").innerHTML =
+  visible
+   .slice()
+   .reverse()
+   .map(x=>`
+
+    <tr>
+
+     <td>${esc(x.date)}</td>
+
+     <td>${esc(x.symbol)}</td>
+
+     <td>${esc(x.session)}</td>
+
+     <td>${esc(x.direction)}</td>
+
+     <td>
+      <span class="badge ${x.result}">
+       ${
+        x.result==="win"
+         ?"TP"
+         :x.result==="loss"
+          ?"SL"
+          :"BE"
+       }
+      </span>
+     </td>
+
+     <td class="${x.pl>=0?"win":"loss"}">
+      ${pl(x.pl)}
+     </td>
+
+     <td>
+      ${
+       x.discipline==="yes"
+        ?"Да"
+        :"Нет"
+      }
+     </td>
+
+     <td>
+      ${esc(
+       x.comment ||
+       x.setup ||
+       "—"
+      )}
+     </td>
+
+    </tr>
+
+   `)
+   .join("");
+
+
+ const free =
+  stat(trades);
+
+ $("freeCount").textContent=
+  free.n;
+
+ $("freeWinrate").textContent=
+  free.wr+"%";
+
+ $("freePL").textContent=
+  pl(free.p);
+
+ $("freeTP").textContent=
+  wins;
+
+ $("freeSL").textContent=
+  losses;
+
+ $("freeBE").textContent=
+  bes;
+
+ $("freeDiscipline").textContent=
+  n
+   ? Math.round(
+      disciplined/n*100
+     )+"%"
+   : "0%";
+
+
+ limitUI();
+
+ groupStats();
+
+ advanced();
+
+ setupAnalytics();
+
+ timeMonthly();
+
+ draw("equity");
+
+ draw("equity2");
+
+
+ $("chartDeposit").textContent=
+  "$"+Number(
+   settings.deposit||0
+  ).toFixed(2);
+
+ $("chartBalance").textContent=
+  "$"+balance.toFixed(2);
+
+ $("chartPL").textContent=
+  pl(totalPL);
+
+ $("chartDD").textContent=
+  "-"+maxDD.toFixed(2)+"%";
+
+}
+
+
+/* =========================
+   PRO BUTTONS
+========================= */
+
+$("getProBtn").onclick =
+ startCheckout;
+
+
+document
+.querySelectorAll(".openProBtn")
+.forEach(button=>{
+
+ button.onclick =
+  startCheckout;
+
+});
+
+
+/* =========================
+   SETTINGS
+========================= */
+
+$("saveSettings").onclick=()=>{
+
+ settings={
+  deposit:
+   Number(
+    $("initialDeposit").value
+   )||0,
+
+  risk:
+   Number(
+    $("riskPercent").value
+   )||0
+ };
+
+ localStorage.setItem(
+  SETTINGS_KEY,
+  JSON.stringify(settings)
+ );
+
+ render();
+
+ alert(
+  "Настройки сохранены"
+ );
+
+};
+
+
+$("saveNickname").onclick =
+async()=>{
+
+ const name =
+  $("nicknameInput")
+   .value
+   .trim();
+
+ if(name.length<3){
+
+  return alert(
+   "Ник должен содержать минимум 3 символа."
+  );
+
+ }
+
+ const {
+  data,
+  error
+ } =
+ await client.auth.updateUser({
+  data:{
+   nickname:name
+  }
+ });
+
+ if(error)
+  return alert(
+   error.message
+  );
+
+ currentUser=data.user;
+
+ updateNick();
+
+};
+
+
+/* =========================
+   ADD TRADE
+========================= */
+
+$("tradeForm").onsubmit =
+async event=>{
+
+ event.preventDefault();
+
+
+ if(
+  !isPro &&
+  trades.length>=FREE_TRADE_LIMIT
+ ){
+
+  alert(
+   "Бесплатная версия ограничена 10 сделками. Для новых сделок нужен PRO."
+  );
+
+  return;
+
+ }
+
+
+ const trade={
+
+  user_id:
+   currentUser.id,
+
+  date:
+   $("date").value,
+
+  symbol:
+   $("symbol").value.trim(),
+
+  session:
+   $("session").value,
+
+  direction:
+   $("direction").value,
+
+  result:
+   $("result").value,
+
+  pl:
+   Number(
+    $("pl").value
+   ),
+
+  setup:
+   $("setup").value.trim(),
+
+  entry_time:
+   $("entryTime").value ||
+   null,
+
+  discipline:
+   $("disciplineInput").value,
+
+  comment:
+   $("comment").value.trim()
+
+ };
+
+
+ const {
+  data,
+  error
+ } =
+ await client
+  .from("trades")
+  .insert(trade)
+  .select()
+  .single();
+
+
+ if(error){
+
+  alert(
+   error.message
+  );
+
+  return;
+
+ }
+
+
+ trades.push({
+  ...data,
+  pl:Number(data.pl)||0
+ });
+
+
+ render();
+
+ event.target.reset();
+
+ $("date").value =
+  new Date()
+   .toISOString()
+   .slice(0,10);
+
+ $("symbol").value=
+  "BTCUSDT";
+
+
+ alert(
+  "Сделка добавлена"
+ );
+
+};
+
+
+/* =========================
+   FILTER EVENTS
+========================= */
+
+[
+ "filterFrom",
+ "filterTo",
+ "filterSession",
+ "filterDirection",
+ "filterResult",
+ "filterDiscipline"
+].forEach(id=>{
+
+ $(id).onchange=
+  render;
+
+});
+
+
+$("resetFilters").onclick=()=>{
+
+ [
+  "filterFrom",
+  "filterTo"
+ ].forEach(id=>
+  $(id).value=""
+ );
+
+ [
+  "filterSession",
+  "filterDirection",
+  "filterResult",
+  "filterDiscipline"
+ ].forEach(id=>
+  $(id).value="all"
+ );
+
+ render();
+
+};
+
+
+/* =========================
+   CLEAR
+========================= */
+
+$("clearAll").onclick =
+async()=>{
+
+ if(
+  !confirm(
+   "Удалить всю историю сделок?"
+  )
+ )
+  return;
+
+
+ const {
+  error
+ } =
+ await client
+  .from("trades")
+  .delete()
+  .eq(
+   "user_id",
+   currentUser.id
+  );
+
+
+ if(error){
+
+  alert(
+   error.message
+  );
+
+  return;
+
+ }
+
+
+ trades=[];
+
+ render();
+
+};
+
+
+/* =========================
+   EXPORT
+========================= */
+
+function exportCSV(){
+
+ const rows=[
+
+  [
+   "Дата",
+   "Инструмент",
+   "Сессия",
+   "Направление",
+   "Результат",
+   "P/L %",
+   "Сетап",
+   "Время",
+   "Стратегия",
+   "Комментарий"
+  ],
+
+  ...filtered().map(x=>[
+
+   x.date,
+   x.symbol,
+   x.session,
+   x.direction,
+   x.result,
+   x.pl,
+   x.setup,
+   x.entry_time||"",
+   x.discipline,
+   x.comment||""
+
+  ])
+
+ ];
+
+
+ const csv =
+  "\ufeff"+
+  rows
+   .map(row=>
+    row
+     .map(value=>
+      '"'+
+      String(value??"")
+       .replace(/"/g,'""')+
+      '"'
+     )
+     .join(",")
+   )
+   .join("\n");
+
+
+ const link =
+  document.createElement("a");
+
+ link.href =
+  URL.createObjectURL(
+   new Blob(
+    [csv],
+    {
+     type:"text/csv"
+    }
+   )
+  );
+
+ link.download=
+  "trade-journal.csv";
+
+ link.click();
+
+}
+
+
+$("export").onclick=
+ exportCSV;
+
+$("exportSettings").onclick=
+ exportCSV;
+
+
+/* =========================
+   AUTH STATE
+========================= */
+
+client.auth.onAuthStateChange(
+ async(event,session)=>{
+
+  if(event==="SIGNED_OUT"){
+
+   currentUser=null;
+
+   isPro=false;
+
+   showAuth();
+
+   return;
+
+  }
+
+  if(
+   session?.user &&
+   event==="TOKEN_REFRESHED"
+  ){
+
+   currentUser=session.user;
+
+   await syncProStatus();
+
+  }
+
+ }
+);
+
+
+/* =========================
+   START
+========================= */
+
+init();
+
+</script>
+
+</body>
+</html>
