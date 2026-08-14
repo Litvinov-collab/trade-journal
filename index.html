@@ -513,6 +513,20 @@ canvas{
  display:block
 }
 
+.proSuccess{
+ margin-top:15px;
+ padding:15px;
+ border-radius:12px;
+ background:#4ade8012;
+ border:1px solid #4ade8040;
+ color:#86efac;
+ display:none
+}
+
+.proSuccess.show{
+ display:block
+}
+
 footer{
  text-align:center;
  color:#66778c;
@@ -571,7 +585,9 @@ footer{
 
 <div id="authScreen" class="auth">
  <div class="panel">
+
   <h2>🔐 Trade Journal</h2>
+
   <p class="subtitle">
    Войди в аккаунт, чтобы загрузить свои сделки из Supabase.
   </p>
@@ -594,6 +610,7 @@ footer{
   </div>
 
   <div id="authStatus" class="status"></div>
+
  </div>
 </div>
 
@@ -644,8 +661,6 @@ footer{
  </button>
 
 </nav>
-
-<!-- HOME -->
 
 <section id="home" class="page active">
 
@@ -721,8 +736,6 @@ footer{
  </div>
 
 </section>
-
-<!-- ADD -->
 
 <section id="add" class="page">
 
@@ -811,8 +824,6 @@ footer{
 
 </section>
 
-<!-- HISTORY -->
-
 <section id="history" class="page">
 
  <div class="panel">
@@ -822,6 +833,7 @@ footer{
    <h2>📋 История сделок</h2>
 
    <div class="actions">
+
     <button id="export" class="secondary">
      Экспорт CSV
     </button>
@@ -829,6 +841,7 @@ footer{
     <button id="clearAll" class="danger">
      Очистить историю
     </button>
+
    </div>
 
   </div>
@@ -919,8 +932,6 @@ footer{
 
 </section>
 
-<!-- ANALYTICS -->
-
 <section id="analytics" class="page">
 
  <div id="proPromo" class="proCard">
@@ -994,7 +1005,7 @@ footer{
 
   <div id="checkoutStatus" class="checkoutBox"></div>
 
-  <div id="proStatus" class="status"></div>
+  <div id="proStatus" class="proSuccess"></div>
 
  </div>
 
@@ -1449,8 +1460,6 @@ footer{
 
 </section>
 
-<!-- CHARTS -->
-
 <section id="charts" class="page">
 
  <div id="proCharts" class="proLocked">
@@ -1512,8 +1521,6 @@ footer{
  </div>
 
 </section>
-
-<!-- SETTINGS -->
 
 <section id="settings" class="page">
 
@@ -1605,55 +1612,56 @@ window.supabase.createClient(
  }
 );
 
-const $ = id => document.getElementById(id);
+const $ = id =>
+ document.getElementById(id);
 
 const FREE_TRADE_LIMIT = 10;
 
 const SETTINGS_KEY =
 "tradeJournalSettings";
 
-let trades = [];
+let trades=[];
 
-let settings = {
+let settings={
  deposit:100,
  risk:1
 };
 
-let currentUser = null;
+let currentUser=null;
 
-let isPro = false;
+let isPro=false;
 
 
 /* =========================
-   HELPERS
+ HELPERS
 ========================= */
 
 function status(message,error=false){
 
- const el = $("authStatus");
+ const el=$("authStatus");
 
- el.textContent = message;
+ el.textContent=message;
 
  el.classList.add("show");
 
- el.style.color =
- error ? "#f87171" : "#9fb3ca";
-}
+ el.style.color=
+  error ? "#f87171" : "#9fb3ca";
 
+}
 
 function pl(value){
 
- value = Number(value) || 0;
+ value=Number(value)||0;
 
- return (
-  value >= 0 ? "+" : ""
- ) + value.toFixed(2) + "%";
+ return(
+  value>=0?"+":""
+ )+value.toFixed(2)+"%";
+
 }
-
 
 function esc(value){
 
- return String(value ?? "")
+ return String(value??"")
  .replace(/[&<>"']/g,m=>({
   "&":"&amp;",
   "<":"&lt;",
@@ -1664,48 +1672,54 @@ function esc(value){
 
 }
 
-
 function stat(array){
 
- const n = array.length;
+ const n=array.length;
 
- const w =
- array.filter(x=>x.result==="win").length;
+ const w=
+  array.filter(
+   x=>x.result==="win"
+  ).length;
 
- const p =
- array.reduce(
-  (sum,x)=>sum+(Number(x.pl)||0),
-  0
- );
+ const p=
+  array.reduce(
+   (sum,x)=>
+    sum+(Number(x.pl)||0),
+   0
+  );
 
- return {
+ return{
   n,
   w,
   p,
-  wr:n ? Math.round(w/n*100) : 0
+  wr:n?Math.round(w/n*100):0
  };
 
 }
 
 
 /* =========================
-   LOCAL SETTINGS
+ LOCAL SETTINGS
 ========================= */
 
 function loadLocal(){
 
  try{
 
-  const saved =
-  JSON.parse(
-   localStorage.getItem(SETTINGS_KEY)||"{}"
-  );
+  const saved=
+   JSON.parse(
+    localStorage.getItem(
+     SETTINGS_KEY
+    )||"{}"
+   );
 
   if(saved.deposit!=null)
-   settings.deposit=Number(saved.deposit);
+   settings.deposit=
+    Number(saved.deposit);
 
   if(saved.risk!=null)
-   settings.risk=Number(saved.risk);
+   settings.risk=
+    Number(saved.risk);
 
  }catch(e){
 
@@ -1717,97 +1731,187 @@ function loadLocal(){
 
 
 /* =========================
-   PRO STATUS
+ PRO
 ========================= */
 
 function readProFromUser(user){
 
- if(!user) return false;
+ if(!user)
+  return false;
 
- const metadata =
- user.user_metadata || {};
+ const metadata=
+  user.user_metadata||{};
 
- return (
-  metadata.is_pro === true ||
-  metadata.is_pro === "true" ||
-  metadata.pro === true ||
-  metadata.pro === "true" ||
-  metadata.subscription === "pro" ||
-  metadata.plan === "pro"
+ return(
+  metadata.is_pro===true ||
+  metadata.is_pro==="true" ||
+  metadata.pro===true ||
+  metadata.pro==="true" ||
+  metadata.subscription==="pro" ||
+  metadata.subscription==="PRO" ||
+  metadata.plan==="pro" ||
+  metadata.plan==="PRO" ||
+  metadata.isPro===true ||
+  metadata.isPro==="true"
  );
 
 }
 
 
+/*
+ Проверяем PRO напрямую через
+ текущую сессию пользователя.
+*/
 async function syncProStatus(){
 
  if(!currentUser){
 
   isPro=false;
+
   proUI();
-  return;
+
+  return false;
 
  }
 
  try{
 
-  const {data,error} =
-  await client.auth.getUser();
+  const{
+   data,
+   error
+  }=
+   await client.auth.getUser();
 
-  if(!error && data?.user){
+  if(
+   !error &&
+   data &&
+   data.user
+  ){
 
    currentUser=data.user;
 
-   isPro=readProFromUser(data.user);
+   isPro=
+    readProFromUser(
+     data.user
+    );
 
   }else{
 
-   isPro=readProFromUser(currentUser);
+   isPro=
+    readProFromUser(
+     currentUser
+    );
 
   }
 
- }catch(e){
+ }catch(error){
 
-  isPro=readProFromUser(currentUser);
+  console.error(
+   "PRO status error:",
+   error
+  );
+
+  isPro=
+   readProFromUser(
+    currentUser
+   );
 
  }
 
  proUI();
 
+ render();
+
+ return isPro;
+
 }
 
 
-/* =========================
-   PRO UI
-========================= */
+/*
+ Несколько попыток после Stripe.
+
+ Это важно, потому что webhook
+ может обновить пользователя
+ через несколько секунд.
+*/
+async function waitForProActivation(){
+
+ const attempts=8;
+
+ for(
+  let i=0;
+  i<attempts;
+  i++
+ ){
+
+  console.log(
+   "PRO check:",
+   i+1,
+   "/",
+   attempts
+  );
+
+  const result=
+   await syncProStatus();
+
+  if(result)
+   return true;
+
+  await new Promise(
+   resolve=>
+    setTimeout(
+     resolve,
+     2000
+    )
+  );
+
+ }
+
+ return false;
+
+}
+
 
 function proUI(){
 
- const promo =
- $("proPromo");
+ const promo=
+  $("proPromo");
 
  if(promo)
-  promo.style.display =
-   isPro ? "none" : "block";
+  promo.style.display=
+   isPro
+    ?"none"
+    :"block";
 
- ["proAnalytics","proCharts"]
- .forEach(id=>{
+
+ [
+  "proAnalytics",
+  "proCharts"
+ ].forEach(id=>{
 
   const box=$(id);
 
-  if(!box) return;
+  if(!box)
+   return;
 
-  const lock =
-   box.querySelector(".proLock");
+  const lock=
+   box.querySelector(
+    ".proLock"
+   );
 
   box.classList.toggle(
    "proLocked",
    !isPro
   );
 
-  if(lock)
-   lock.style.display =
-    isPro ? "none" : "flex";
+  if(lock){
+
+   lock.style.display=
+    isPro
+     ?"none"
+     :"flex";
+
+  }
 
  });
 
@@ -1816,10 +1920,11 @@ function proUI(){
 
 function showCheckoutMessage(message){
 
- const box =
- $("checkoutStatus");
+ const box=
+  $("checkoutStatus");
 
- box.textContent=message;
+ box.textContent=
+  message;
 
  box.classList.add("show");
 
@@ -1827,26 +1932,41 @@ function showCheckoutMessage(message){
 
 
 /* =========================
-   CREATE STRIPE CHECKOUT
+ STRIPE CHECKOUT
 ========================= */
 
 async function startCheckout(){
 
  if(!currentUser){
 
-  alert("Сначала войди в аккаунт.");
+  alert(
+   "Сначала войди в аккаунт."
+  );
 
   return;
 
  }
 
- const button =
- $("getProBtn");
+ if(isPro){
+
+  alert(
+   "PRO уже активирован."
+  );
+
+  return;
+
+ }
+
+ const button=
+  $("getProBtn");
 
  if(button){
 
   button.disabled=true;
-  button.textContent="⏳ Создаём оплату...";
+
+  button.textContent=
+   "⏳ Создаём оплату...";
+
  }
 
  showCheckoutMessage(
@@ -1855,12 +1975,12 @@ async function startCheckout(){
 
  try{
 
-  const {
+  const{
    data:{
     session
    }
-  } =
-  await client.auth.getSession();
+  }=
+   await client.auth.getSession();
 
   if(!session){
 
@@ -1870,69 +1990,84 @@ async function startCheckout(){
 
   }
 
-  const returnUrl =
-   window.location.origin +
-   window.location.pathname +
+  const returnUrl=
+   window.location.origin+
+   window.location.pathname+
    "?checkout=success";
 
-  const response =
-  await fetch(
-   CHECKOUT_URL,
-   {
-    method:"POST",
+  const response=
+   await fetch(
+    CHECKOUT_URL,
+    {
+     method:"POST",
 
-    headers:{
-     "Content-Type":"application/json",
-     "Authorization":
-      "Bearer "+session.access_token,
-     "apikey":SUPABASE_KEY
-    },
+     headers:{
+      "Content-Type":
+       "application/json",
 
-    body:JSON.stringify({
-     user_id:currentUser.id,
-     email:currentUser.email,
-     return_url:returnUrl
-    })
-   }
-  );
+      "Authorization":
+       "Bearer "+
+       session.access_token,
 
-  const text =
+      "apikey":
+       SUPABASE_KEY
+     },
+
+     body:JSON.stringify({
+
+      user_id:
+       currentUser.id,
+
+      email:
+       currentUser.email,
+
+      return_url:
+       returnUrl
+
+     })
+    }
+   );
+
+  const text=
    await response.text();
 
   let result;
 
   try{
 
-   result=JSON.parse(text);
+   result=
+    JSON.parse(text);
 
   }catch(e){
 
-   result={raw:text};
+   result={
+    raw:text
+   };
 
   }
 
   if(!response.ok){
 
    throw new Error(
-    result.error ||
-    result.message ||
-    result.raw ||
+    result.error||
+    result.message||
+    result.raw||
     "Ошибка создания платежа."
    );
 
   }
 
-  const checkoutUrl =
-   result.url ||
-   result.checkout_url ||
-   result.checkoutUrl ||
-   result.session_url ||
+  const checkoutUrl=
+   result.url||
+   result.checkout_url||
+   result.checkoutUrl||
+   result.session_url||
    result.sessionUrl;
 
   if(!checkoutUrl){
 
    console.error(
-    "Ответ create-checkout:",
+    "create-checkout:",
     result
    );
 
@@ -1946,7 +2081,7 @@ async function startCheckout(){
    "Перенаправляем на защищённую страницу оплаты..."
   );
 
-  window.location.href =
+  window.location.href=
    checkoutUrl;
 
  }catch(error){
@@ -1957,14 +2092,19 @@ async function startCheckout(){
   );
 
   showCheckoutMessage(
-   "Ошибка оплаты: " +
-   (error.message || "неизвестная ошибка")
+   "Ошибка оплаты: "+
+   (
+    error.message||
+    "неизвестная ошибка"
+   )
   );
 
   if(button){
 
    button.disabled=false;
-   button.textContent="👑 Получить PRO";
+
+   button.textContent=
+    "👑 Получить PRO";
 
   }
 
@@ -1974,102 +2114,157 @@ async function startCheckout(){
 
 
 /* =========================
-   CHECK RETURN FROM PAYMENT
+ PAYMENT RETURN
 ========================= */
 
 async function handleCheckoutReturn(){
 
- const params =
- new URLSearchParams(
-  window.location.search
- );
-
- if(
-  params.get("checkout")==="success" ||
-  params.get("success")==="true"
- ){
-
-  const box =
-   $("proStatus");
-
-  box.style.display="block";
-
-  box.textContent =
-   "⏳ Проверяем оплату и активацию PRO...";
-
-  await new Promise(
-   resolve=>setTimeout(resolve,1500)
+ const params=
+  new URLSearchParams(
+   window.location.search
   );
 
-  await syncProStatus();
+ const checkout=
+  params.get("checkout");
 
-  if(isPro){
+ const success=
+  params.get("success");
 
-   box.textContent =
-    "👑 PRO успешно активирован!";
+ if(
+  checkout!=="success" &&
+  success!=="true"
+ ){
 
-  }else{
+  return;
 
-   box.textContent =
-    "Оплата прошла или находится в обработке. Если PRO ещё не появился, обнови страницу через несколько секунд.";
+ }
+
+ const box=
+  $("proStatus");
+
+ box.classList.add("show");
+
+ box.textContent=
+  "⏳ Оплата получена. Проверяем активацию PRO...";
+
+ /*
+  Сначала обновляем сессию.
+ */
+ try{
+
+  const{
+   data,
+   error
+  }=
+   await client.auth.refreshSession();
+
+  if(
+   !error &&
+   data?.session?.user
+  ){
+
+   currentUser=
+    data.session.user;
 
   }
 
-  window.history.replaceState(
-   {},
-   document.title,
-   window.location.pathname
+ }catch(e){
+
+  console.error(
+   "Refresh session:",
+   e
   );
 
  }
+
+
+ /*
+  Теперь несколько раз проверяем PRO.
+ */
+ const activated=
+  await waitForProActivation();
+
+ if(activated){
+
+  box.textContent=
+   "👑 PRO успешно активирован! Все PRO-функции доступны.";
+
+  box.style.background=
+   "#4ade8012";
+
+  box.style.color=
+   "#86efac";
+
+ }else{
+
+  box.textContent=
+   "⏳ Оплата прошла. Активация PRO ещё обрабатывается. Подожди немного и обнови страницу.";
+
+  box.style.background=
+   "#facc1510";
+
+  box.style.color=
+   "#fde68a";
+
+ }
+
+ /*
+  Убираем параметры из URL.
+ */
+ window.history.replaceState(
+  {},
+  document.title,
+  window.location.pathname
+ );
 
 }
 
 
 /* =========================
-   LIMIT
+ LIMIT
 ========================= */
 
 function limitUI(){
 
- const n=trades.length;
+ const n=
+  trades.length;
 
- const remaining =
+ const remaining=
   Math.max(
    0,
    FREE_TRADE_LIMIT-n
   );
 
- $("tradeLimitBox").innerHTML =
+ $("tradeLimitBox").innerHTML=
   isPro
 
-  ?
+   ?
 
-  "👑 <strong>PRO активен</strong> — количество сделок не ограничено."
+   "👑 <strong>PRO активен</strong> — количество сделок не ограничено."
 
-  :
+   :
 
-  `Бесплатная версия:
-   <strong>${n}/${FREE_TRADE_LIMIT}</strong>
-   сделок.
-   Осталось:
-   <strong>${remaining}</strong>.`;
+   `Бесплатная версия:
+    <strong>${n}/${FREE_TRADE_LIMIT}</strong>
+    сделок.
+    Осталось:
+    <strong>${remaining}</strong>.`;
 
- $("addLimitNotice").innerHTML =
+ $("addLimitNotice").innerHTML=
   isPro
 
-  ?
+   ?
 
-  ""
+   ""
 
-  :
+   :
 
-  `<div class="limitBox">
-   🔒 Лимит бесплатной версии:
-   <strong>${n}/${FREE_TRADE_LIMIT}</strong>
-  </div>`;
+   `<div class="limitBox">
+    🔒 Лимит бесплатной версии:
+    <strong>${n}/${FREE_TRADE_LIMIT}</strong>
+   </div>`;
 
- $("addTradeBtn").disabled =
+ $("addTradeBtn").disabled=
   !isPro &&
   n>=FREE_TRADE_LIMIT;
 
@@ -2077,25 +2272,35 @@ function limitUI(){
 
 
 /* =========================
-   AUTH
+ AUTH
 ========================= */
 
-function showAuth(message="",error=false){
+function showAuth(
+ message="",
+ error=false
+){
 
- $("app").style.display="none";
+ $("app").style.display=
+  "none";
 
- $("authScreen").style.display="block";
+ $("authScreen").style.display=
+  "block";
 
  if(message)
-  status(message,error);
+  status(
+   message,
+   error
+  );
 
 }
 
 
 function nick(){
 
- return (
-  currentUser?.user_metadata?.nickname ||
+ return(
+  currentUser
+   ?.user_metadata
+   ?.nickname||
   ""
  ).trim();
 
@@ -2104,12 +2309,12 @@ function nick(){
 
 function updateNick(){
 
- $("userNickname").textContent =
+ $("userNickname").textContent=
   nick()
-   ? "@"+nick()
-   : (currentUser?.email||"");
+   ?"@"+nick()
+   :(currentUser?.email||"");
 
- $("nicknameInput").value =
+ $("nicknameInput").value=
   nick();
 
 }
@@ -2120,21 +2325,31 @@ async function loadTrades(){
  if(!currentUser)
   return;
 
- const {
+ const{
   data,
   error
- } =
+ }=
  await client
   .from("trades")
   .select("*")
-  .eq("user_id",currentUser.id)
-  .order("date",{ascending:true});
+  .eq(
+   "user_id",
+   currentUser.id
+  )
+  .order(
+   "date",
+   {
+    ascending:true
+   }
+  );
 
  if(error){
 
   if(
    /jwt|expired|invalid/i
-   .test(error.message||"")
+    .test(
+     error.message||""
+    )
   ){
 
    await client.auth.signOut({
@@ -2154,11 +2369,15 @@ async function loadTrades(){
 
  }
 
- trades =
+ trades=
   (data||[])
    .map(x=>({
+
     ...x,
-    pl:Number(x.pl)||0
+
+    pl:
+     Number(x.pl)||0
+
    }));
 
  render();
@@ -2166,31 +2385,39 @@ async function loadTrades(){
 }
 
 
+/* =========================
+ INIT
+========================= */
+
 async function init(){
 
  loadLocal();
 
- const {
+ const{
   data
- } =
+ }=
  await client.auth.getSession();
 
- if(data.session?.user){
+ if(
+  data.session?.user
+ ){
 
-  currentUser =
+  currentUser=
    data.session.user;
 
-  $("authScreen").style.display="none";
+  $("authScreen").style.display=
+   "none";
 
-  $("app").style.display="block";
+  $("app").style.display=
+   "block";
 
-  $("initialDeposit").value =
+  $("initialDeposit").value=
    settings.deposit;
 
-  $("riskPercent").value =
+  $("riskPercent").value=
    settings.risk;
 
-  $("date").value =
+  $("date").value=
    new Date()
     .toISOString()
     .slice(0,10);
@@ -2212,18 +2439,26 @@ async function init(){
 }
 
 
-/* LOGIN */
+/* =========================
+ LOGIN
+========================= */
 
-$("loginBtn").onclick =
+$("loginBtn").onclick=
 async()=>{
 
- const email =
-  $("authEmail").value.trim();
+ const email=
+  $("authEmail")
+   .value
+   .trim();
 
- const password =
-  $("authPassword").value;
+ const password=
+  $("authPassword")
+   .value;
 
- if(!email || !password){
+ if(
+  !email||
+  !password
+ ){
 
   return status(
    "Введи email и пароль.",
@@ -2232,28 +2467,34 @@ async()=>{
 
  }
 
- const {
+ const{
   data,
   error
- } =
+ }=
  await client.auth.signInWithPassword({
   email,
   password
  });
 
- if(error)
+ if(error){
+
   return status(
    error.message,
    true
   );
 
- currentUser=data.user;
+ }
+
+ currentUser=
+  data.user;
 
  loadLocal();
 
- $("authScreen").style.display="none";
+ $("authScreen").style.display=
+  "none";
 
- $("app").style.display="block";
+ $("app").style.display=
+  "block";
 
  updateNick();
 
@@ -2264,19 +2505,24 @@ async()=>{
 };
 
 
-/* REGISTER */
+/* =========================
+ REGISTER
+========================= */
 
-$("registerBtn").onclick =
+$("registerBtn").onclick=
 async()=>{
 
- const email =
-  $("authEmail").value.trim();
+ const email=
+  $("authEmail")
+   .value
+   .trim();
 
- const password =
-  $("authPassword").value;
+ const password=
+  $("authPassword")
+   .value;
 
  if(
-  !email ||
+  !email||
   password.length<6
  ){
 
@@ -2287,30 +2533,36 @@ async()=>{
 
  }
 
- const {
+ const{
   data,
   error
-  } =
-  await client.auth.signUp({
-   email,
-   password
-  });
+ }=
+ await client.auth.signUp({
+  email,
+  password
+ });
 
- if(error)
+ if(error){
+
   return status(
    error.message,
    true
   );
 
+ }
+
  if(data.session){
 
-  currentUser=data.user;
+  currentUser=
+   data.user;
 
   loadLocal();
 
-  $("authScreen").style.display="none";
+  $("authScreen").style.display=
+   "none";
 
-  $("app").style.display="block";
+  $("app").style.display=
+   "block";
 
   updateNick();
 
@@ -2329,9 +2581,11 @@ async()=>{
 };
 
 
-/* LOGOUT */
+/* =========================
+ LOGOUT
+========================= */
 
-$("logoutBtn").onclick =
+$("logoutBtn").onclick=
 async()=>{
 
  await client.auth.signOut({
@@ -2352,88 +2606,95 @@ async()=>{
 
 
 /* =========================
-   NAVIGATION
+ NAVIGATION
 ========================= */
 
 document
-.querySelectorAll(".nav button")
-.forEach(button=>{
+ .querySelectorAll(".nav button")
+ .forEach(button=>{
 
- button.onclick=()=>{
+  button.onclick=()=>{
 
-  document
-   .querySelectorAll(".nav button")
-   .forEach(x=>
-    x.classList.toggle(
-     "active",
-     x===button
+   document
+    .querySelectorAll(
+     ".nav button"
     )
-   );
+    .forEach(x=>
+     x.classList.toggle(
+      "active",
+      x===button
+     )
+    );
 
-  document
-   .querySelectorAll(".page")
-   .forEach(x=>
-    x.classList.toggle(
-     "active",
-     x.id===button.dataset.page
-    )
-   );
+   document
+    .querySelectorAll(".page")
+    .forEach(x=>
+     x.classList.toggle(
+      "active",
+      x.id===
+       button.dataset.page
+     )
+    );
 
-  if(
-   button.dataset.page==="charts"
-  ){
+   if(
+    button.dataset.page==="charts"
+   ){
 
-   draw("equity2");
+    draw("equity2");
 
-  }
+   }
 
-  scrollTo({
-   top:0,
-   behavior:"smooth"
-  });
+   scrollTo({
+    top:0,
+    behavior:"smooth"
+   });
 
- };
+  };
 
-});
+ });
 
 
 /* =========================
-   FILTERS
+ FILTERS
 ========================= */
 
 function filtered(){
 
- const f =
+ const f=
   $("filterFrom").value;
 
- const t =
+ const t=
   $("filterTo").value;
 
- const s =
+ const s=
   $("filterSession").value;
 
- const d =
+ const d=
   $("filterDirection").value;
 
- const r =
+ const r=
   $("filterResult").value;
 
- const c =
+ const c=
   $("filterDiscipline").value;
 
  return trades.filter(x=>
 
-  (!f || x.date>=f) &&
+  (!f||x.date>=f)&&
 
-  (!t || x.date<=t) &&
+  (!t||x.date<=t)&&
 
-  (s==="all" || x.session===s) &&
+  (s==="all"||
+   x.session===s)&&
 
-  (d==="all" || x.direction===d) &&
+  (d==="all"||
+   x.direction===d)&&
 
-  (r==="all" || x.result===r) &&
+  (r==="all"||
+   x.result===r)&&
 
-  (c==="all" || x.discipline===c)
+  (c==="all"||
+   x.discipline===c)
 
  );
 
@@ -2441,70 +2702,80 @@ function filtered(){
 
 
 /* =========================
-   ADVANCED
+ ADVANCED
 ========================= */
 
 function advanced(){
 
- const win =
+ const win=
   trades.filter(
    x=>x.result==="win"
   );
 
- const loss =
+ const loss=
   trades.filter(
    x=>x.result==="loss"
   );
 
- const gp =
+ const gp=
   win.reduce(
-   (s,x)=>s+Math.max(0,Number(x.pl)||0),
+   (s,x)=>
+    s+Math.max(
+     0,
+     Number(x.pl)||0
+    ),
    0
   );
 
- const gl =
+ const gl=
   Math.abs(
    loss.reduce(
-    (s,x)=>s+Math.min(0,Number(x.pl)||0),
+    (s,x)=>
+     s+Math.min(
+      0,
+      Number(x.pl)||0
+     ),
     0
    )
   );
 
- const pf =
+ const pf=
   gl
-   ? gp/gl
-   : gp
-    ? Infinity
-    : 0;
+   ?gp/gl
+   :gp
+    ?Infinity
+    :0;
 
  [
   "profitFactor",
   "ratingPF"
  ].forEach(id=>{
 
-  $(id).textContent =
+  $(id).textContent=
    pf===Infinity
-    ? "∞"
-    : pf.toFixed(2);
+    ?"∞"
+    :pf.toFixed(2);
 
  });
 
 
- const aw =
+ const aw=
   win.length
-   ? win.reduce(
-      (s,x)=>s+x.pl,
-      0
-     )/win.length
-   : 0;
+   ?win.reduce(
+    (s,x)=>
+     s+x.pl,
+    0
+   )/win.length
+   :0;
 
- const al =
+ const al=
   loss.length
-   ? loss.reduce(
-      (s,x)=>s+x.pl,
-      0
-     )/loss.length
-   : 0;
+   ?loss.reduce(
+    (s,x)=>
+     s+x.pl,
+    0
+   )/loss.length
+   :0;
 
  [
   ["avgTP",aw],
@@ -2512,7 +2783,8 @@ function advanced(){
   ["avgSL",al],
   ["avgLoss",al]
  ].forEach(([id,v])=>
-  $(id).textContent=pl(v)
+  $(id).textContent=
+   pl(v)
  );
 
 
@@ -2529,7 +2801,9 @@ function advanced(){
    cl=0;
    mw=Math.max(mw,cw);
 
-  }else if(x.result==="loss"){
+  }else if(
+   x.result==="loss"
+  ){
 
    cl++;
    cw=0;
@@ -2544,9 +2818,11 @@ function advanced(){
 
  });
 
- $("maxWinStreak").textContent=mw;
+ $("maxWinStreak").textContent=
+  mw;
 
- $("maxLossStreak").textContent=ml;
+ $("maxLossStreak").textContent=
+  ml;
 
 
  let st=0;
@@ -2554,11 +2830,13 @@ function advanced(){
 
  if(trades.length){
 
-  const last =
-   trades[trades.length-1].result;
+  const last=
+   trades[
+    trades.length-1
+   ].result;
 
   if(
-   last==="win" ||
+   last==="win"||
    last==="loss"
   ){
 
@@ -2566,7 +2844,7 @@ function advanced(){
 
    for(
     let i=trades.length-1;
-    i>=0 &&
+    i>=0&&
     trades[i].result===typ;
     i--
    ){
@@ -2579,41 +2857,46 @@ function advanced(){
 
  }
 
- $("currentStreak").textContent=st;
+ $("currentStreak").textContent=
+  st;
 
- $("currentStreakType").textContent =
+ $("currentStreakType").textContent=
   typ==="win"
-   ? "Победы"
-   : typ==="loss"
-    ? "Убытки"
-    : "—";
+   ?"Победы"
+   :typ==="loss"
+    ?"Убытки"
+    :"—";
 
 
  let daily={};
 
  trades.forEach(x=>{
 
-  daily[x.date] =
-   (daily[x.date]||0)+x.pl;
+  daily[x.date]=
+   (daily[x.date]||0)+
+   x.pl;
 
  });
 
- const ds =
+ const ds=
   Object.entries(daily);
 
  if(ds.length){
 
-  const best =
+  const best=
    ds.reduce(
-    (a,x)=>x[1]>a[1]?x:a
+    (a,x)=>
+     x[1]>a[1]?x:a
    );
 
-  const worst =
+  const worst=
    ds.reduce(
-    (a,x)=>x[1]<a[1]?x:a
+    (a,x)=>
+     x[1]<a[1]?x:a
    );
 
-  $("bestDay").textContent=best[0];
+  $("bestDay").textContent=
+   best[0];
 
   $("bestDayPL").textContent=
    pl(best[1]);
@@ -2631,17 +2914,21 @@ function advanced(){
 
  trades.forEach(x=>{
 
-  const m =
+  const m=
    x.date?.slice(0,7);
 
-  if(!m) return;
+  if(!m)
+   return;
 
-  if(!mon[m])
+  if(!mon[m]){
+
    mon[m]={
     n:0,
     w:0,
     p:0
    };
+
+  }
 
   mon[m].n++;
 
@@ -2652,17 +2939,17 @@ function advanced(){
 
  });
 
- const me =
+ const me=
   Object.entries(mon);
 
  if(me.length){
 
-  const best =
+  const best=
    me.reduce(
     (a,x)=>
      x[1].p>a[1].p
-      ? x
-      : a
+      ?x
+      :a
    );
 
   $("bestMonth").textContent=
@@ -2684,29 +2971,30 @@ function advanced(){
  }
 
 
- const n=trades.length;
+ const n=
+  trades.length;
 
- const wr =
+ const wr=
   n
-   ? win.length/n*100
-   : 0;
+   ?win.length/n*100
+   :0;
 
- const dr =
+ const dr=
   n
-   ? trades.filter(
-      x=>x.discipline==="yes"
-     ).length/n*100
-   : 0;
+   ?trades.filter(
+    x=>x.discipline==="yes"
+   ).length/n*100
+   :0;
 
- const score =
+ const score=
   pf===Infinity
-   ? 100
-   : Math.min(
-      100,
-      pf/2*100
-     );
+   ?100
+   :Math.min(
+    100,
+    pf/2*100
+   );
 
- const rating =
+ const rating=
   Math.round(
    Math.min(
     100,
@@ -2728,17 +3016,17 @@ function advanced(){
  $("ratingDiscipline").textContent=
   Math.round(dr)+"%";
 
- $("ratingTitle").textContent =
+ $("ratingTitle").textContent=
   rating>=80
-   ? "🔥 Отличная торговля"
-   : rating>=60
-    ? "💪 Хороший результат"
-    : rating>=40
-     ? "⚠️ Есть что улучшить"
-     : "🛑 Нужно пересмотреть торговлю";
+   ?"🔥 Отличная торговля"
+   :rating>=60
+    ?"💪 Хороший результат"
+    :rating>=40
+     ?"⚠️ Есть что улучшить"
+     :"🛑 Нужно пересмотреть торговлю";
 
 
- const riskDollar =
+ const riskDollar=
   settings.deposit*
   settings.risk/
   100;
@@ -2750,13 +3038,15 @@ function advanced(){
   riskDollar.toFixed(2)+"$";
 
  $("rewardDollar").textContent=
-  (riskDollar*2).toFixed(2)+"$";
+  (
+   riskDollar*2
+  ).toFixed(2)+"$";
 
 }
 
 
 /* =========================
-   GROUP STATS
+ GROUP STATS
 ========================= */
 
 function groupStats(){
@@ -2800,7 +3090,8 @@ function groupStats(){
   of Object.entries(groups)
  ){
 
-  const s=stat(array);
+  const s=
+   stat(array);
 
   $(key+"Count")
    .textContent=s.n;
@@ -2814,14 +3105,23 @@ function groupStats(){
  }
 
 
- const yes=stat(groups.yes);
- const no=stat(groups.no);
+ const yes=
+  stat(groups.yes);
 
- const london=stat(groups.london);
- const ny=stat(groups.ny);
+ const no=
+  stat(groups.no);
 
- const long=stat(groups.long);
- const short=stat(groups.short);
+ const london=
+  stat(groups.london);
+
+ const ny=
+  stat(groups.ny);
+
+ const long=
+  stat(groups.long);
+
+ const short=
+  stat(groups.short);
 
 
  $("disciplineDifference")
@@ -2831,24 +3131,24 @@ function groupStats(){
  $("bestSession")
   .textContent=
    london.n||ny.n
-    ? london.p>=ny.p
-      ? "London"
-      : "New York"
-    : "—";
+    ?london.p>=ny.p
+     ?"London"
+     :"New York"
+    :"—";
 
  $("bestDirection")
   .textContent=
    long.n||short.n
-    ? long.p>=short.p
-      ? "LONG"
-      : "SHORT"
-    : "—";
+    ?long.p>=short.p
+     ?"LONG"
+     :"SHORT"
+    :"—";
 
 }
 
 
 /* =========================
-   SETUP ANALYTICS
+ SETUP
 ========================= */
 
 function setupAnalytics(){
@@ -2862,6 +3162,7 @@ function setupAnalytics(){
  const d={};
 
  names.forEach(n=>{
+
   d[n]={
    n:0,
    w:0,
@@ -2869,13 +3170,14 @@ function setupAnalytics(){
    sl:0,
    p:0
   };
+
  });
 
  trades.forEach(x=>{
 
-  const q =
+  const q=
    (x.setup||"")
-   .toLowerCase();
+    .toLowerCase();
 
   const found=[];
 
@@ -2918,34 +3220,42 @@ function setupAnalytics(){
  });
 
 
- $("setupStats").innerHTML =
- names.map(name=>{
+ $("setupStats").innerHTML=
+  names.map(name=>{
 
-  const x=d[name];
+   const x=d[name];
 
-  return `
-   <tr>
-    <td>${name}</td>
-    <td>${x.n}</td>
-    <td>${x.n?Math.round(x.w/x.n*100):0}%</td>
-    <td>${x.tp}</td>
-    <td>${x.sl}</td>
-    <td class="${x.p>=0?"win":"loss"}">
-     ${pl(x.p)}
-    </td>
-    <td>
-     ${pl(x.n?x.p/x.n:0)}
-    </td>
-   </tr>
-  `;
+   return`
+    <tr>
+     <td>${name}</td>
+     <td>${x.n}</td>
+     <td>${x.n?Math.round(x.w/x.n*100):0}%</td>
+     <td>${x.tp}</td>
+     <td>${x.sl}</td>
+     <td class="${
+      x.p>=0
+       ?"win"
+       :"loss"
+     }">
+      ${pl(x.p)}
+     </td>
+     <td>
+      ${pl(
+       x.n
+        ?x.p/x.n
+        :0
+      )}
+     </td>
+    </tr>
+   `;
 
- }).join("");
+  }).join("");
 
 }
 
 
 /* =========================
-   TIME + MONTHLY
+ TIME + MONTHLY
 ========================= */
 
 function timeMonthly(){
@@ -2955,21 +3265,24 @@ function timeMonthly(){
 
  trades.forEach(x=>{
 
-  const tm =
-   x.entry_time ||
+  const tm=
+   x.entry_time||
    x.entryTime;
 
   if(tm){
 
-   const k =
+   const k=
     tm.slice(0,2);
 
-   if(!h[k])
+   if(!h[k]){
+
     h[k]={
      n:0,
      w:0,
      p:0
     };
+
+   }
 
    h[k].n++;
 
@@ -2981,12 +3294,13 @@ function timeMonthly(){
   }
 
 
-  const mo =
+  const mo=
    x.date?.slice(0,7);
 
   if(mo){
 
-   if(!m[mo])
+   if(!m[mo]){
+
     m[mo]={
      n:0,
      w:0,
@@ -2994,6 +3308,8 @@ function timeMonthly(){
      sl:0,
      p:0
     };
+
+   }
 
    m[mo].n++;
 
@@ -3014,31 +3330,34 @@ function timeMonthly(){
  });
 
 
- const he =
+ const he=
   Object.entries(h)
    .sort();
 
- $("hourStats").innerHTML =
+ $("hourStats").innerHTML=
   he.map(([key,x])=>`
 
    <tr>
     <td>${key}:00</td>
     <td>${x.n}</td>
-    <td>${Math.round(x.w/x.n*100)}%</td>
+    <td>${Math.round(
+     x.w/x.n*100
+    )}%</td>
     <td>${pl(x.p)}</td>
-    <td>${pl(x.p/x.n)}</td>
+    <td>${pl(
+     x.p/x.n
+    )}</td>
    </tr>
 
   `).join("");
 
-
- $("hourEmpty").style.display =
+ $("hourEmpty").style.display=
   he.length
-   ? "none"
-   : "block";
+   ?"none"
+   :"block";
 
 
- $("monthlyStats").innerHTML =
+ $("monthlyStats").innerHTML=
   Object.entries(m)
    .sort()
    .reverse()
@@ -3047,7 +3366,9 @@ function timeMonthly(){
     <tr>
      <td>${key}</td>
      <td>${x.n}</td>
-     <td>${Math.round(x.w/x.n*100)}%</td>
+     <td>${Math.round(
+      x.w/x.n*100
+     )}%</td>
      <td>${x.tp}</td>
      <td>${x.sl}</td>
      <td>${pl(x.p)}</td>
@@ -3059,7 +3380,7 @@ function timeMonthly(){
 
 
 /* =========================
-   CHART
+ CHART
 ========================= */
 
 function draw(id){
@@ -3072,13 +3393,18 @@ function draw(id){
  const ctx=
   canvas.getContext("2d");
 
- const W=canvas.width;
- const H=canvas.height;
+ const W=
+  canvas.width;
+
+ const H=
+  canvas.height;
 
  let balance=
   Number(settings.deposit)||0;
 
- const values=[balance];
+ const values=[
+  balance
+ ];
 
  trades.forEach(x=>{
 
@@ -3087,7 +3413,9 @@ function draw(id){
    Number(x.pl||0)/
    100;
 
-  values.push(balance);
+  values.push(
+   balance
+  );
 
  });
 
@@ -3102,9 +3430,11 @@ function draw(id){
 
  if(values.length<2){
 
-  ctx.fillStyle="#66778c";
+  ctx.fillStyle=
+   "#66778c";
 
-  ctx.font="16px Arial";
+  ctx.font=
+   "16px Arial";
 
   ctx.fillText(
    "Добавь сделки, чтобы увидеть график",
@@ -3117,8 +3447,11 @@ function draw(id){
  }
 
 
- let min=Math.min(...values);
- let max=Math.max(...values);
+ let min=
+  Math.min(...values);
+
+ let max=
+  Math.max(...values);
 
  if(min===max){
 
@@ -3128,9 +3461,14 @@ function draw(id){
  }
 
 
- ctx.strokeStyle="#1b2b3c";
+ ctx.strokeStyle=
+  "#1b2b3c";
 
- for(let i=1;i<5;i++){
+ for(
+  let i=1;
+  i<5;
+  i++
+ ){
 
   const y=
    25+
@@ -3138,9 +3476,15 @@ function draw(id){
 
   ctx.beginPath();
 
-  ctx.moveTo(25,y);
+  ctx.moveTo(
+   25,
+   y
+  );
 
-  ctx.lineTo(W-25,y);
+  ctx.lineTo(
+   W-25,
+   y
+  );
 
   ctx.stroke();
 
@@ -3149,28 +3493,38 @@ function draw(id){
 
  ctx.beginPath();
 
- values.forEach((value,i)=>{
+ values.forEach(
+  (value,i)=>{
 
-  const px=
-   25+
-   i*(W-50)/(values.length-1);
+   const px=
+    25+
+    i*(W-50)/
+    (values.length-1);
 
-  const py=
-   H-
-   25-
-   (value-min)/
-   (max-min)*
-   (H-50);
+   const py=
+    H-
+    25-
+    (value-min)/
+    (max-min)*
+    (H-50);
 
-  if(i)
-   ctx.lineTo(px,py);
-  else
-   ctx.moveTo(px,py);
+   if(i)
+    ctx.lineTo(
+     px,
+     py
+    );
+   else
+    ctx.moveTo(
+     px,
+     py
+    );
 
- });
+  }
+ );
 
 
- ctx.strokeStyle="#60a5fa";
+ ctx.strokeStyle=
+  "#60a5fa";
 
  ctx.lineWidth=3;
 
@@ -3180,44 +3534,47 @@ function draw(id){
 
 
 /* =========================
-   RENDER
+ RENDER
 ========================= */
 
 function render(){
 
- const n=trades.length;
+ const n=
+  trades.length;
 
- const wins =
+ const wins=
   trades.filter(
    x=>x.result==="win"
   ).length;
 
- const losses =
+ const losses=
   trades.filter(
    x=>x.result==="loss"
   ).length;
 
- const bes =
+ const bes=
   trades.filter(
    x=>x.result==="be"
   ).length;
 
- const totalPL =
+ const totalPL=
   trades.reduce(
-   (s,x)=>s+x.pl,
+   (s,x)=>
+    s+x.pl,
    0
   );
 
- const disciplined =
+ const disciplined=
   trades.filter(
    x=>x.discipline==="yes"
   ).length;
 
 
- let balance =
+ let balance=
   Number(settings.deposit)||0;
 
- let peak=balance;
+ let peak=
+  balance;
 
  let maxDD=0;
 
@@ -3257,60 +3614,69 @@ function render(){
  });
 
 
- $("count").textContent=n;
+ $("count").textContent=
+  n;
 
- $("winrate").textContent =
+ $("winrate").textContent=
   n
-   ? Math.round(wins/n*100)+"%"
-   : "0%";
+   ?Math.round(
+    wins/n*100
+   )+"%"
+   :"0%";
 
- $("discipline").textContent =
+ $("discipline").textContent=
   n
-   ? Math.round(
-      disciplined/n*100
-     )+"%"
-   : "0%";
+   ?Math.round(
+    disciplined/n*100
+   )+"%"
+   :"0%";
 
  $("pnl").textContent=
   pl(totalPL);
 
  $("pnlDollar").textContent=
-  (balance-settings.deposit)
-   .toFixed(2)+"$";
+  (
+   balance-settings.deposit
+  ).toFixed(2)+"$";
 
  $("balance").textContent=
-  "$"+balance.toFixed(2);
+  "$"+
+  balance.toFixed(2);
 
  $("avg").textContent=
   pl(
    n
-    ? totalPL/n
-    : 0
+    ?totalPL/n
+    :0
   );
 
- $("tpCount").textContent=wins;
+ $("tpCount").textContent=
+  wins;
 
- $("slCount").textContent=losses;
+ $("slCount").textContent=
+  losses;
 
- $("beCount").textContent=bes;
+ $("beCount").textContent=
+  bes;
 
  $("bestTrade").textContent=
   pl(best);
 
  $("drawdown").textContent=
-  "-"+maxDD.toFixed(2)+"%";
+  "-"+
+  maxDD.toFixed(2)+"%";
 
 
- const visible =
+ const visible=
   filtered();
 
- $("empty").style.display =
+ $("empty").style.display=
   visible.length
-   ? "none"
-   : "block";
+   ?"none"
+   :"block";
 
 
- $("trades").innerHTML =
+ $("trades").innerHTML=
   visible
    .slice()
    .reverse()
@@ -3327,7 +3693,9 @@ function render(){
      <td>${esc(x.direction)}</td>
 
      <td>
+
       <span class="badge ${x.result}">
+
        ${
         x.result==="win"
          ?"TP"
@@ -3335,27 +3703,39 @@ function render(){
           ?"SL"
           :"BE"
        }
+
       </span>
+
      </td>
 
-     <td class="${x.pl>=0?"win":"loss"}">
+     <td class="${
+      x.pl>=0
+       ?"win"
+       :"loss"
+     }">
+
       ${pl(x.pl)}
+
      </td>
 
      <td>
+
       ${
        x.discipline==="yes"
         ?"Да"
         :"Нет"
       }
+
      </td>
 
      <td>
+
       ${esc(
-       x.comment ||
-       x.setup ||
+       x.comment||
+       x.setup||
        "—"
       )}
+
      </td>
 
     </tr>
@@ -3364,7 +3744,7 @@ function render(){
    .join("");
 
 
- const free =
+ const free=
   stat(trades);
 
  $("freeCount").textContent=
@@ -3387,10 +3767,10 @@ function render(){
 
  $("freeDiscipline").textContent=
   n
-   ? Math.round(
-      disciplined/n*100
-     )+"%"
-   : "0%";
+   ?Math.round(
+    disciplined/n*100
+   )+"%"
+   :"0%";
 
 
  limitUI();
@@ -3409,61 +3789,72 @@ function render(){
 
 
  $("chartDeposit").textContent=
-  "$"+Number(
+  "$"+
+  Number(
    settings.deposit||0
   ).toFixed(2);
 
  $("chartBalance").textContent=
-  "$"+balance.toFixed(2);
+  "$"+
+  balance.toFixed(2);
 
  $("chartPL").textContent=
   pl(totalPL);
 
  $("chartDD").textContent=
-  "-"+maxDD.toFixed(2)+"%";
+  "-"+
+  maxDD.toFixed(2)+"%";
 
 }
 
 
 /* =========================
-   PRO BUTTONS
+ PRO BUTTONS
 ========================= */
 
-$("getProBtn").onclick =
+$("getProBtn").onclick=
  startCheckout;
 
-
 document
-.querySelectorAll(".openProBtn")
-.forEach(button=>{
+ .querySelectorAll(
+  ".openProBtn"
+ )
+ .forEach(button=>{
 
- button.onclick =
-  startCheckout;
+  button.onclick=
+   startCheckout;
 
-});
+ });
 
 
 /* =========================
-   SETTINGS
+ SETTINGS
 ========================= */
 
-$("saveSettings").onclick=()=>{
+$("saveSettings").onclick=
+()=>{
 
  settings={
+
   deposit:
    Number(
-    $("initialDeposit").value
+    $("initialDeposit")
+     .value
    )||0,
 
   risk:
    Number(
-    $("riskPercent").value
+    $("riskPercent")
+     .value
    )||0
+
  };
 
  localStorage.setItem(
   SETTINGS_KEY,
-  JSON.stringify(settings)
+  JSON.stringify(
+   settings
+  )
  );
 
  render();
@@ -3475,10 +3866,10 @@ $("saveSettings").onclick=()=>{
 };
 
 
-$("saveNickname").onclick =
+$("saveNickname").onclick=
 async()=>{
 
- const name =
+ const name=
   $("nicknameInput")
    .value
    .trim();
@@ -3491,22 +3882,26 @@ async()=>{
 
  }
 
- const {
+ const{
   data,
   error
- } =
+ }=
  await client.auth.updateUser({
   data:{
    nickname:name
   }
  });
 
- if(error)
+ if(error){
+
   return alert(
    error.message
   );
 
- currentUser=data.user;
+ }
+
+ currentUser=
+  data.user;
 
  updateNick();
 
@@ -3514,18 +3909,19 @@ async()=>{
 
 
 /* =========================
-   ADD TRADE
+ ADD TRADE
 ========================= */
 
-$("tradeForm").onsubmit =
+$("tradeForm").onsubmit=
 async event=>{
 
  event.preventDefault();
 
 
  if(
-  !isPro &&
-  trades.length>=FREE_TRADE_LIMIT
+  !isPro&&
+  trades.length>=
+  FREE_TRADE_LIMIT
  ){
 
   alert(
@@ -3546,7 +3942,9 @@ async event=>{
    $("date").value,
 
   symbol:
-   $("symbol").value.trim(),
+   $("symbol")
+    .value
+    .trim(),
 
   session:
    $("session").value,
@@ -3563,25 +3961,30 @@ async event=>{
    ),
 
   setup:
-   $("setup").value.trim(),
+   $("setup")
+    .value
+    .trim(),
 
   entry_time:
-   $("entryTime").value ||
+   $("entryTime").value||
    null,
 
   discipline:
-   $("disciplineInput").value,
+   $("disciplineInput")
+    .value,
 
   comment:
-   $("comment").value.trim()
+   $("comment")
+    .value
+    .trim()
 
  };
 
 
- const {
+ const{
   data,
   error
- } =
+ }=
  await client
   .from("trades")
   .insert(trade)
@@ -3601,8 +4004,12 @@ async event=>{
 
 
  trades.push({
+
   ...data,
-  pl:Number(data.pl)||0
+
+  pl:
+   Number(data.pl)||0
+
  });
 
 
@@ -3610,14 +4017,13 @@ async event=>{
 
  event.target.reset();
 
- $("date").value =
+ $("date").value=
   new Date()
    .toISOString()
    .slice(0,10);
 
  $("symbol").value=
   "BTCUSDT";
-
 
  alert(
   "Сделка добавлена"
@@ -3627,7 +4033,7 @@ async event=>{
 
 
 /* =========================
-   FILTER EVENTS
+ FILTER EVENTS
 ========================= */
 
 [
@@ -3645,7 +4051,8 @@ async event=>{
 });
 
 
-$("resetFilters").onclick=()=>{
+$("resetFilters").onclick=
+()=>{
 
  [
   "filterFrom",
@@ -3669,10 +4076,10 @@ $("resetFilters").onclick=()=>{
 
 
 /* =========================
-   CLEAR
+ CLEAR
 ========================= */
 
-$("clearAll").onclick =
+$("clearAll").onclick=
 async()=>{
 
  if(
@@ -3683,9 +4090,9 @@ async()=>{
   return;
 
 
- const {
+ const{
   error
- } =
+ }=
  await client
   .from("trades")
   .delete()
@@ -3714,7 +4121,7 @@ async()=>{
 
 
 /* =========================
-   EXPORT
+ EXPORT
 ========================= */
 
 function exportCSV(){
@@ -3734,25 +4141,26 @@ function exportCSV(){
    "Комментарий"
   ],
 
-  ...filtered().map(x=>[
+  ...filtered()
+   .map(x=>[
 
-   x.date,
-   x.symbol,
-   x.session,
-   x.direction,
-   x.result,
-   x.pl,
-   x.setup,
-   x.entry_time||"",
-   x.discipline,
-   x.comment||""
+    x.date,
+    x.symbol,
+    x.session,
+    x.direction,
+    x.result,
+    x.pl,
+    x.setup,
+    x.entry_time||"",
+    x.discipline,
+    x.comment||""
 
-  ])
+   ])
 
  ];
 
 
- const csv =
+ const csv=
   "\ufeff"+
   rows
    .map(row=>
@@ -3760,7 +4168,10 @@ function exportCSV(){
      .map(value=>
       '"'+
       String(value??"")
-       .replace(/"/g,'""')+
+       .replace(
+        /"/g,
+        '""'
+       )+
       '"'
      )
      .join(",")
@@ -3768,10 +4179,10 @@ function exportCSV(){
    .join("\n");
 
 
- const link =
+ const link=
   document.createElement("a");
 
- link.href =
+ link.href=
   URL.createObjectURL(
    new Blob(
     [csv],
@@ -3797,13 +4208,18 @@ $("exportSettings").onclick=
 
 
 /* =========================
-   AUTH STATE
+ AUTH STATE
 ========================= */
 
 client.auth.onAuthStateChange(
- async(event,session)=>{
+ async(
+  event,
+  session
+ )=>{
 
-  if(event==="SIGNED_OUT"){
+  if(
+   event==="SIGNED_OUT"
+  ){
 
    currentUser=null;
 
@@ -3816,22 +4232,28 @@ client.auth.onAuthStateChange(
   }
 
   if(
-   session?.user &&
-   event==="TOKEN_REFRESHED"
+   session?.user
   ){
 
-   currentUser=session.user;
+   currentUser=
+    session.user;
 
-   await syncProStatus();
+   if(
+    event==="TOKEN_REFRESHED"||
+    event==="SIGNED_IN"
+   ){
+
+    await syncProStatus();
+
+   }
 
   }
 
- }
-);
+ });
 
 
 /* =========================
-   START
+ START
 ========================= */
 
 init();
